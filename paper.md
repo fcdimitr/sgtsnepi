@@ -65,7 +65,7 @@ provide two particular types of interfaces. The first is to support the
 conventional t-SNE, with its typical interface and
 wrappers [@VanDerMaaten2014], which converts data points in a metric
 space to a stochastic $k$NN graph. The second is a MATLAB interface for
-SG-t-SNE-$\Pi$.
+SG-t-SNE-$\Pi$. The SG-t-SNE-$\Pi$ source code is archived with Zenodo [@Zenodo].
 
 
 # References
