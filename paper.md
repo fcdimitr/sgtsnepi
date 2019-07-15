@@ -10,7 +10,7 @@ tags:
 authors:
   - name: Nikos Pitsianis
     orcid: 0000-0002-7353-3524
-    affiliation: 1,2
+    affiliation: "1,2"
   - name: Dimitris Floros
     orcid: 0000-0003-1190-4075
     affiliation: 1
@@ -25,7 +25,7 @@ affiliations:
   - name: Department of Computer Science, Duke University, Durham, NC 27708, USA
     index: 2
 date: 14 July 2019
-bibliograph: references.bib
+bibliography: references.bib
 ---
 
 
