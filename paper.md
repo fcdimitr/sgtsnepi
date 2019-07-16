@@ -55,14 +55,12 @@ variants [@VanDerMaaten2014; @Linderman2019].[^1][^2] The t-SNE
 algorithm has successfully assisted scientific discoveries, as reported
 in numerous articles in Nature and Science magazines. However, previous
 t-SNE algorithms and software are limited in two aspects:
-
-The algorithms require that the data points be in a metric space and the
+(i) The algorithms require that the data points be in a metric space and the
 associated graph (internally generated) be regular with a constant
 degree. In many real-world networks, the vertices do not readily reside
 in a metric space, their degrees of connections vary greatly, far from
 constant.
-
-The software is limited in practical use either to small graphs/networks
+(ii) The software is limited in practical use either to small graphs/networks
 or to embedding of $d<3$ dimensions.
 
 We remove these limitations. SG-t-SNE-$\Pi$ admits arbitrary large,
