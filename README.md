@@ -352,8 +352,7 @@ of preprocessing functions. Issue
 
     make tsnepi
 
-to generate the `bin/tsnepi` binary, which is fully compatible with the
-[existing wrappers](https://github.com/lvdmaaten/bhtsne/) provided by van der Maaten [[3](#VanDerMaaten2014)].
+to generate the `bin/tsnepi` binary, which can replace the `bh_tsne` binary and is fully compatible with the [existing wrappers](https://github.com/lvdmaaten/bhtsne/) provided by van der Maaten [[3](#VanDerMaaten2014)].
 
 #### MATLAB interface 
 
@@ -398,12 +397,4 @@ Sun<sup>2</sup>\
 Aristotle University of Thessaloniki, Thessaloniki 54124, Greece\
 <sup>2</sup> Department of Computer Science, Duke University, Durham, NC
 27708, USA
-
-## Acknowledgements 
-
-*Alpha test participants*:\
-Xenofon Theodoridis
-
-
-
 

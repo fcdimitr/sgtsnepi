@@ -1,8 +1,6 @@
 /*!
   \file   nuconv.hpp
-  \brief  
-
-  <long description>
+  \brief  Non-uniform convolution
 
   \author Dimitris Floros
   \date   2019-06-20
@@ -15,6 +13,7 @@
 #include "types.hpp"
 #include "utils.hpp"
 
+#define GRID_SIZE_THRESHOLD 20  // Differenet parallelism strategy for small grids
 
 void nuconv( coord *PhiScat, coord *y, coord *VScat,
              uint32_t *ib, uint32_t *cb, 

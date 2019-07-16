@@ -32,9 +32,8 @@ void allKNNsearch(int * IDX,        //!< [k-by-N] array with the neighbor IDs
 
   p = DEFAULT_FLANN_PARAMETERS;
   p.algorithm = FLANN_INDEX_KDTREE;
-  p.trees = 8;
-  // p.log_level = FLANN_LOG_INFO;
-  p.checks = 100;
+  p.trees = 16;
+  p.checks = 300;
   
   // -------- Run a kNN search
   flann_find_nearest_neighbors_double(dataset, N, dims, dataset, N, IDX, DIST, kappa, &p);
@@ -44,7 +43,7 @@ void allKNNsearch(int * IDX,        //!< [k-by-N] array with the neighbor IDs
 int main()
 {
   // ~~~~~~~~~~ variable declarations
-  int origN, N, D, no_dims, max_iter;
+  int origN, N, L, no_dims, max_iter;
   double perplexity, theta, *data;
   int rand_seed = -1;
   tsneparams params;
@@ -53,7 +52,7 @@ int main()
   // ~~~~~~~~~~ parse inputs
 
   // ----- retrieve the (non-option) argument:
-  if (vdm_load_data(&data, &origN, &D, &no_dims, &theta, &perplexity, &rand_seed, &max_iter)) {
+  if (vdm_load_data(&data, &origN, &L, &no_dims, &theta, &perplexity, &rand_seed, &max_iter)) {
 
     N = origN;
 
@@ -76,11 +75,11 @@ int main()
     double * D = (double *)malloc(params.n * (nn + 1) * sizeof(double));
     int    * I = (int *)malloc(params.n * (nn + 1) * sizeof(int));
 
-    allKNNsearch(I, D, data, N, no_dims, nn+1);
+    allKNNsearch(I, D, data, N, L, nn+1);
 
     std::cout << "DONE" << std::endl;
 
-    std::cout << "Perplexity equalization..."
+    std::cout << "Perplexity equalization u = " << perplexity << "..."
               << std::flush;
     
     sparse_matrix P = perplexityEqualization( I, D, N, nn, perplexity );

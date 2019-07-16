@@ -39,9 +39,8 @@ void allKNNsearch(int * IDX,        //!< [k-by-N] array with the neighbor IDs
 
   p = DEFAULT_FLANN_PARAMETERS;
   p.algorithm = FLANN_INDEX_KDTREE;
-  p.trees = 8;
-  // p.log_level = FLANN_LOG_INFO;
-  p.checks = 100;
+  p.trees = 16;
+  p.checks = 300;
   
   // -------- Run a kNN search
   flann_find_nearest_neighbors_double(dataset, N, dims, dataset, N, IDX, DIST, kappa, &p);

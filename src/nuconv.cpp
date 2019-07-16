@@ -1,8 +1,6 @@
 /*!
   \file   nuconv.cpp
-  \brief  
-
-  <long description>
+  \brief  Non-uniform convolution
 
   \author Dimitris Floros
   \date   2019-06-20
@@ -59,15 +57,24 @@ void nuconv( coord *PhiScat, coord *y, coord *VScat,
   switch (d) {
 
   case 1:
-    s2g1drb( VGrid, y, VScat, ib, cb, nGridDim+2, np, n, d, m );
+    if (nGridDim <= GRID_SIZE_THRESHOLD)
+      s2g1d( VGrid, y, VScat, nGridDim+2, np, n, d, m );
+    else
+      s2g1drb( VGrid, y, VScat, ib, cb, nGridDim+2, np, n, d, m );
     break;
     
   case 2:
-    s2g2drb( VGrid, y, VScat, ib, cb, nGridDim+2, np, n, d, m );
+    if (nGridDim <= GRID_SIZE_THRESHOLD)
+      s2g2d( VGrid, y, VScat, nGridDim+2, np, n, d, m );
+    else
+      s2g2drb( VGrid, y, VScat, ib, cb, nGridDim+2, np, n, d, m );
     break;
 
   case 3:
-    s2g3drb( VGrid, y, VScat, ib, cb, nGridDim+2, np, n, d, m );
+    if (nGridDim <= GRID_SIZE_THRESHOLD)
+      s2g3d( VGrid, y, VScat, nGridDim+2, np, n, d, m );
+    else
+      s2g3drb( VGrid, y, VScat, ib, cb, nGridDim+2, np, n, d, m );
     break;
     
   }
