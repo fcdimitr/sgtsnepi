@@ -350,8 +350,9 @@ SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width
 of preprocessing functions. Issue
 
     make tsnepi
+    cp bin/tsnepi <BHTSNEPATH>/bh_tsne
 
-to generate the `bin/tsnepi` binary, which can replace the `bh_tsne` binary and is fully compatible with the [existing wrappers](https://github.com/lvdmaaten/bhtsne/) provided by van der Maaten [[3](#VanDerMaaten2014)].
+to generate the `bin/tsnepi` binary, which is fully compatible with the [existing wrappers](https://github.com/lvdmaaten/bhtsne/) provided by van der Maaten [[3](#VanDerMaaten2014)], and replace the `bh_tsne` binary. `<BHTSNEPATH>` in the installation path of [`bhtsne`](https://github.com/lvdmaaten/bhtsne/).
 
 #### MATLAB interface 
 
