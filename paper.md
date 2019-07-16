@@ -62,7 +62,6 @@ in a metric space, their degrees of connections vary greatly, far from
 constant.
 (ii) The software is limited in practical use either to small graphs/networks
 or to embedding of $d<3$ dimensions.
-
 We remove these limitations. SG-t-SNE-$\Pi$ admits arbitrary large,
 sparse, stochastic graphs/networks. It is used in [@Pitsianis2019] for
 novel, autonomous embedding of large, real-world stochastic networks.
