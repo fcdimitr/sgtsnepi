@@ -32,40 +32,61 @@ bibliography: references.bib
 # Summary
 
 SG-t-SNE-$\Pi$ is a high-performance software for swift embedding of a
-large, sparse, stochastic graph into a $d$-dimensional space
-($d = 1,2,3$) on a shared-memory computer. Sparse graphs or network data
-emerge in numerous real-world applications and research fields, such as
-biological networks, commercial product networks, food webs,
-telecommunication networks, and word co-occurrence networks;
-see [@Kovacs2019; @Yang2015] and references therein. Fundamental to many
-graph analysis tasks, graph embedding maps the vertices of a graph to a
-set of code/feature vectors in a code space. Often, a high-dimensional
-graph embedding is accompanied by a $d$-dimensional embedding
-($d = 1,2,3$) for visual inspection, interpretation of analysis results,
-interactive exploration, and hypothesis generation.
+large, sparse, stochastic graph/network into a $d$-dimensional space
+($d = 1,2,3$) on a shared-memory computer, especially on personal laptop
+and desktop computers. Graphs/networks are an important type of
+relational data. They arise ubiquitously in real-world applications and
+various research fields, such as biological networks, social networks,
+communication networks, food webs, word co-occurrence networks; see
+[@Kovacs2019; @Yang2015] for more real-world networks. Graph embedding
+maps each vertex of the graph to a $d$-dimensional feature vector. Graph
+embedding to a $d$-dimensional space with $d=1,2,3$ is frequently used
+in data-based scientific studies for visual inspection of data,
+interpretation of network-based analysis results, interactive inquiries
+and hypothesis generation.
 
-SG-t-SNE-$\Pi$ is based on the algorithm SG-t-SNE [@Pitsianis2019] and
-was used to obtain the published results of the latter.  The algorithm
-is built upon precursors for $k$-nearest neighbor graph embedding, in
-particular Stochastic Neighbor Embedding (SNE) [@Hinton2003],
-t-Distributed Stochastic Neighbor Embedding (t-SNE) [@Maaten2008], and
-their variants [@VanDerMaaten2014; @Linderman2019]. The precursor
-algorithms typically require the data to be provided in a metric space
-and the graph be regular with constant degree $k$. We remove this
-limitation and enable low-dimensional embedding of arbitrary large,
-sparse, stochastic graphs, which arise with real-world social and
-commercial networks. The use of the precursor methods was practically
-limited up to two-dimensional (2D) embeddings. We advocate 3D
-embedding and make it fast and practical on modern laptop and desktop
-computers, which are affordable and available to researchers and
-developers by and large.
+The software SG-t-SNE-$\Pi$ and its underlying algorithm are built upon
+precursor algorithms and software for stochastic neighbor embedding of
+high-dimensional data, in particular, the original Stochastic Neighbor
+Embedding (SNE) algorithm by Hinton and van der Maaten [@Hinton2003],
+the algorithm for t-Distributed Stochastic Neighbor Embedding (t-SNE) by
+van der Maaten [@Maaten2008], and their
+variants [@VanDerMaaten2014; @Linderman2019].[^1][^2] The t-SNE
+algorithm has successfully assisted scientific discoveries, as reported
+in numerous articles in Nature and Science magazines. However, previous
+t-SNE algorithms and software are limited in two aspects:
 
-The SG-t-SNE-$\Pi$ library is implemented in `C++`. In addition, we
-provide two particular types of interfaces. The first is to support the
-conventional t-SNE, with its typical interface and
-wrappers [@VanDerMaaten2014], which converts data points in a metric
-space to a stochastic $k$NN graph. The second is a MATLAB interface for
-SG-t-SNE-$\Pi$. The SG-t-SNE-$\Pi$ source code is archived with Zenodo [@Zenodo].
+The algorithms require that the data points be in a metric space and the
+associated graph (internally generated) be regular with a constant
+degree. In many real-world networks, the vertices do not readily reside
+in a metric space, their degrees of connections vary greatly, far from
+constant.
 
+The software is limited in practical use either to small graphs/networks
+or to embedding of $d<3$ dimensions.
+
+We remove these limitations. SG-t-SNE-$\Pi$ admits arbitrary large,
+sparse, stochastic graphs/networks. It is used in [@Pitsianis2019] for
+novel, autonomous embedding of large, real-world stochastic networks.
+SG-t-SNE-$\Pi$ also enables fast three-dimensional (3D) graph embedding,
+which preserves and reveals more or even critical structural information
+as shown in [@Pitsianis2019], on modern laptop and desktop computers
+with ease of use.
+
+SG-t-SNE-$\Pi$ is implemented in `C++`. It takes as input a stochastic
+graph and outputs $d$-dimensional coordinate vectors, one for each
+vertex. In addition, we provide two particular types of interfaces. The
+first is to support the conventional t-SNE, with its typical interface
+and wrappers [@VanDerMaaten2014], which converts data points in a metric
+space to a stochastic $k$-nearest neighbor graph. The second is a MATLAB
+interface. SG-t-SNE-$\Pi$ is used to obtain all numerical experiments in
+the research article [@Pitsianis2019] and the supplementary
+material.[^3]
+
+[^1]: <https://github.com/lvdmaaten/bhtsne>
+
+[^2]: <https://github.com/KlugerLab/FIt-SNE>
+
+[^3]: <http://t-sne-pi.cs.duke.edu>
 
 # References
