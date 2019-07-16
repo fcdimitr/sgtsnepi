@@ -26,7 +26,6 @@
     -   [Usage demo](#usage-demo)
 -   [License and community guidelines](#license-and-community-guidelines)
 -   [Contributors](#contributors)
--   [Acknowledgements](#acknowledgements)
 
 ## Overview 
 
