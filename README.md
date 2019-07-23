@@ -297,9 +297,9 @@ Algorithms and Architectures*, pp. 233–244, 2009.
 
 SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/> is developed for shared-memory computers with
 multi-threading, running Linux or macOS operating system. The source
-code is (to be) compiled by a `C++` compiler supporting Cilk. The
-current release is tested with the `GNU g++` compiler 7.4.0 and the
-`Intel` `icpc` compiler 19.0.4.233.
+code is (to be) compiled by a C++ compiler supporting Cilk. The
+current release is tested with the GNU `g++` compiler 7.4.0 and the
+Intel `icpc` compiler 19.0.4.233.
 
 ### Prerequisites 
 
@@ -321,7 +321,7 @@ On Ubuntu:
 
 On macOS:
 
-    sudo port install flann tbb metis fftw-3
+    sudo port install flann tbb metis fftw-3 doxygen
 
 ### Installation 
 
@@ -356,9 +356,9 @@ to generate the `bin/tsnepi` binary, which is fully compatible with the [existin
 
 #### MATLAB interface 
 
-To compile the SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/> `MATLAB` wrappers, use the
+To compile the SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/> MATLAB wrappers, use the
 `--enable-matlab` option in the `configure` command. The default
-`MATLAB` installation path is `/opt/local/matlab`; otherwise, set
+MATLAB installation path is `/opt/local/matlab`; otherwise, set
 `MATLABROOT`:
 
     ./configure --enable-matlab MATLABROOT=<matlab-path>
