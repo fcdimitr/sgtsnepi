@@ -28,7 +28,7 @@ LIBS     = @LIBS@
 
 MEX      = @MEX@
 MEXFLAGS = @MEXFLAGS@
-
+LDFLAGS  = @LDFLAGS@
 BUILDMEX = @ENABLE_MATLAB@
 
 # # get OS name-type (OSX or linux setup)
@@ -196,9 +196,9 @@ $(shell mkdir -p lib >/dev/null)
 
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$(notdir $*.Td)
 
-LINKMEX.o     = $(MEX) $(MEXFLAGS) $(LIBPATH) $(TARGET_ARCH) 
+LINKMEX.o     = $(MEX) $(MEXFLAGS) $(LIBPATH) $(LDFLAGS) $(TARGET_ARCH) 
 COMPILEMEX.cc = $(CXX) $(DEPFLAGS) $(CFLAGS) $(MEXINC) $(MEXRPATH) $(TARGET_ARCH) $(INCPATH) -c
-LINK.o        = $(CXX) $(CFLAGS)  $(LIBPATH) $(TARGET_ARCH)
+LINK.o        = $(CXX) $(CFLAGS)  $(LIBPATH) $(LDFLAGS) $(TARGET_ARCH)
 COMPILE.cc    = $(CXX) $(DEPFLAGS) $(CFLAGS) $(TARGET_ARCH) $(INCPATH) -c
 POSTCOMPILE   = @mv -f $(DEPDIR)/$(notdir $*.Td) $(DEPDIR)/$(notdir $*.d) && touch $@
 
