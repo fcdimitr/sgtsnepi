@@ -37,8 +37,8 @@ large, sparse, stochastic graph/network into a $d$-dimensional space
 and desktop computers. Graphs/networks are an important type of
 relational data, arising ubiquitously in real-world applications and
 various research fields. Such data include biological networks, social networks,
-communication networks, food webs, word co-occurrence networks, etc; see
-[@Kovacs2019; @Yang2015] for more real-world networks. Graph embedding
+communication networks, food webs, word co-occurrence networks, 
+see @Kovacs2019 and @Yang2015 for more real-world networks. Graph embedding
 maps each vertex of the graph to a $d$-dimensional feature vector. Graph
 embedding into a $d$-dimensional space with $d=1,2,3$ is frequently used
 in data-based scientific studies for visual inspection of data,
@@ -48,9 +48,9 @@ and hypothesis generation.
 The software SG-t-SNE-$\Pi$ and its underlying algorithm are built upon
 precursor algorithms and software for stochastic neighbor embedding of
 high-dimensional data, namely the original Stochastic Neighbor
-Embedding (SNE) algorithm by Hinton and Roweis [@Hinton2003],
+Embedding (SNE) algorithm by @Hinton2003,
 the algorithm for t-distributed Stochastic Neighbor Embedding (t-SNE) by
-van der Maaten and Hinton [@Maaten2008], and their
+@Maaten2008, and their
 variants [@VanDerMaaten2014; @Linderman2019].[^1][^2] The t-SNE
 algorithm has successfully assisted scientific discoveries, as reported
 in numerous articles in Nature and Science magazines. However, previous
@@ -63,11 +63,11 @@ constant.
 (ii) The software is limited in practical use either to small graphs/networks
 or to embedding into $d<3$ dimensions.
 We remove both limitations. SG-t-SNE-$\Pi$ admits arbitrary large,
-sparse, stochastic graphs/networks. It is demonstrated in [@Pitsianis2019] for
+sparse, stochastic graphs/networks. It is demonstrated in @Pitsianis2019 for
 novel, autonomous embedding of large, real-world stochastic networks.
 SG-t-SNE-$\Pi$ also enables fast three-dimensional (3D) graph embedding,
 which preserves and reveals more or even critical structural information
-as shown in [@Pitsianis2019], on modern laptop and desktop computers
+as shown in @Pitsianis2019, on modern laptop and desktop computers
 with ease of use.
 
 SG-t-SNE-$\Pi$ is implemented in C++. It takes as input a stochastic
