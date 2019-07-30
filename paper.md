@@ -77,7 +77,7 @@ first is to support the conventional t-SNE, with its typical interface
 and wrappers [@VanDerMaaten2014], which converts data points in a metric
 space to a stochastic $k$-nearest neighbor graph. The second is a MATLAB
 interface. SG-t-SNE-$\Pi$ is used to obtain all numerical experiments in
-the research article [@Pitsianis2019] and the accompanying supplementary
+the research article by @Pitsianis2019 and the accompanying supplementary
 material.[^3]
 
 [^1]: <https://github.com/lvdmaaten/bhtsne>
