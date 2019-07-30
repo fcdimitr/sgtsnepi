@@ -61,13 +61,13 @@ degree. In many real-world networks, the vertices do not readily reside
 in a metric space, and their degrees vary greatly, far from
 constant.
 (ii) The software is limited in practical use either to small graphs/networks
-or to embedding into $d<3$ dimensions.
-We remove both limitations. SG-t-SNE-$\Pi$ admits arbitrary large,
-sparse, stochastic graphs/networks. It is demonstrated in @Pitsianis2019 for
+or to embedding to $d<3$ dimensional space.
+We remove both limitations. SG-t-SNE-$\Pi$ admits arbitrary,
+sparse, stochastic graphs/networks. It is demonstrated by @Pitsianis2019 for
 novel, autonomous embedding of large, real-world stochastic networks.
 SG-t-SNE-$\Pi$ also enables fast three-dimensional (3D) graph embedding,
 which preserves and reveals more or even critical structural information
-as shown in @Pitsianis2019, on modern laptop and desktop computers
+as shown by @Pitsianis2019, on modern laptop and desktop computers
 with ease of use.
 
 SG-t-SNE-$\Pi$ is implemented in C++. It takes as input a stochastic
