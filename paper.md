@@ -71,8 +71,7 @@ as shown by @Pitsianis2019, on modern laptop and desktop computers
 with ease of use.
 
 SG-t-SNE-$\Pi$ is implemented in C++. It takes as input a stochastic
-graph and outputs $d$-dimensional coordinate vectors, one for each
-vertex. We provide two additional interfaces. The
+graph and outputs $d$-dimensional coordinate vectors. We provide two additional interfaces. The
 first is to support the conventional t-SNE, with its typical interface
 and wrappers [@VanDerMaaten2014], which converts data points in a metric
 space to a stochastic $k$-nearest neighbor graph. The second is a MATLAB
