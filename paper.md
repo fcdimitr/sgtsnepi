@@ -51,7 +51,7 @@ high-dimensional data, namely the original Stochastic Neighbor
 Embedding (SNE) algorithm by @Hinton2003,
 the algorithm for t-distributed Stochastic Neighbor Embedding (t-SNE) by
 @Maaten2008, and their
-variants [@VanDerMaaten2014; @Linderman2019].[^1][^2] The t-SNE
+variants [@VanDerMaaten2014; @Linderman2019].[^1] [^2] The t-SNE
 algorithm has successfully assisted scientific discoveries, as reported
 in numerous articles in Nature and Science magazines. However, previous
 t-SNE algorithms and software are limited in two aspects:
