@@ -1,5 +1,6 @@
 # SG-t-SNE-Π <br/> Swift Neighbor Embedding of Sparse Stochastic Graphs
 
+[![DOI](http://joss.theoj.org/papers/10.21105/joss.01577/status.svg)](https://doi.org/10.21105/joss.01577)
 [![DOI](https://zenodo.org/badge/196885143.svg)](https://zenodo.org/badge/latestdoi/196885143)
 [![GitHub license](https://img.shields.io/github/license/fcdimitr/sgtsnepi.svg)](https://github.com/fcdimitr/sgtsnepi/blob/master/LICENSE)
 [![GitHub issues](https://img.shields.io/github/issues/fcdimitr/sgtsnepi.svg)](https://github.com/fcdimitr/sgtsnepi/issues/)
