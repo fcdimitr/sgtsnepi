@@ -83,7 +83,16 @@ fprintf( '   - DONE\n');
 fprintf( '...visualize embedding...\n' ); 
 
 figure
-scatter( Y(:,1), Y(:,2), eps, L, '.' )
+
+switch dEmb
+  case 1
+    scatter(Y(:,1), Y(:,1), eps, L, '.' )
+  case 2
+    scatter( Y(:,1), Y(:,2), eps, L, '.' )
+  case 3
+    scatter3( Y(:,1), Y(:,2), Y(:,3), eps, L, '.' )
+end
+
 axis image off
 colormap( jet(10) )
 colorbar
