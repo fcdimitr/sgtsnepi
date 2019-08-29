@@ -18,7 +18,7 @@ urlMNIST = 'https://github.com/daniel-e/mnist_octave/raw/master/mnist.mat';
 numPCA = 50;
 
 u         = 30;
-dEmb      = 2;
+dEmb      = 2; % 1, 2 and 3 dimensional embeddings are supported
 lambda    = 1;
 maxIter   = 1000;
 earlyIter = 250;
