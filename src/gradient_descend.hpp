@@ -23,5 +23,17 @@ void kl_minimization(coord* Y,  //!< Embedding coordinates (output)
                      double **timeInfo //!< [Optional] Timing information (output)
                      );
 
+//! Compute the gradient vector
+/*! 
+ */
+template <class dataPoint>
+double compute_gradient(dataPoint *dy,
+                        double *timeFrep,
+                        double *timeFattr,
+			tsneparams params,
+			dataPoint *y,
+			BiCsb<dataPoint, unsigned int> * csb,
+                        double *timeInfo = nullptr);
+
 
 #endif /* GRADIENT_DESCEND_HPP */

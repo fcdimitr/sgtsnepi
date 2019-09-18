@@ -79,7 +79,7 @@ double compute_gradient(dataPoint *dy,
 			tsneparams params,
 			dataPoint *y,
 			BiCsb<dataPoint, unsigned int> * csb,
-                        double *timeInfo = nullptr){
+                        double *timeInfo){
 
 
   // ----- parse input parameters
@@ -219,3 +219,24 @@ void kl_minimization(coord* y,
   free(uy);
   free(gains);
 }
+
+
+// ***** EXPLICIT INSTATIATION
+
+template
+double compute_gradient(double *dy,
+                        double *timeFrep,
+                        double *timeFattr,
+			tsneparams params,
+			double *y,
+			BiCsb<double, unsigned int> * csb,
+                        double *timeInfo);
+
+// template
+// double compute_gradient(float *dy,
+//                         double *timeFrep,
+//                         double *timeFattr,
+// 			tsneparams params,
+// 			float *y,
+// 			BiCsb<float, unsigned int> * csb,
+//                         double *timeInfo);

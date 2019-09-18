@@ -97,7 +97,8 @@ SRCS =  sgtsne.cpp sparsematrix.cpp utils.cpp		\
 	qq.cpp nuconv.cpp graph_rescaling.cpp		\
 	dataReloc.cpp timers.cpp pq.cpp
 
-MEXS =  sgtsnepi.$(MEXEXT) perplexityEqualize.$(MEXEXT)
+MEXS =  sgtsnepi.$(MEXEXT) perplexityEqualize.$(MEXEXT) \
+	computegrad.$(MEXEXT)
 
 DEMOS = demo_perplexity_equalization demo_stochastic_matrix
 
