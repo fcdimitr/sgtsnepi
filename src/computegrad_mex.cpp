@@ -18,12 +18,13 @@
 #include "sgtsne.hpp"
 #include "../csb/csb_wrapper.hpp"
 #include "gradient_descend.hpp"
+#include "qq.hpp"
 
-static const int OPTION_INITIALIZE_CSB   = 0;
-static const int OPTION_DESTROY_CSB      = 1;
-static const int OPTION_COMPUTE_GRADIENT = 2;
-static const int OPTION_COMPUTE_KL       = 3;
-
+static const int OPTION_INITIALIZE_CSB            = 0;
+static const int OPTION_DESTROY_CSB               = 1;
+static const int OPTION_COMPUTE_GRADIENT          = 2;
+static const int OPTION_COMPUTE_GRADIENT_SEPARATE = 3;
+static const int OPTION_COMPUTE_REPULSIVE         = 4;
 
 void parseInputs( tsneparams &P, double **y, int nrhs, const mxArray *prhs[] ){
 
@@ -166,85 +167,93 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
     }
     break;
     
-  case OPTION_COMPUTE_KL:
+  case OPTION_COMPUTE_GRADIENT_SEPARATE:
     {
+      if (csb == NULL){
+        mexErrMsgTxt("No CSB object");
+      }
+      y_in = (double *) mxGetData( prhs[1] );
+      nDim = (uint32_t) mxGetM( prhs[1] );
+      nPts = (uint32_t) mxGetN( prhs[1] );
+
+      double *Fattr, *Frep;
+
+      params.alpha = (double) mxGetScalar( prhs[2] );
+      params.d     = nDim;
+      params.n     = nPts;
+
+      switch (params.d){
+      case 1:
+        params.h = 0.5;
+        break;
+      case 2:
+        params.h = 0.7;
+        break;
+      case 3:
+        params.h = 1.2;
+        break;
+      }
+
+      params.np = getWorkers();
+
       
+      plhs[0] = mxCreateNumericMatrix(params.d, nPts, mxDOUBLE_CLASS, mxREAL);
+      plhs[1] = mxCreateNumericMatrix(params.d, nPts, mxDOUBLE_CLASS, mxREAL);
+      plhs[2] = mxCreateNumericMatrix(1, 1, mxDOUBLE_CLASS, mxREAL);
+      
+      Frep    = (double *)mxGetData(plhs[0]);
+      Fattr   = (double *)mxGetData(plhs[1]);
+      zeta    = (double *)mxGetData(plhs[2]);
+
+      csb_pq( NULL, NULL, csb, y_in, Fattr, params.n, params.d, 0, 0, 0 );
+      zeta[0] = computeFrepulsive_interp(Frep, y_in, params.n, params.d, params.h, params.np);
+
+    }
+    break;
+
+  case OPTION_COMPUTE_REPULSIVE:
+    {
+
+      y_in = (double *) mxGetData( prhs[1] );
+      nDim = (uint32_t) mxGetM( prhs[1] );
+      nPts = (uint32_t) mxGetN( prhs[1] );
+
+      double *Frep;
+
+      params.alpha = (double) mxGetScalar( prhs[2] );
+      params.d     = nDim;
+      params.n     = nPts;
+
+      switch (params.d){
+      case 1:
+        params.h = 0.5;
+        break;
+      case 2:
+        params.h = 0.7;
+        break;
+      case 3:
+        params.h = 1.2;
+        break;
+      }
+
+      if (nrhs > 3) params.h = (double) mxGetScalar( prhs[3] );
+
+      params.np = getWorkers();
+
+      
+      plhs[0] = mxCreateNumericMatrix(params.d, nPts, mxDOUBLE_CLASS, mxREAL);
+      plhs[1] = mxCreateNumericMatrix(1, 1, mxDOUBLE_CLASS, mxREAL);
+      
+      Frep    = (double *)mxGetData(plhs[0]);
+      zeta    = (double *)mxGetData(plhs[1]);
+
+      zeta[0] = computeFrepulsive_interp(Frep, y_in, params.n, params.d, params.h, params.np);
+
     }
     break;
     
   default:
     break;
   }
-  
-  // ~~~~~~~~~~~~~~~~~~~~ PARSE INPUTS
-  // double *vv = (double *)mxGetData(prhs[0]);
-  // size_t *ir = mxGetIr( prhs[0] );
-  // size_t *jc = mxGetJc( prhs[0] );
-  
-  // // ---------- get sizes
-  // nPts = (uint32_t) mxGetM( prhs[0] );
-  // nnz  = mxGetNzmax(prhs[0]);
-
-  // params.n = nPts;
-
-  // // parse inputs
-  // parseInputs( params, &y_in, nrhs-1, &prhs[1] );
-  
-  // // ---------- prepare local matrices
-  // matidx *rows = (matidx *) malloc( nnz      * sizeof(matidx) );
-  // matidx *cols = (matidx *) malloc( (nPts+1) * sizeof(matidx) );
-  // matval *vals = (matval *) malloc( nnz      * sizeof(matval) );
-
-  // std::copy( vv, vv + nnz   , vals );
-  // std::copy( ir, ir + nnz   , rows );
-  // std::copy( jc, jc + nPts+1, cols );
-  
-  // // ~~~~~~~~~~~~~~~~~~~~ SETUP OUTPUS
-  // plhs[0] = mxCreateNumericMatrix(nPts, params.d, mxDOUBLE_CLASS, mxREAL);
-
-  // if (nlhs > 1) flagTime = true;
-
-  // if (flagTime){
-  //   plhs[1] = mxCreateNumericMatrix(6, params.maxIter, mxDOUBLE_CLASS, mxREAL);
-  //   timeInfo = (double **) malloc( params.maxIter * sizeof(double *) );
-    
-  //   double *mxTime = (double *)mxGetData(plhs[1]);
-
-  //   for (int i=0; i<params.maxIter; i++)
-  //     timeInfo[i] = &mxTime[i*6];
-    
-  // }
-  
-  // // get pointer
-  // y_mx = (double *)mxGetData(plhs[0]);
-
-  // // ---------- build sparse_matrix struct
-  // sparse_matrix P;
-  // P.m = nPts;
-  // P.n = nPts;
-  // P.nnz = nnz;
-  // P.row = rows;
-  // P.col = cols;
-  // P.val = vals;
-
-  // // ~~~~~~~~~~ setup number of workers
-  
-  // if (getWorkers() != params.np && params.np > 0)
-  //   setWorkers( params.np );
-
-  // params.np = getWorkers();
-
-  
-  // // ~~~~~~~~~~~~~~~~~~~~ (OPERATION)
-  // double *y = sgtsne( P, params, y_in, timeInfo );
-
-  // // write back to output (transpose for MATLAB)
-  // for (int i=0; i<nPts; i++)
-  //   for (int j=0; j<params.d; j++)
-  //     y_mx[ j*nPts + i ] = y[ i*params.d + j ];
-  
-  // // ~~~~~~~~~~~~~~~~~~~~ DE-ALLOCATE TEMPORARY MEMORY
-  // free( y );
-  // if (flagTime) free(timeInfo);
   
 }

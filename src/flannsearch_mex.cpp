@@ -1,11 +1,11 @@
 /*!
-  \file   sgtsnepi_mex.cpp
+  \file   flannsearch_mex.cpp
   \brief  
 
-  <long description>
+  Approximate kNN search using FLANN.
 
   \author Dimitris Floros
-  \date   2019-06-22
+  \date   2019-09-20
 */
 
 
@@ -52,10 +52,8 @@ void allKNNsearch(int * IDX,        //!< [k-by-N] array with the neighbor IDs
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) { 
   
   // ~~~~~~~~~~~~~~~~~~~~ DEFINE VARIABLES
-  double   *X, *vv;
-  size_t   *ir, *jc;
+  double   *X;
   uint32_t nPts, nDim;
-  size_t nnz;
   
   // ~~~~~~~~~~~~~~~~~~~~ PARSE INPUTS
 
@@ -67,40 +65,21 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   nPts = (uint32_t) mxGetN( prhs[0] );
 
   // ~~~~~ get perplexity
-  double u = mxGetScalar( prhs[1] );
+  int nn = (int) mxGetScalar( prhs[1] );
 
-  int nn = std::ceil( 3*u );
-  
   // ~~~~~~~~~~ run kNN search
 
   std::cout << "Running k-neareast neighbor search for " << nn << " neighbors..."
             << std::flush;
-  
-  double * D = (double *)malloc(nPts * (nn + 1) * sizeof(double));
-  int    * I = (int *)malloc(nPts * (nn + 1) * sizeof(int));
+
+  plhs[0] = mxCreateNumericMatrix((nn+1), nPts, mxINT32_CLASS, mxREAL);
+  plhs[1] = mxCreateNumericMatrix((nn+1), nPts, mxDOUBLE_CLASS, mxREAL);
+
+  int    * I = (int *)    mxGetData(plhs[0]);
+  double * D = (double *) mxGetData(plhs[1]);
 
   allKNNsearch(I, D, X, nPts, nDim, nn+1);
 
   std::cout << "DONE" << std::endl;
-
-  sparse_matrix P = perplexityEqualization( I, D, nPts, nn, u );
-
-  free( D ); free( I );
-  
-  // ~~~~~~~~~~~~~~~~~~~~ SETUP OUTPUS
-  plhs[0] = mxCreateSparse(nPts,nPts,P.nnz,mxREAL);
-
-  vv = mxGetPr(plhs[0]);
-  ir = mxGetIr(plhs[0]);
-  jc = mxGetJc(plhs[0]);
-  
-  // ---------- copy data to MATLAB
-  std::copy( P.val, P.val + P.nnz , vv );
-  std::copy( P.row, P.row + P.nnz , ir );
-  std::copy( P.col, P.col + nPts+1, jc );
-  
-
-  // ~~~~~~~~~~~~~~~~~~~~ DE-ALLOCATE TEMPORARY MEMORY
-  free_sparse_matrix(&P);
   
 }
