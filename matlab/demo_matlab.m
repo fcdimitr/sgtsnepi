@@ -30,7 +30,7 @@ close all
 urlMNIST = 'https://github.com/daniel-e/mnist_octave/raw/master/mnist.mat';
 
 % subsample MNIST? (empty for full)
-nSub = 1e4;
+nSub = 2e4;
 
 alg  = 'tsnepi';     % algorithm for tSNE
 pca  = 50;           % PCA components (prior to tSNE)
@@ -76,35 +76,18 @@ fprintf( '   - DONE\n');
 
 fprintf( '...t-SNE embedding...\n' ); 
 
+% create new figure and prepare visualization function
+figure
+options.OutputFcn = @(x,y) drawtsneembedding(x,y,L,u);
+
 Y = tsne_custom(X, ...
                 'Algorithm', alg, ...
                 'NumPCAComponents', pca, ...
                 'NumDimensions', dEmb, ...
                 'Distance', dist, ...
                 'Perplexity', u, ...
+                'Options', options, ... 
                 'Verbose', verb);
-
-fprintf( '   - DONE\n');
-
-%% VISUALIZE EMBEDDING
-
-fprintf( '...visualize embedding...\n' ); 
-
-figure
-
-switch dEmb
-  case 1
-    scatter(Y(:,1), Y(:,1), eps, L, '.' )
-  case 2
-    scatter( Y(:,1), Y(:,2), eps, L, '.' )
-  case 3
-    scatter3( Y(:,1), Y(:,2), Y(:,3), eps, L, '.' )
-end
-
-axis image off
-colormap( jet(10) )
-colorbar
-title(sprintf( 't-SNE MNIST embedding | u: %d', u ) )
 
 fprintf( '   - DONE\n');
 
@@ -112,6 +95,39 @@ fprintf( '   - DONE\n');
 %% (END)
 
 fprintf('\n *** end %s ***\n\n',mfilename);
+
+
+
+function stop = drawtsneembedding(optimValues,state,L,u)
+
+  Y = optimValues.Y;
+
+  if ~isempty( Y )
+    
+    switch size(Y,2)
+      case 1
+        scatter(Y(:,1), Y(:,1), eps, L, '.' )
+      case 2
+        scatter( Y(:,1), Y(:,2), eps, L, '.' )
+      case 3
+        scatter3( Y(:,1), Y(:,2), Y(:,3), eps, L, '.' )
+    end
+
+    axis equal off
+    colormap( jet(10) )
+    colorbar
+    suptitle( { sprintf( 't-SNE MNIST embedding | u: %d', u ) , ...
+                sprintf( 'Iteration: %d | KL error: %.2f' , ...
+                         optimValues.iteration, ...
+                         optimValues.fval ) } );
+    drawnow
+    
+  end
+  
+  % return value dictates whether embedding should stop or not
+  stop = false;
+    
+end
 
 
 
@@ -124,7 +140,7 @@ fprintf('\n *** end %s ***\n\n',mfilename);
 %
 % VERSION       0.1
 %
-% TIMESTAMP     <Sep 26, 2019: 11:41:02 Dimitris>
+% TIMESTAMP     <Sep 26, 2019: 11:52:47 Dimitris>
 %
 % ------------------------------------------------------------
 
