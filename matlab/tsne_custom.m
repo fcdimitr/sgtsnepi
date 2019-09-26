@@ -1,4 +1,4 @@
-function [Y,loss] = tsne_custom(X,varargin)
+function [Y,loss,time] = tsne_custom(X,varargin)
 %TSNE t-Distributed Stochastic Neighbor Embedding.
 %   Y = tsne(X) returns the representation of the N by P matrix X in the
 %   two dimensional space. Each row in X represents an observation. Rows
@@ -399,7 +399,7 @@ if verbose>1
     fprintf('%s\n',getString(message('stats:tsne:PerformTSNE')));
 end
 
-[Y,loss] = tsneEmbedding(ystart,probMatX,exaggeration,learnrate,...
+[Y,loss,time] = tsneEmbedding(ystart,probMatX,exaggeration,learnrate,...
     numprint,verbose,options,algorithm,theta,colidx,rowcnt,tsnepiopt);
 end % tsne
 
@@ -489,7 +489,7 @@ pdiff = numeratorProbMatY.*(probMatX - probMatY);
 grad = 4 * (diag(sum(pdiff,1))-pdiff) * Y; 
 end
 
-function [Y,loss] = tsneEmbedding(Y,probMatX,exaggeration,...
+function [Y,loss,time] = tsneEmbedding(Y,probMatX,exaggeration,...
               learnrate,numprint,verbose,options,algorithm,theta,colidx,rowcnt,...
                                   tsnepiopt)
 
@@ -538,6 +538,7 @@ if haveOutputFcn
     stop = callOutputFcns(OutputFcn,optimValues,'init');
 end
 
+tic
 while (iter<=options.MaxIter && ~stop)
     if iter == exaggerationStop
         probMatX = probMatX/exaggeration;
@@ -625,6 +626,8 @@ while (iter<=options.MaxIter && ~stop)
     end
     iter = iter + 1;
 end
+
+time = toc;
 
 % cleanup CSB
 computegrad( tsnepiopt.destroycsb );
