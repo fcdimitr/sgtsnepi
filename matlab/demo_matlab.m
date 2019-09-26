@@ -5,13 +5,17 @@
 % 
 %   Before executing, issue the following commands in terminal
 % 
-%     cp <MROOT>/toolbox/stats/stats/private/tsnelossmex.mexmaci64 ./
-%     cp <MROOT>/toolbox/stats/stats/private/tsnebhmex.mexmaci64 ./
-%     cp <MROOT>toolbox/stats/stats/tsne.m ./tsne_custom.m
-%     patch tsne_custom.m patch_tsnepi.patch
+%     cp <MROOT>/toolbox/stats/stats/private/tsnelossmex.<MEXEXT> ./
+%     cp <MROOT>/toolbox/stats/stats/private/tsnebhmex.<MEXEXT> ./
 % 
-%   where <MROOT> is the path to MATLAB installation.
+%   where <MROOT> is the path to MATLAB installation
+%   and <MEXEXT> is the extension for the MEX executables on your system.
+% 
 %   Issue  matlabroot  to find the path
+% 
+%   The changes to the MATLAB function can be seen by issuing
+% 
+%   diff tsne_custom.m <MROOT>/toolbox/stats/stats/tsne.m
 %
 
 
@@ -24,6 +28,9 @@ close all
 %% PARAMETERS
 
 urlMNIST = 'https://github.com/daniel-e/mnist_octave/raw/master/mnist.mat';
+
+% subsample MNIST? (empty for full)
+nSub = 1e4;
 
 alg  = 'tsnepi';     % algorithm for tSNE
 pca  = 50;           % PCA components (prior to tSNE)
@@ -53,7 +60,13 @@ X = d.trainX;
 X = im2double( X );
 L = d.trainY';
 clear d;
-    
+
+if ~isempty(nSub)
+  prand = randperm( size(X,1), nSub );
+  X = X(prand,:);
+  L = L(prand);
+end
+
 n = size(X,1);
 
 fprintf( '   - DONE\n');
@@ -111,7 +124,7 @@ fprintf('\n *** end %s ***\n\n',mfilename);
 %
 % VERSION       0.1
 %
-% TIMESTAMP     <Sep 18, 2019: 15:45:10 Dimitris>
+% TIMESTAMP     <Sep 26, 2019: 11:41:02 Dimitris>
 %
 % ------------------------------------------------------------
 
