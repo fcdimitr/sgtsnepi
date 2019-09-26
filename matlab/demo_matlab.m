@@ -116,7 +116,7 @@ function stop = drawtsneembedding(optimValues,state,L,u)
     axis equal off
     colormap( jet(10) )
     colorbar
-    suptitle( { sprintf( 't-SNE MNIST embedding | u: %d', u ) , ...
+    suptitle( { sprintf( 't-SNE embedding | n = %s | u = %d', CommaFormat(size(Y,1)),u ) , ...
                 sprintf( 'Iteration: %d | KL error: %.2f' , ...
                          optimValues.iteration, ...
                          optimValues.fval ) } );
@@ -131,6 +131,23 @@ end
 
 
 
+function [commaFormattedString] = CommaFormat(value)
+
+  % Split into integer part and fractional part.
+  [integerPart, decimalPart]=strtok(num2str(value),'.'); 
+  % Reverse the integer-part string.
+  integerPart=integerPart(end:-1:1); 
+  % Insert commas every third entry.
+  integerPart=[sscanf(integerPart,'%c',[3,inf])' ... 
+               repmat(',',ceil(length(integerPart)/3),1)]'; 
+  integerPart=integerPart(:)'; 
+  % Strip off any trailing commas.
+  integerPart=deblank(integerPart(1:(end-1)));
+  % Piece the integer part and fractional part back together again.
+  commaFormattedString = [integerPart(end:-1:1) decimalPart];
+
+end
+
 
 %%------------------------------------------------------------
 %
@@ -140,7 +157,7 @@ end
 %
 % VERSION       0.1
 %
-% TIMESTAMP     <Sep 26, 2019: 11:52:47 Dimitris>
+% TIMESTAMP     <Sep 26, 2019: 12:02:10 Dimitris>
 %
 % ------------------------------------------------------------
 
