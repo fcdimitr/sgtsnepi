@@ -13,9 +13,9 @@ close all
 
 %% PARAMETERS
 
-n = 8000;
-d = 3;
-w = 20;
+n = 5000;
+d = 1;
+w = 80;
 h = logspace(log10(0.4),log10(2.5),30);
 
 errFunAbs = @(x,y) max( abs( x(:) - y(:) ) );
@@ -128,7 +128,7 @@ end
 %
 % VERSION       0.1
 %
-% TIMESTAMP     <Sep 23, 2019: 15:05:40 Dimitris>
+% TIMESTAMP     <Sep 23, 2019: 16:19:50 Dimitris>
 %
 % ------------------------------------------------------------
 

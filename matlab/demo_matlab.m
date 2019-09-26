@@ -31,6 +31,7 @@ dist = 'euclidean';  % distance metric
 u    = 30;           % perplexity
 dEmb = 2;            % 1, 2 and 3 dimensional embeddings are supported
 verb = 2;            % verbose level
+NumPrint = 5;
 
 
 %% (BEGIN)
@@ -63,17 +64,36 @@ fprintf( '   - DONE\n');
 
 fprintf( '...t-SNE embedding...\n' ); 
 
+options.OutputFcn = @(x,y) drawtsneembedding(x,y,L);
+options.MaxIter = 500;
+
+figure
+set(gcf,'Color', 'w')
+
+clear drawtsneembedding
+
+% initial embedding coordinates
+rng(0)
+y0 = 0.3*rand(dEmb, n)';
+
+
 Y = tsne_custom(X, ...
                 'Algorithm', alg, ...
                 'NumPCAComponents', pca, ...
                 'NumDimensions', dEmb, ...
                 'Distance', dist, ...
                 'Perplexity', u, ...
-                'Verbose', verb);
+                'Verbose', verb, ...
+                'NumPrint', NumPrint, ...
+                'Options', options, ...
+                'InitialY', y0, ...
+                'Exaggeration', 12 );
 
 fprintf( '   - DONE\n');
 
 %% VISUALIZE EMBEDDING
+
+drawtsneembedding([]);
 
 fprintf( '...visualize embedding...\n' ); 
 
@@ -101,6 +121,69 @@ fprintf( '   - DONE\n');
 fprintf('\n *** end %s ***\n\n',mfilename);
 
 
+function stop = drawtsneembedding(optimValues,state,L)
+
+  persistent F;
+
+  if isempty( optimValues )
+    
+    for i = 1:length(F)
+      im = frame2im(F(i)); 
+      [imind,cm] = rgb2ind(im,256); 
+      
+      strRep = sprintf( '_%d', i );
+      !mkdir -p /tmp/movie-mnist
+      imwrite(imind,cm,...
+              ['/tmp/movie-mnist/mnist-embedding-process' strRep '.png'],...
+               'png'); 
+        
+    end
+    
+    
+  else
+    
+    Y = optimValues.Y;
+
+    if ~isempty( Y )
+    
+      switch size(Y,2)
+        case 1
+          scatter(Y(:,1), Y(:,1), eps, L, '.' )
+        case 2
+          scatter( Y(:,1), Y(:,2), eps, L, '.' )
+        case 3
+          scatter3( Y(:,1), Y(:,2), Y(:,3), eps, L, '.' )
+      end
+
+      axis image off
+      cmap = jet(64);
+      cmap = cmap(linspace(1,64,10), :);
+      colormap( cmap )
+      drawnow
+      suptitle( sprintf( 'Iteration: %d | KL error: %.2f' , ...
+                      optimValues.iteration, ...
+                      optimValues.fval ) )
+      
+      
+      if isempty(F)
+        F = getframe(gcf) ;
+      else
+        F(end+1) = getframe(gcf) ;
+      end
+      
+    else
+      
+      keyboard
+      
+    end
+      
+    stop = false;
+
+      
+      
+  end
+    
+end
 
 
 %%------------------------------------------------------------
@@ -111,7 +194,7 @@ fprintf('\n *** end %s ***\n\n',mfilename);
 %
 % VERSION       0.1
 %
-% TIMESTAMP     <Sep 18, 2019: 15:45:10 Dimitris>
+% TIMESTAMP     <Sep 24, 2019: 15:57:18 Dimitris>
 %
 % ------------------------------------------------------------
 
