@@ -44,8 +44,10 @@ void parseInputs( tsneparams &P, double **y, int nrhs, const mxArray *prhs[] ){
     *y = (double *) mxGetData( prhs[7] );
 
   if ( nrhs > 8 && !(mxGetM(prhs[8]) == 0 && mxGetN(prhs[8]) == 0) )
-    P.dropLeaf = (int) mxGetScalar( prhs[8] );
-  
+    P.dropLeaf  = (int) mxGetScalar( prhs[8] );
+
+  if ( nrhs > 9 && !(mxGetM(prhs[9]) == 0 && mxGetN(prhs[9]) == 0) )
+    P.dist      = (int) mxGetScalar( prhs[9] );
   
 }
 

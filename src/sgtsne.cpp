@@ -67,7 +67,7 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
   if (params.lambda == 1)
     std::cout << "Skipping λ rescaling..." << std::endl;
   else
-    lambdaRescaling( P, params.lambda, false, params.dropLeaf );
+    lambdaRescaling( P, params.lambda, params.dist, params.dropLeaf );
   
   // ----- symmetrizing
   symmetrizeMatrix( &P );

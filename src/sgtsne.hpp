@@ -33,7 +33,7 @@ typedef struct {
   double h         = -1;        //!< Grid side length (accuracy control)
   bool   dropLeaf  = false;     //!< Drop edges originating from leaf nodes?
   int    np        = 0;         //!< Number of CILK workers (processes)
-  
+  bool   dist      = false;     //!< Give squared distances as input matrix?
 } tsneparams; 
 
 
