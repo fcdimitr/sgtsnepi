@@ -17,6 +17,7 @@
 #include "qq.hpp"
 #include "pq.hpp"
 #include "../csb/csb_wrapper.hpp"
+#include <algorithm>    // std::random_shuffle
 
 #define N_NUM 3
 #define D_NUM 3
@@ -62,16 +63,91 @@ sparse_matrix *generateRandomCSC(int n){
   std::uniform_real_distribution<double> unif(0,1);
   std::default_random_engine re;
 
-  for (int l = 0; l < P->nnz; l++){
-    P->row[l] = rand() % n;
-    P->val[l] = unif(re);
+  int arr[n];
+  for(int i = 0; i < n; ++i)
+    arr[i] = i;
+  
+  for (int j=0 ; j<n ; j++) {
+
+    std::random_shuffle(arr, arr+n);
+    int k = 0;
+    for (matidx l = P->col[j]; l < P->col[j+1]; l++){
+      if (arr[k] == j) k++;
+      P->row[l] = arr[k++];
+      P->val[l] = unif(re);
+    }
+
   }
   
   return P;
   
 }
 
+sparse_matrix *copySparseMatrix(sparse_matrix *P){
 
+  sparse_matrix *P2 = (sparse_matrix *) malloc(sizeof(sparse_matrix));
+  
+  P2->n   = P->n;
+  P2->m   = P->m;
+  P2->nnz = P->nnz;
+  
+  P2->col = (matidx *) malloc( ((P2->n)+1)*sizeof(matidx) );
+  P2->row = (matidx *) malloc( (P2->nnz)*sizeof(matidx) );
+  P2->val = (matval *) malloc( (P2->nnz)*sizeof(matval) );
+
+  for (int l = 0; l < P2->nnz; l++){
+    P2->row[l] = P->row[l];
+    P2->val[l] = P->val[l];
+  }
+
+  for (int l = 0; l < P2->n + 1; l++){
+    P2->col[l] = P->col[l];
+  }
+  
+  return P2;
+  
+}
+
+void triu2(sparse_matrix *P){
+
+  matidx n = P->n;
+  matidx *Ap = P->col, *Ai = P->row;
+  matval *Ax = P->val;
+  
+  for (matidx j=0 ; j<n ; j++) {
+
+    for (matidx l = Ap[j]; l < Ap[j+1]; l++)
+      if (Ai[l] < j) Ax[l] = 0;
+
+  }
+  
+}
+
+bool testEqual( sparse_matrix *P, sparse_matrix *P2 ){
+
+  bool isEqual = true;
+  
+  for (matidx i=0; i < P->n+1; i++)
+    if (P->col[i] != P2->col[i]){
+      // std::cout << "COL: "<< i << " not equal!" << std::endl;
+      isEqual = false;
+    }
+
+  for (matidx i=0; i < P->nnz; i++)
+    if (P->row[i] != P2->row[i]){
+      // std::cout << "ROW: " << i << " not equal!" << std::endl;
+      isEqual = false;
+    }
+
+  for (matidx i=0; i < P->nnz; i++)
+    if (P->val[i] != P2->val[i]){
+      // std::cout << "VAL: " << i << " not equal!" << std::endl;
+      isEqual = false;
+    }
+
+  return isEqual;
+  
+}
 
 bool testAttractiveTerm( int n, int d){
 
@@ -79,13 +155,54 @@ bool testAttractiveTerm( int n, int d){
 
   double *y  = generateRandomCoord( n, d );
   sparse_matrix *P = generateRandomCSC(n);
-  symmetrizeMatrix( P );
- 
 
+  if( isSymPattern(P) )
+    std::cout << "Input symmetric??" << std::endl;
+
+  if( isSymValues(P) )
+    std::cout << "Input symmetric values??" << std::endl;
+
+  
+  symmetrizeMatrix( P );
+
+  if( !isSymPattern(P) )
+    std::cout << "Not symmetric" << std::endl;
+
+  if( !isSymValues(P) )
+    std::cout << "Not symmetric values" << std::endl;
+
+  sparse_matrix *P2 = copySparseMatrix(P);
+
+  if( !testEqual(P, P2) )
+    std::cout << "Symmetrized not equal!!!" << std::endl;
+
+  if( !isSymPattern(P2) )
+    std::cout << "Not symmetric pattern" << std::endl;
+
+  if( !isSymValues(P2) )
+    std::cout << "Not symmetric value" << std::endl;
+
+  triu2( P2 );
+
+  if( !isSymPattern(P2) )
+    std::cout << "Not symmetric pattern" << std::endl;
+
+  if( isSymValues(P2) )
+    std::cout << "Still symmetric values?" << std::endl;
+
+  symmetrizeMatrixWithSymPat( P2 ); 
+
+  if( !isSymPattern(P2) )
+    std::cout << "Symmetric pattern error!!!" << std::endl;
+
+  if( !testEqual(P, P2) )
+    std::cout << "Symmetrized not equal!!!" << std::endl;
+  
+  
   double *Fg = (double *) calloc( n*d , sizeof(double) );
   double *Ft = (double *) calloc( n*d , sizeof(double) );
 
-  pq( Fg, y, P->val, P->row, P->col, n, d);
+  pq( Fg, y, P2->val, P2->row, P2->col, n, d);
   
   // initialize CSB object
   BiCsb<matval, matidx> *csb = NULL;
@@ -111,6 +228,7 @@ bool testAttractiveTerm( int n, int d){
   
   deallocate(csb);
   free( P );
+  free_sparse_matrix( P2 );
   free(y);
   free(Fg);
   free(Ft);

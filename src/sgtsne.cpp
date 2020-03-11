@@ -56,24 +56,49 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
   printParams( params );
 
   // ~~~~~~~~~~ make sure input matrix is column stochastic
-  uint32_t nStoch = makeStochastic( P );
-  std::cout << nStoch << " out of " << P.n
-            << " nodes already stochastic"
-            << std::endl;
+  if (!params.dist) {
+    uint32_t nStoch = makeStochastic( P );
+    std::cout << nStoch << " out of " << P.n
+              << " nodes already stochastic"
+              << std::endl;
+  }
   
   // ~~~~~~~~~~ prepare graph for SG-t-SNE
   
   // ----- lambda rescaling
-  if (params.lambda == 1)
+  if (params.lambda == 1 && !params.dist)
     std::cout << "Skipping λ rescaling..." << std::endl;
-  else
+  else{
+    std::cout << "Performing λ rescaling..." << std::endl;
     lambdaRescaling( P, params.lambda, params.dist, params.dropLeaf );
-  
-  // ----- symmetrizing
-  symmetrizeMatrix( &P );
+  }
+
+  if( isSymValues(&P) ){         // --- symmetric, nothing to be done
+
+    std::cout << "Already symmetric, nothing to do..."
+              << std::endl;
+    
+  } else if( isSymPattern(&P) ){ // --- symmetric pattern, fast
+
+    std::cout << "Symmetrizing with symmetric pattern (fast)..."
+              << std::endl;
+    
+    symmetrizeMatrixWithSymPat( &P );
+
+
+  } else {                       // --- general case, slower
+
+    std::cout << "Not symmetric pattern, might take a while..."
+              << std::endl;
+    
+    symmetrizeMatrix( &P );
+    
+  }
 
  
   // ----- normalize matrix (total sum is 1.0)
+  std::cout << "Normalizing matrix..."
+            << std::endl;
   double sum_P = .0;
   for(int i = 0; i < P.nnz; i++){
     sum_P += P.val[i];

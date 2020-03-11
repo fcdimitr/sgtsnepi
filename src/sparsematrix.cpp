@@ -151,6 +151,144 @@ void symmetrizeMatrix( sparse_matrix *P ){
   
 }
 
+bool isSymPattern( sparse_matrix *P ){
+
+  matidx n = P->n; // square matrices
+
+  matidx *Ap, *Ai, j, i, p, q;
+
+  bool isSym = true;
+  
+  Ap = P->col; Ai = P->row;
+  
+  for (j = 0 ;
+       j < n  && isSym ;
+       j++){
+    
+    for (p = Ap[j] ;
+         p < Ap[j+1] && isSym ;
+         p++) {
+
+      i = Ai[p];
+
+      bool isSymVal = false;
+      
+      for (q = Ap[i] ;
+           q < Ap[i+1] && !isSymVal ;
+           q++)
+
+        if (Ai[q] == j) isSymVal = true;
+
+      isSym &= isSymVal;
+      
+    }
+    
+  }
+
+  return isSym;
+  
+}
+
+
+bool isSymValues( sparse_matrix *P ){
+
+  matidx n = P->n; // square matrices
+
+  matidx *Ap, *Ai, j, i, p, q;
+  matval *Ax;
+  
+  bool isSym = true;
+  
+  Ap = P->col; Ai = P->row;
+  Ax = P->val;
+
+  // loop through columns of matrix
+  for (j = 0 ;
+       j < n  && isSym ;
+       j++){
+
+    // loop through nonzero rows
+    for (p = Ap[j] ;
+         p < Ap[j+1] && isSym ;
+         p++) {
+
+      // (i,j) element
+      i = Ai[p];
+
+      bool isSymVal = false;
+
+      // access column (:,i)
+      for (q = Ap[i] ;
+           q < Ap[i+1] && !isSymVal ;
+           q++) {
+
+        // (k,i) element
+        matidx k = Ai[q];
+      
+        if (k == j &&
+            abs( Ax[q] - Ax[p] ) < 1e-10 )
+          isSymVal = true;
+
+      } // for (q)
+        
+      isSym &= isSymVal;
+      
+    }
+    
+  }
+
+  return isSym;
+  
+}
+
+
+void symmetrizeMatrixWithSymPat( sparse_matrix *P ){
+
+  matidx n = P->n; // square matrices
+
+  matidx *Ap, *Ai;
+  matval *Ax;
+
+  Ap = P->col; Ai = P->row;
+  Ax = P->val;
+
+  // loop through columns of matrix
+  cilk_for (matidx j = 0 ;
+            j < n ;
+            j++){
+
+    // loop through nonzero rows
+    for (matidx p = Ap[j] ;
+         p < Ap[j+1];
+         p++) {
+
+      // i < j
+      if (Ai[p] > j) continue;
+      
+      // (i,j) element
+      matidx i = Ai[p];
+
+      // access column (:,i)
+      for (matidx q = Ap[i] ;
+           q < Ap[i+1];
+           q++){
+
+        // (k,i) element
+        matidx k = Ai[q];
+        
+        if (k == j) {
+          Ax[q] += Ax[p];
+          Ax[p]  = Ax[q];
+        }
+
+      } // for (q)
+
+    }
+    
+  }
+
+}
+
 
 void permuteMatrix( sparse_matrix *P, int *perm, int *iperm ){
 
@@ -197,9 +335,14 @@ void permuteMatrix( sparse_matrix *P, int *perm, int *iperm ){
 
 void printSparseMatrix( sparse_matrix P ){
 
+  double hash = 0;
+  for (int j = 0; j < P.nnz; j++)
+    hash += P.val[j];
+  
   std::cout << "m = " << P.m
             << "| n = " << P.n
-            << "| nnnz = " << P.nnz
+            << "| nnz = " << P.nnz
+            << "| total sum = " << hash
             << std::endl;
   
   if ( P.nnz < 150 )

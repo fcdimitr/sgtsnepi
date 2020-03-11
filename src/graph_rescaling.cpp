@@ -22,7 +22,7 @@ void lambdaRescaling( sparse_matrix P, double lambda, bool dist, bool dropLeafEd
   int    maxIter     = 100;
   double *sig2       = static_cast<double *>( malloc(P.n*sizeof(double)) );
 
-  if (dist)  std::cout << "Input considered as distances" << std::endl;
+  if (dist)  std::cout << "Input considered as distances..." << std::endl;
   
   cilk_for (int i=0; i<P.n; i++){
 

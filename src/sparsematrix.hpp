@@ -44,6 +44,26 @@ void printSparseMatrix(sparse_matrix P);
 */
 void symmetrizeMatrix( sparse_matrix *P );
 
+//! Check if P has symmetric pattern
+/*!
+
+  \param[in,out] P      Sparse matrix in CSC format.
+*/
+bool isSymPattern( sparse_matrix *P );
+
+//! Check if P is symmetric
+/*!
+
+  \param[in,out] P      Sparse matrix in CSC format.
+*/
+bool isSymValues( sparse_matrix *P );
+
+//! Symmetrize matrix P (already symmetric pattern)
+/*!
+
+  \param[in,out] P      Sparse matrix in CSC format.
+*/
+void symmetrizeMatrixWithSymPat( sparse_matrix *P );
 
 //! Permute matrix P
 /*!

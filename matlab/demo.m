@@ -73,8 +73,8 @@ fprintf( '   - DONE\n');
 fprintf( '...perplexity-based embedding (t-SNE)...\n' ); 
 
 P = perplexityEqualize( X', u );
-Y = sgtsnepi( P, dEmb, 2, maxIter, earlyIter, hSide, ...
-              nProc, alpha, y0, false, true );
+Y = sgtsnepi( P, dEmb, 1, maxIter, earlyIter, hSide, ...
+              nProc, alpha, y0, false, false );
 
 fprintf( '   - DONE\n');
 
@@ -116,7 +116,7 @@ fprintf('\n *** end %s ***\n\n',mfilename);
 %
 % VERSION       0.1
 %
-% TIMESTAMP     <Mar 6, 2020: 14:22:52 Dimitris>
+% TIMESTAMP     <Mar 11, 2020: 13:36:47 Dimitris>
 %
 % ------------------------------------------------------------
 
