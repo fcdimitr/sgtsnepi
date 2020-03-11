@@ -45,7 +45,7 @@ typedef struct {
 
   int m;        //!< Number of rows
   int n;        //!< Number of columns
-  int nnz;      //!< Number of nonzero elements
+  matidx nnz;   //!< Number of nonzero elements
   
   matidx * row; //!< Rows indices (NNZ length)
   matidx * col; //!< Columns offset (N+1 length)

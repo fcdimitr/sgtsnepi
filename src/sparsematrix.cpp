@@ -155,25 +155,25 @@ bool isSymPattern( sparse_matrix *P ){
 
   matidx n = P->n; // square matrices
 
-  matidx *Ap, *Ai, j, i, p, q;
+  matidx *Ap, *Ai;
 
   bool isSym = true;
   
   Ap = P->col; Ai = P->row;
   
-  for (j = 0 ;
-       j < n  && isSym ;
-       j++){
+  cilk_for (matidx j = 0 ;
+            j < n ;
+            j++){
     
-    for (p = Ap[j] ;
+    for (matidx p = Ap[j] ;
          p < Ap[j+1] && isSym ;
          p++) {
 
-      i = Ai[p];
+      matidx i = Ai[p];
 
       bool isSymVal = false;
       
-      for (q = Ap[i] ;
+      for (matidx q = Ap[i] ;
            q < Ap[i+1] && !isSymVal ;
            q++)
 
