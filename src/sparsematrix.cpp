@@ -164,24 +164,28 @@ bool isSymPattern( sparse_matrix *P ){
   cilk_for (matidx j = 0 ;
             j < n ;
             j++){
+
+    if (isSym) {
     
-    for (matidx p = Ap[j] ;
-         p < Ap[j+1] && isSym ;
-         p++) {
+      for (matidx p = Ap[j] ;
+           p < Ap[j+1] && isSym ;
+           p++) {
 
-      matidx i = Ai[p];
+        matidx i = Ai[p];
 
-      bool isSymVal = false;
+        bool isSymVal = false;
       
-      for (matidx q = Ap[i] ;
-           q < Ap[i+1] && !isSymVal ;
-           q++)
+        for (matidx q = Ap[i] ;
+             q < Ap[i+1] && !isSymVal ;
+             q++)
 
-        if (Ai[q] == j) isSymVal = true;
+          if (Ai[q] == j) isSymVal = true;
 
-      isSym &= isSymVal;
+        isSym &= isSymVal;
       
-    }
+      }
+
+    } // still considered symmetric
     
   }
 
