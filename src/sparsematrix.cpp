@@ -231,9 +231,6 @@ bool isSymValues( sparse_matrix *P ){
           // (k,i) element
           matidx k = Ai[q];
 
-          if (j ==0)
-            std::cout << k << "," << i << "," << j << ":" << Ax[q] << " " << Ax[p] << std::endl;
-          
           if (k == j &&
               fabs( Ax[q] - Ax[p] ) < 1e-10 )
             isSymVal = true;
