@@ -198,7 +198,7 @@ bool isSymValues( sparse_matrix *P ){
 
   matidx n = P->n; // square matrices
 
-  matidx *Ap, *Ai, j, i, p, q;
+  matidx *Ap, *Ai;
   matval *Ax;
   
   bool isSym = true;
@@ -207,37 +207,47 @@ bool isSymValues( sparse_matrix *P ){
   Ax = P->val;
 
   // loop through columns of matrix
-  for (j = 0 ;
-       j < n  && isSym ;
-       j++){
+  cilk_for (matidx j = 0 ;
+            j < n ;
+            j++){
 
-    // loop through nonzero rows
-    for (p = Ap[j] ;
-         p < Ap[j+1] && isSym ;
-         p++) {
+    if (isSym) {
 
-      // (i,j) element
-      i = Ai[p];
+      // loop through nonzero rows
+      for (matidx p = Ap[j] ;
+           p < Ap[j+1] && isSym ;
+           p++) {
 
-      bool isSymVal = false;
+        // (i,j) element
+        matidx i = Ai[p];
 
-      // access column (:,i)
-      for (q = Ap[i] ;
-           q < Ap[i+1] && !isSymVal ;
-           q++) {
+        bool isSymVal = false;
 
-        // (k,i) element
-        matidx k = Ai[q];
-      
-        if (k == j &&
-            abs( Ax[q] - Ax[p] ) < 1e-10 )
-          isSymVal = true;
+        // access column (:,i)
+        for (matidx q = Ap[i] ;
+             q < Ap[i+1] && !isSymVal ;
+             q++) {
 
-      } // for (q)
+          // (k,i) element
+          matidx k = Ai[q];
+
+          if (j ==0)
+            std::cout << k << "," << i << "," << j << ":" << Ax[q] << " " << Ax[p] << std::endl;
+          
+          if (k == j &&
+              fabs( Ax[q] - Ax[p] ) < 1e-10 )
+            isSymVal = true;
+
+        } // for (q)
+
+        if (j ==0)
+          std::cout << isSymVal << std::endl;
         
-      isSym &= isSymVal;
+        isSym &= isSymVal;
       
-    }
+      }
+
+    } // still considered symmetric
     
   }
 
