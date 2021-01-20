@@ -4144,6 +4144,20 @@ fi
 
 done
 
+for ac_header in lz4.h
+do :
+  ac_fn_cxx_check_header_mongrel "$LINENO" "lz4.h" "ac_cv_header_lz4_h" "$ac_includes_default"
+if test "x$ac_cv_header_lz4_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LZ4_H 1
+_ACEOF
+
+else
+  as_fn_error $? "An LZ4 installation is required" "$LINENO" 5
+fi
+
+done
+
 for ac_header in metis.h
 do :
   ac_fn_cxx_check_header_mongrel "$LINENO" "metis.h" "ac_cv_header_metis_h" "$ac_includes_default"
@@ -4186,16 +4200,16 @@ fi
 
 done
 
-for ac_header in omp.h
+for ac_header in cilk/cilk_api.h
 do :
-  ac_fn_cxx_check_header_mongrel "$LINENO" "omp.h" "ac_cv_header_omp_h" "$ac_includes_default"
-if test "x$ac_cv_header_omp_h" = xyes; then :
+  ac_fn_cxx_check_header_mongrel "$LINENO" "cilk/cilk_api.h" "ac_cv_header_cilk_cilk_api_h" "$ac_includes_default"
+if test "x$ac_cv_header_cilk_cilk_api_h" = xyes; then :
   cat >>confdefs.h <<_ACEOF
-#define HAVE_OMP_H 1
+#define HAVE_CILK_CILK_API_H 1
 _ACEOF
 
 else
-  as_fn_error $? "An OMP installation is required" "$LINENO" 5
+  as_fn_error $? "A working Cilk API is required" "$LINENO" 5
 fi
 
 done
@@ -4433,6 +4447,64 @@ if test "$ac_res" != no; then :
 
 else
   as_fn_error $? "A METIS installation is required. Issue make dependencies and re-run configure." "$LINENO" 5
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing LZ4_decompress_safe" >&5
+$as_echo_n "checking for library containing LZ4_decompress_safe... " >&6; }
+if ${ac_cv_search_LZ4_decompress_safe+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char LZ4_decompress_safe ();
+int
+main ()
+{
+return LZ4_decompress_safe ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' lz4; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_search_LZ4_decompress_safe=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_LZ4_decompress_safe+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_LZ4_decompress_safe+:} false; then :
+
+else
+  ac_cv_search_LZ4_decompress_safe=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_LZ4_decompress_safe" >&5
+$as_echo "$ac_cv_search_LZ4_decompress_safe" >&6; }
+ac_res=$ac_cv_search_LZ4_decompress_safe
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+else
+  as_fn_error $? "An LZ4 installation is required.  Issue make dependencies and re-run configure." "$LINENO" 5
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing flann_find_nearest_neighbors_double" >&5

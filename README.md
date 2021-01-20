@@ -314,22 +314,19 @@ Intel `icpc` compiler 19.0.4.233.
 SG-t-SNE-Π uses the following open-source software:
 
 -   [FFTW3](http://www.fftw.org/) 3.3.8
-	
 -   [METIS](http://glaros.dtc.umn.edu/gkhome/metis/metis/overview) 5.1.0
-
 -   [FLANN](https://www.cs.ubc.ca/research/flann/) 1.9.1
-
 -   [Intel TBB](https://01.org/tbb) 2019
-
+-   [LZ4](https://github.com/lz4/lz4) 1.9.1
 -   [Doxygen](http://www.doxygen.nl/) 1.8.14
 
 On Ubuntu:
 
-    sudo apt-get install libtbb-dev libflann-dev libmetis-dev libfftw3-dev doxygen
+    sudo apt-get install libtbb-dev libflann-dev libmetis-dev libfftw3-dev liblz4-dev doxygen
 
 On macOS:
 
-    sudo port install flann tbb metis fftw-3 doxygen
+    sudo port install flann tbb metis fftw-3 lz4 doxygen
 
 ### Installation 
 
