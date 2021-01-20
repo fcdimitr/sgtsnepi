@@ -43,7 +43,6 @@ extern "C" {
  * full frame to determine this.
  */
 
-CILK_EXPORT __CILKRTS_NOTHROW
 int __cilkrts_synched(void);
 
 #ifdef __cplusplus

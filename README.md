@@ -303,11 +303,11 @@ graphs](https://doi.org/10.21105/joss.01577). *Journal of Open Source Software*
 
 ### System environment 
 
-SG-t-SNE-Π is developed for shared-memory computers with
-multi-threading, running Linux or macOS operating system. The source
-code is (to be) compiled by a C++ compiler supporting Cilk. The
-current release is tested with the GNU `g++` compiler 7.4.0 and the
-Intel `icpc` compiler 19.0.4.233.
+SG-t-SNE-Π is developed for shared-memory computers with multi-threading,
+running Linux or macOS operating system. The source code must be compiled with a
+C++ compiler which supports Cilk. The current release is tested with
+[OpenCilk](http://opencilk.org) 1.0 `clang`, GNU `g++` 7.4.0, and Intel
+`icpc` 19.0.4.233.
 
 ### Prerequisites 
 

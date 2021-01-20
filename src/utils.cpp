@@ -146,6 +146,7 @@ void extractEmbedding( double *y, int n, int d ){
   return;
 }
 
+#ifndef OPENCILK
 void setWorkers(int n){
   std::string str = std::to_string(n);
 
@@ -153,6 +154,7 @@ void setWorkers(int n){
   if ( 0!=__cilkrts_set_param("nworkers", str.c_str() ) )
     std::cerr << "Error setting workers" << std::endl;
 }
+#endif
 
 int getWorkers(){
   return __cilkrts_get_nworkers();

@@ -41,13 +41,8 @@ BiCsb<NT,IT> * prepareCSB( NT *values, IT *rows, IT *cols,
   csc = new Csc<NT, IT>();
 
   csc->SetPointers( cols, rows, values, nzmax, m, n, 0 );
-   
-  if (workers == 0)
-    workers = __cilkrts_get_nworkers();
-  else{
-    std::string sworkers = std::to_string(workers);
-    __cilkrts_set_param("nworkers", sworkers.c_str());
-  }
+
+  workers = __cilkrts_get_nworkers();
   
   BiCsb<NT,IT> *bicsb = new BiCsb<NT, IT>(*csc, workers, forcelogbeta);
 

@@ -116,7 +116,8 @@ static double getMilliseconds( struct timeval begin, struct timeval end ) {
     ((double) (end.tv_usec - begin.tv_usec) / 1000 );
 }
 
-void setThreadsNum(int nworkers);
+// [DEPRECATED]
+// void setThreadsNum(int nworkers);
 
 void extractDimensions(double *y, double *x, CS_INT N, CS_INT ldim, CS_INT d);
 

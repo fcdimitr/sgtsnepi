@@ -72,9 +72,11 @@ int main(int argc, char **argv)
   }
 
   // ~~~~~~~~~~ setup number of workers
-  
+
+#ifndef OPENCILK
   if (getWorkers() != params.np && params.np > 0)
     setWorkers( params.np );
+#endif
 
   params.np = getWorkers();
 

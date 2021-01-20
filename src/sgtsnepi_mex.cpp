@@ -111,9 +111,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   P.val = vals;
 
   // ~~~~~~~~~~ setup number of workers
-  
+
+#ifndef OPENCILK
   if (getWorkers() != params.np && params.np > 0)
     setWorkers( params.np );
+#endif
 
   params.np = getWorkers();
 
