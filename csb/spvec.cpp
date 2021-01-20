@@ -1,10 +1,6 @@
 #include "spvec.h"
 #include "utility.h"
-#if (__GNUC__ == 4 && (__GNUC_MINOR__ < 7) )
-	#include "randgen.h"
-#else
-	#include <random>
-#endif
+#include <random>
 #include <cassert>
 
 // constructor that generates a junk dense vector 
@@ -116,18 +112,10 @@ Spvec<T,ITYPE> & Spvec<T,ITYPE>::operator+=(const Matmul< BiCsb<T, ITYPE>, Spvec
 template <class T, class ITYPE>
 void Spvec<T,ITYPE>::fillrandom()
 {
-#if (__GNUC__ == 4 && (__GNUC_MINOR__ < 7) )
-	RandGen G;
-	for(ITYPE i=0; i< n; ++i)
-	{
-		arr[i] = G.RandReal();
-	}
-#else
 	std::uniform_real_distribution<T> distribution(0.0f, 1.0f); //Values between 0 and 1
 	std::mt19937 engine; // Mersenne twister MT19937
 	auto generator = std::bind(distribution, engine);
 	std::generate_n(arr, n, generator); 
-#endif	
 }
 
 // populate the vector with zeros
