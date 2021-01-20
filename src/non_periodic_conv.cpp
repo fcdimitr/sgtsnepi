@@ -66,9 +66,11 @@ void conv1dnopad( double * const PhiGrid,
   cilk_for (uint32_t i=0; i<nGridDims[0]; i++)
     wc[i] = std::polar(1.0, -2*pi*i/(2*nGridDims[0]) );
 
-  Kc[0:(n1)] = 0.0;
-  Xc[0:(n1*nVec)] = 0.0;
   
+  cilk_for (long int i = 0; i < n1; i++)
+    Kc[i] = 0.0;
+  cilk_for (long int i = 0; i < n1*nVec; i++)
+    Xc[i] = 0.0;
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP PARALLELISM
 
@@ -140,9 +142,11 @@ void conv1dnopad( double * const PhiGrid,
 
   // ============================== ODD FREQUENCIES
 
-  Kc[0:n1] = 0.0; 
-  Xc[0:n1*nVec] = 0.0;
   
+  cilk_for (long int i = 0; i < n1; i++)
+    Kc[i] = 0.0;
+  cilk_for (long int i = 0; i < n1*nVec; i++)
+    Xc[i] = 0.0;
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
   for (uint32_t i=0; i<n1; i++) {
     std::complex<double> tmp( kernel1d( hsq, i ), 0 );
@@ -197,7 +201,8 @@ void conv1dnopad( double * const PhiGrid,
     }
   }
 
-  PhiGrid[ 0:n1*nVec ] *= (0.5 / n1);
+  cilk_for (long int i = 0; i < n1*nVec; i++)
+    PhiGrid[i] *= (0.5 / n1);
 
   // ~~~~~~~~~~~~~~~~~~~~ DESTROY FFTW PLANS
   fftw_destroy_plan( planc_kernel );
@@ -256,8 +261,10 @@ void conv2dnopad( double * const PhiGrid,
   cilk_for (uint32_t i=0; i<nGridDims[0]; i++)
     wc[i] = std::polar(1.0, -2*pi*i/(2*nGridDims[0]) );
   
-  Kc[0:(n1*n2)] = 0.0;
-  Xc[0:(n1*n2*nVec)] = 0.0;
+  cilk_for (long int i = 0; i < n1*n2; i++)
+    Kc[i] = 0.0;
+  cilk_for (long int i = 0; i < n1*n2*nVec; i++)
+    Xc[i] = 0.0;
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP PARALLELISM
 
@@ -336,9 +343,11 @@ void conv2dnopad( double * const PhiGrid,
 
   // ============================== ODD-EVEN
 
-  Kc[0:n1*n2] = 0.0; 
-  Xc[0:n1*n2*nVec] = 0.0;
   
+  cilk_for (long int i = 0; i < n1*n2; i++)
+    Kc[i] = 0.0;
+  cilk_for (long int i = 0; i < n1*n2*nVec; i++)
+    Xc[i] = 0.0;
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
   for (uint32_t j=0; j<n2; j++) {
     for (uint32_t i=0; i<n1; i++) {
@@ -410,9 +419,11 @@ void conv2dnopad( double * const PhiGrid,
 
   // ============================== EVEN-ODD
 
-  Kc[0:n1*n2] = 0.0; 
-  Xc[0:n1*n2*nVec] = 0.0;
   
+  cilk_for (long int i = 0; i < n1*n2; i++)
+    Kc[i] = 0.0;
+  cilk_for (long int i = 0; i < n1*n2*nVec; i++)
+    Xc[i] = 0.0;
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
   for (uint32_t j=0; j<n2; j++) {
     for (uint32_t i=0; i<n1; i++) {
@@ -484,9 +495,11 @@ void conv2dnopad( double * const PhiGrid,
 
   // ============================== ODD-ODD
 
-  Kc[0:n1*n2] = 0.0; 
-  Xc[0:n1*n2*nVec] = 0.0;
   
+  cilk_for (long int i = 0; i < n1*n2; i++)
+    Kc[i] = 0.0;
+  cilk_for (long int i = 0; i < n1*n2*nVec; i++)
+    Xc[i] = 0.0;
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
   for (uint32_t j=0; j<n2; j++) {
     for (uint32_t i=0; i<n1; i++) {
@@ -619,8 +632,10 @@ void conv3dnopad( double * const PhiGrid,
   cilk_for (uint32_t i=0; i<nGridDims[0]; i++)
     wc[i] = std::polar(1.0, -2*pi*i/(2*nGridDims[0]) );
   
-  Kc[0:(n1*n2*n3)] = 0.0;
-  Xc[0:(n1*n2*n3*nVec)] = 0.0;
+  cilk_for (long int i = 0; i < n1*n2*n3; i++)
+    Kc[i] = 0.0;
+  cilk_for (long int i = 0; i < n1*n2*n3*nVec; i++)
+    Xc[i] = 0.0;
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP PARALLELISM
 

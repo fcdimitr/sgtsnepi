@@ -1537,36 +1537,37 @@ void BiCsb<NT, IT>::SubtSNEkernel(IT * __restrict btop, IT bstart, IT bend, cons
   __m128i lcms = _mm_set1_epi32 (lowcolmask);
   __m128i lrms = _mm_set1_epi32 (lowrowmask);
 
-  IT DIM = 3;
+  constexpr IT DIM = 3;
   
   const RHS * __restrict subxx = &x[DIM*rhi];
-  RHS Yj[3] = {0};
-  RHS Yi[3] = {0};
+  RHS Yj[DIM] = {0};
+  RHS Yi[DIM] = {0};
   for (IT j = bstart ; j < bend ; ++j)		// for all blocks inside that block row
+  {
+    // get higher order bits for column indices
+    IT chi = (j << collowbits);
+    const RHS * __restrict subx = &x[DIM * chi];
+
+    for(IT k=btop[j]; k<btop[j+1]; ++k)
     {
-      // get higher order bits for column indices
-      IT chi = (j << collowbits);
-      const RHS * __restrict subx = &x[DIM * chi];
-      
-      for(IT k=btop[j]; k<btop[j+1]; ++k)
-	{
-	  IT rli = ((r_bot[k] >> collowbits) & lowrowmask);
-	  IT cli = (r_bot[k] & lowcolmask);
+      IT rli = ((r_bot[k] >> collowbits) & lowrowmask);
+      IT cli = (r_bot[k] & lowcolmask);
 
-          Yi[:] = subx[cli*DIM+ 0:DIM];
-	  Yj[:] = subxx[rli*DIM+ 0:DIM];
-          
-	  /* distance computation */
-	  RHS dist = __sec_reduce_add( (Yj[:] - Yi[:])*(Yj[:] - Yi[:]) );
+      RHS dist = 0;
+      for (int d = 0; d < DIM; ++d) {
+        Yi[d] = subx[cli*DIM + d];
+        Yj[d] = subxx[rli*DIM + d];
+        /* distance computation */
+        dist += (Yi[d] - Yj[d])*(Yi[d] - Yj[d]);
+      }
 
-          
-	  /* P_{ij} \times Q_{ij} */
-	  const RHS p_times_q = r_num[k] / (1+dist);
-	  suby[rli*DIM + 0:DIM] += p_times_q * (Yj[:] - Yi[:]);
+      /* P_{iij} \times Q_{ij} */
+      const RHS p_times_q = r_num[k] / (1+dist);
+      for (int d = 0; d < DIM; ++d)
+        suby[rli*DIM + d] += p_times_q * (Yj[d] - Yi[d]);
 
-
-	}
     }
+  }
 }
 
 // double* restrict a; --> No aliases for a[0], a[1], ...
@@ -1581,36 +1582,37 @@ void BiCsb<NT, IT>::SubtSNEkernel2D(IT * __restrict btop, IT bstart, IT bend, co
   __m128i lcms = _mm_set1_epi32 (lowcolmask);
   __m128i lrms = _mm_set1_epi32 (lowrowmask);
 
-  IT DIM = 2;
+  constexpr IT DIM = 2;
   
   const RHS * __restrict subxx = &x[DIM*rhi];
-  RHS Yj[2] = {0};
-  RHS Yi[2] = {0};
+  RHS Yj[DIM] = {0};
+  RHS Yi[DIM] = {0};
   for (IT j = bstart ; j < bend ; ++j)		// for all blocks inside that block row
-    {
-      // get higher order bits for column indices
-      IT chi = (j << collowbits);
-      const RHS * __restrict subx = &x[DIM * chi];
+  {
+    // get higher order bits for column indices
+    IT chi = (j << collowbits);
+    const RHS * __restrict subx = &x[DIM * chi];
       
-      for(IT k=btop[j]; k<btop[j+1]; ++k)
-	{
-	  IT rli = ((r_bot[k] >> collowbits) & lowrowmask);
-	  IT cli = (r_bot[k] & lowcolmask);
+    for(IT k=btop[j]; k<btop[j+1]; ++k)
+    {
+      IT rli = ((r_bot[k] >> collowbits) & lowrowmask);
+      IT cli = (r_bot[k] & lowcolmask);
 
-          Yi[:] = subx[cli*DIM+ 0:DIM];
-	  Yj[:] = subxx[rli*DIM+ 0:DIM];
-          
-	  /* distance computation */
-	  RHS dist = __sec_reduce_add( (Yj[:] - Yi[:])*(Yj[:] - Yi[:]) );
+      RHS dist = 0;
+      for (int d = 0; d < DIM; ++d) {
+        Yi[d] = subx[cli*DIM + d];
+        Yj[d] = subxx[rli*DIM + d];
+        /* distance computation */
+        dist += (Yi[d] - Yj[d])*(Yi[d] - Yj[d]);
+      }
 
-          
-	  /* P_{ij} \times Q_{ij} */
-	  const RHS p_times_q = r_num[k] / (1+dist);
-	  suby[rli*DIM + 0:DIM] += p_times_q * (Yj[:] - Yi[:]);
+      /* P_{iij} \times Q_{ij} */
+      const RHS p_times_q = r_num[k] / (1+dist);
+      for (int d = 0; d < DIM; ++d)
+        suby[rli*DIM + d] += p_times_q * (Yj[d] - Yi[d]);
 
-
-	}
     }
+  }
 }
 
 // double* restrict a; --> No aliases for a[0], a[1], ...
@@ -1625,43 +1627,47 @@ void BiCsb<NT, IT>::SubtSNEkernel4D(IT * __restrict btop, IT bstart, IT bend, co
   __m128i lcms = _mm_set1_epi32 (lowcolmask);
   __m128i lrms = _mm_set1_epi32 (lowrowmask);
 
-  IT DIM = 4;
-  
+  constexpr IT DIM = 4;
+
   const RHS * __restrict subxx = &x[DIM*rhi];
-  RHS Yj[4] = {0};
-  RHS Yi[4] = {0};
+  RHS Yj[DIM] = {0};
+  RHS Yi[DIM] = {0};
   for (IT j = bstart ; j < bend ; ++j)		// for all blocks inside that block row
+  {
+    // get higher order bits for column indices
+    IT chi = (j << collowbits);
+    const RHS * __restrict subx = &x[DIM * chi];
+
+    for(IT k=btop[j]; k<btop[j+1]; ++k)
     {
-      // get higher order bits for column indices
-      IT chi = (j << collowbits);
-      const RHS * __restrict subx = &x[DIM * chi];
-      
-      for(IT k=btop[j]; k<btop[j+1]; ++k)
-	{
-	  IT rli = ((r_bot[k] >> collowbits) & lowrowmask);
-	  IT cli = (r_bot[k] & lowcolmask);
+      IT rli = ((r_bot[k] >> collowbits) & lowrowmask);
+      IT cli = (r_bot[k] & lowcolmask);
 
-          Yi[:] = subx[cli*DIM+ 0:DIM];
-	  Yj[:] = subxx[rli*DIM+ 0:DIM];
-          
-	  /* distance computation */
-	  RHS dist = __sec_reduce_add( (Yj[:] - Yi[:])*(Yj[:] - Yi[:]) );
+      RHS dist = 0;
+      for (int d = 0; d < DIM; ++d) {
+        Yi[d] = subx[cli*DIM + d];
+        Yj[d] = subxx[rli*DIM + d];
+        /* distance computation */
+        dist += (Yi[d] - Yj[d])*(Yi[d] - Yj[d]);
+      }
 
-          
-	  /* P_{ij} \times Q_{ij} */
-	  const RHS p_times_q = r_num[k] / (1+dist);
-	  suby[rli*DIM + 0:DIM] += p_times_q * (Yj[:] - Yi[:]);
+      /* P_{iij} \times Q_{ij} */
+      const RHS p_times_q = r_num[k] / (1+dist);
+      for (int d = 0; d < DIM; ++d)
+        suby[rli*DIM + d] += p_times_q * (Yj[d] - Yi[d]);
 
-
-	}
     }
+  }
 }
+
 
 // double* restrict a; --> No aliases for a[0], a[1], ...
 // bstart/bend: block start/end index (to the top array)
 template <class NT, class IT>
 template <typename SR, typename RHS, typename LHS>
-void BiCsb<NT, IT>::SubtSNEkernel1D(IT * __restrict btop, IT bstart, IT bend, const RHS * __restrict x, LHS * __restrict suby, IT rhi) const
+void BiCsb<NT, IT>::SubtSNEkernel1D(IT * __restrict btop, IT bstart, IT bend,
+                                    const RHS * __restrict x, LHS * __restrict suby,
+                                    IT rhi) const
 {
   IT * __restrict r_bot = bot;
   NT * __restrict r_num = num;
@@ -1669,36 +1675,35 @@ void BiCsb<NT, IT>::SubtSNEkernel1D(IT * __restrict btop, IT bstart, IT bend, co
   __m128i lcms = _mm_set1_epi32 (lowcolmask);
   __m128i lrms = _mm_set1_epi32 (lowrowmask);
 
-  IT DIM = 1;
+  constexpr IT DIM = 1;
   
   const RHS * __restrict subxx = &x[DIM*rhi];
-  RHS Yj[1] = {0};
-  RHS Yi[1] = {0};
+  RHS Yj[DIM] = {0};
+  RHS Yi[DIM] = {0};
   for (IT j = bstart ; j < bend ; ++j)		// for all blocks inside that block row
-    {
-      // get higher order bits for column indices
-      IT chi = (j << collowbits);
-      const RHS * __restrict subx = &x[DIM * chi];
+  {
+    // get higher order bits for column indices
+    IT chi = (j << collowbits);
+    const RHS * __restrict subx = &x[DIM * chi];
       
-      for(IT k=btop[j]; k<btop[j+1]; ++k)
-	{
-	  IT rli = ((r_bot[k] >> collowbits) & lowrowmask);
-	  IT cli = (r_bot[k] & lowcolmask);
+    for(IT k=btop[j]; k<btop[j+1]; ++k)
+    {
+      IT rli = ((r_bot[k] >> collowbits) & lowrowmask);
+      IT cli = (r_bot[k] & lowcolmask);
 
-          Yi[:] = subx[cli*DIM+ 0:DIM];
-	  Yj[:] = subxx[rli*DIM+ 0:DIM];
+      Yi[0] = subx[cli];
+      Yj[0] = subxx[rli];
+
+      /* distance computation */
+      RHS dist = (Yj[0] - Yi[0])*(Yj[0] - Yi[0]);
+
           
-	  /* distance computation */
-	  RHS dist = __sec_reduce_add( (Yj[:] - Yi[:])*(Yj[:] - Yi[:]) );
+      /* P_{ij} \times Q_{ij} */
+      const RHS p_times_q = r_num[k] / (1+dist);
+      suby[rli] += p_times_q * (Yj[0] - Yi[0]);
 
-          
-	  /* P_{ij} \times Q_{ij} */
-	  const RHS p_times_q = r_num[k] / (1+dist);
-	  suby[rli*DIM + 0:DIM] += p_times_q * (Yj[:] - Yi[:]);
-
-
-	}
     }
+  }
 }
 
 
@@ -1713,7 +1718,7 @@ void BiCsb<NT, IT>::SubtSNEkernel_tar(IT * __restrict btop, IT bstart, IT bend, 
   __m128i lcms = _mm_set1_epi32 (lowcolmask);
   __m128i lrms = _mm_set1_epi32 (lowrowmask);
 
-  IT DIM = 3;
+  constexpr IT DIM = 3;
   
   const RHS * __restrict subxx = &x[DIM*rhi];
   RHS Yj[3] = {0};
@@ -1729,16 +1734,18 @@ void BiCsb<NT, IT>::SubtSNEkernel_tar(IT * __restrict btop, IT bstart, IT bend, 
 	  IT rli = ((r_bot[k] >> collowbits) & lowrowmask);
 	  IT cli = (r_bot[k] & lowcolmask);
 
-          Yi[:] = subx[cli*DIM+ 0:DIM];
-	  Yj[:] = subxx[rli*DIM+ 0:DIM];
-          
-	  /* distance computation */
-	  RHS dist = __sec_reduce_add( (Yj[:] - Yi[:])*(Yj[:] - Yi[:]) );
+    RHS dist = 0;
+    cilk_for (int d = 0; d < DIM; ++d) {
+      Yi[d] = subx[cli*DIM + d];
+      Yj[d] = subxx[rli*DIM + d];
+      /* distance computation */
+      dist += (Yi[d] - Yj[d])*(Yi[d] - Yj[d]);
+    }
 
-          
 	  /* P_{ij} \times Q_{ij} */
 	  const RHS p_times_q = r_num[k] / (1+dist);
-	  suby[rli*DIM + 0:DIM] += p_times_q * (Yj[:] - Yi[:]);
+    for (int d = 0; d < DIM; ++d)
+      suby[rli*DIM + d] += p_times_q * (Yj[d] - Yi[d]);
 
 
 	}
@@ -1759,7 +1766,7 @@ void BiCsb<NT, IT>::SubtSNEkernel(IT * __restrict btop, IT bstart, IT bend,
   __m128i lcms = _mm_set1_epi32 (lowcolmask);
   __m128i lrms = _mm_set1_epi32 (lowrowmask);
 
-  IT DIM = 3;
+  constexpr IT DIM = 3;
   
   const RHS * __restrict subxx = &x_row[DIM*rhi];
   RHS Yj[3] = {0};
@@ -1775,40 +1782,18 @@ void BiCsb<NT, IT>::SubtSNEkernel(IT * __restrict btop, IT bstart, IT bend,
 	  IT rli = ((r_bot[k] >> collowbits) & lowrowmask);
 	  IT cli = (r_bot[k] & lowcolmask);
 
-#ifdef GCC_BUG
+    RHS dist = 0;
 	  for(int di=0; di<DIM; di++){
 	    Yi[di] = subx[cli*DIM+ di];
-	  }
-#else
-	  Yi[:] = subx[cli*DIM+ 0:DIM];
-#endif
-    
-#ifdef GCC_BUG
-	  for(int di=0; di<DIM; di++){
 	    Yj[di] = subxx[rli*DIM+ di];
-	  }
-#else      
-	  Yj[:] = subxx[rli*DIM+ 0:DIM];
-#endif
-
-	  /* distance computation */
-#ifdef GCC_BUG
-	  RHS dist = 0;
-	  for(int di=0; di<DIM; di++){
+      /* distance computation */
 	    dist += (Yj[di] - Yi[di])*(Yj[di] - Yi[di]);
 	  }
-#else
-	  RHS dist = __sec_reduce_add( (Yj[:] - Yi[:])*(Yj[:] - Yi[:]) );
-#endif
 
 	  /* P_{ij} \times Q_{ij} */
 	  const RHS p_times_q = r_num[k] / (1+dist);
-#ifdef GCC_BUG
 	  for (int di = 0 ; di < DIM ; di++)
 	    SR::axpy(p_times_q, Yj[di] - Yi[di], suby[rli*DIM+ di]);
-#else
-	  suby[rli*DIM + 0:DIM] += p_times_q * (Yj[:] - Yi[:]); 
-#endif
 	}
     }
 }
@@ -1842,39 +1827,30 @@ void BiCsb<NT, IT>::SubtSNEcost(IT * __restrict btop, IT bstart, IT bend,
       const RHS * __restrict subx = &x[DIM * chi];
       
       for(IT k=btop[j]; k<btop[j+1]; ++k)
-	{
-	  IT rli = ((r_bot[k] >> collowbits) & lowrowmask);
-	  IT cli = (r_bot[k] & lowcolmask);
+      {
+        IT rli = ((r_bot[k] >> collowbits) & lowrowmask);
+        IT cli = (r_bot[k] & lowcolmask);
 
-          Yi[0:DIM] = subx[cli*DIM+ 0:DIM];
-	  Yj[0:DIM] = subxx[rli*DIM+ 0:DIM];
-	  // for(int d =0; d<DIM; d++){
-	    // Yi[d] = subx[cli*DIM+d];
-	    // Yj[d] = subxx[rli*DIM+d];
-	  // }
+        RHS dist = 0;
+        for (int d = 0; d < DIM; ++d) {
+          Yi[d] = subx[cli*DIM + d];
+          Yj[d] = subxx[rli*DIM + d];
+          /*  distance computation */
+          dist += (Yi[d] - Yj[d])*(Yi[d] - Yj[d]);
+        }
+
+        double p_tmp = alpha * r_num[k];
+
+        const double q_tmp = ( 1.0 / (1.0+dist) ) / zeta;
           
-	  /* distance computation */
-	  
-	  RHS dist = __sec_reduce_add( (Yj[0:DIM] - Yi[0:DIM])
-                                       * (Yj[0:DIM] - Yi[0:DIM]) );
-	
-	  // RHS dist = 0;
-	  // for(int d=0; d<DIM; d++){
-	    // dist += (Yj[d] - Yi[d]) * (Yj[d] - Yi[d]);
-	  // }
-
-          double p_tmp = alpha * r_num[k];
-
-          const double q_tmp = ( 1.0 / (1.0+dist) ) / zeta;
-          
-	  /* P_{ij} \times Q_{ij} */
-	  suby[rli] += p_tmp * log( (p_tmp + FLT_MIN) / (q_tmp + FLT_MIN) );
-	  // for(int d=0; d<DIM; d++){
-	    // suby[rli*DIM + d] += p_times_q * (Yj[d] - Yi[d]);
-	  // }
+        /* P_{ij} \times Q_{ij} */
+        suby[rli] += p_tmp * log( (p_tmp + FLT_MIN) / (q_tmp + FLT_MIN) );
+        // for(int d=0; d<DIM; d++){
+        // suby[rli*DIM + d] += p_times_q * (Yj[d] - Yi[d]);
+        // }
 
 
-	}
+      }
     }
 }
 

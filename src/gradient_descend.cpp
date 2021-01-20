@@ -15,6 +15,7 @@
 #include <cfloat>
 #include <cstdlib>
 #include <cilk/cilk.h>
+#include <cilk/reducer_opadd.h>
 
 #include "timers.hpp"
 #include "qq.hpp"
@@ -56,10 +57,12 @@ void update_positions(dataPoint * const dY,
   }
 
   // find mean
-  dataPoint meany[no_dims]; meany[0:no_dims] = 0.0;
+  dataPoint meany[no_dims];
   for (int i = 0; i < no_dims; i++){
-    meany[i] = __sec_reduce_add(Y[i:N:no_dims]);
-    meany[i] /= N;
+    cilk::reducer_opadd<dataPoint> meany_reducer(0.0);
+    cilk_for (int j = i; j < N*no_dims; j += no_dims)
+      *meany_reducer += Y[j];
+    meany[i] = meany_reducer.get_value() / N;
   }
 
   // zero-mean
@@ -172,7 +175,7 @@ void kl_minimization(coord* y,
       zeta = compute_gradient(dy, &timeFrep, &timeFattr, params, y, csb,
                               timeInfo[iter]);
     // ----- Position update
-    update_positions(dy, uy, n, d, y, gains, momentum, eta);
+    update_positions<coord>(dy, uy, n, d, y, gains, momentum, eta);
 
     // Stop lying about the P-values after a while, and switch momentum
     if(iter == stop_lying_iter) {

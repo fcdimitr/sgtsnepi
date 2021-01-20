@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <cilk/cilk.h>
+#include <cilk/reducer_opadd.h>
 #include <limits>
 #include <cmath>
 
@@ -54,11 +55,14 @@ coord computeFrepulsive_exact(coord * frep,
     }
   }
 
-  coord zeta = __sec_reduce_add( zetaVec[0:N] );
-  
-  for (int i = 0; i < N; i++) {
-    frep[(i*d) + 0:d] /= zeta;
-  }
+  cilk::reducer_opadd<coord> zeta_reducer(0.0);
+  cilk_for (int i = 0; i < N; i++)
+    *zeta_reducer += zetaVec[i];
+  coord zeta = zeta_reducer.get_value();
+
+  cilk_for (int i = 0; i < N; i++)
+    for (int j = 0; j < d; j++)
+      frep[(i*d) + j] /= zeta;
 
   free( zetaVec );
   
@@ -141,7 +145,9 @@ coord computeFrepulsive_interp(coord * Frep,
   struct timeval start;
   
   // ~~~~~~~~~~ move data to (0,0,...)
-  coord miny[d]; miny[0:d] = std::numeric_limits<coord>::infinity();
+  coord miny[d];
+  for (int j = 0; j < d; j++)
+    miny[j] = std::numeric_limits<coord>::infinity();
   
   for (int i = 0; i < n; i++)
     for (int j = 0; j < d; j++)

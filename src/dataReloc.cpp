@@ -140,7 +140,8 @@ void doSort( uint64_t * const Cs, uint64_t * const Ct,
   for(int i=0; i<n; i++){
     uint32_t const ii = (Cs[i] >> sft) & mask;
     Ct[BinCursor[ii]] = Cs[i];
-    Yt[BinCursor[ii]*d:d] = Ys[i*d:d];
+    for (int k = 0; k < d; k++)
+      Yt[BinCursor[ii]*d + k] = Ys[i*d + k];
     Pt[BinCursor[ii]] = Ps[i];
     BinCursor[ii]++;
   }
@@ -228,7 +229,8 @@ void doSort_top( uint64_t * const Cs, uint64_t * const Ct,
       uint32_t const ii = (Cs[idx] >> sft) & mask;
       uint32_t const jj = BinCursor[j*nBin + ii];
       Ct[jj] = Cs[idx];
-      Yt[jj*d:d] = Ys[idx*d:d];
+      for (int k = 0; k < d; k++)
+        Yt[jj*d + k] = Ys[idx*d + k];
       Pt[jj] = Ps[idx];
       BinCursor[j*nBin + ii]++;
     }

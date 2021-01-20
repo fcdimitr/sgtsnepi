@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <cilk/cilk.h>
+#include <cilk/reducer_max.h>
 #include <limits>
 #include <cmath>
 
@@ -27,19 +28,18 @@ void nuconv( coord *PhiScat, coord *y, coord *VScat,
 
   struct timeval start;
   
-  // ~~~~~~~~~~ normalize coordinates (inside bins)
-  coord maxy = 0;
-  for (int i = 0; i < n*d; i++)
-    maxy = maxy < y[i] ? y[i] : maxy;
-  
-  y[0:n*d] /= maxy;
+  // ~~~~~~~~~~ normalize coordinates and scale to [0,ng-1] (inside bins)
 
-  // ~~~~~~~~~~ scale them from 0 to ng-1
-  
-  if (1 == y[0:n*d])
-    y[0:n*d] = y[0:n*d] - std::numeric_limits<coord>::epsilon();
-  
-  y[0:n*d] *= (nGridDim-1);
+  cilk::reducer< cilk::op_max<coord> > maxy_reducer;
+  cilk_for (int i = 0; i < n*d; i++)
+    maxy_reducer->calc_max( y[i] );
+  coord maxy = maxy_reducer.get_value();
+
+  cilk_for (int i = 0; i < n*d; i++) {
+    y[i] /= maxy;
+    y[i] -= (y[i] == 1) * std::numeric_limits<coord>::epsilon();
+    y[i] *= (nGridDim-1);
+  }
 
   for (int i = 0; i< n*d; i++)
     if ( (y[i] >= nGridDim-1) || (y[i] < 0) ) exit(1);
@@ -95,7 +95,8 @@ void nuconv( coord *PhiScat, coord *y, coord *VScat,
   // ~~~~~~~~~~ grid2grid
   coord *PhiGrid = static_cast<coord *> ( calloc( szV, sizeof(coord) ) );
   uint32_t * const nGridDims = new uint32_t [d]();
-  nGridDims[0:d] = nGridDim + 2;
+  for (int i = 0; i < d; i++)
+    nGridDims[i] = nGridDim + 2;
 
   start = tsne_start_timer();
   
