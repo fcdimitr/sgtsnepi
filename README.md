@@ -30,18 +30,18 @@
 
 ## Overview 
 
-We introduce SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/>, a high-performance software for swift
+We introduce SG-t-SNE-Π, a high-performance software for swift
 embedding of a large, sparse, stochastic graph
 <img src="svgs/4ad232c35b5cd188a13d128bb2c1eecc.svg" align=middle width=103.24177049999999pt height=24.65753399999998pt/> into a <img src="svgs/2103f85b8b1477f430fc407cad462224.svg" align=middle width=8.55596444999999pt height=22.831056599999986pt/>-dimensional space
 (<img src="svgs/3fa1f779de09763d248814c0c4f40d07.svg" align=middle width=69.74298869999998pt height=22.831056599999986pt/>) on a shared-memory computer. The algorithm SG-t-SNE and the
-software t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/> were first described in Reference [[1](#Pitsianis2019)].
+software t-SNE-Π were first described in Reference [[1](#Pitsianis2019)].
 The algorithm is built upon precursors for embedding a <img src="svgs/63bb9849783d01d91403bc9a5fea12a2.svg" align=middle width=9.075367949999992pt height=22.831056599999986pt/>-nearest
 neighbor (<img src="svgs/63bb9849783d01d91403bc9a5fea12a2.svg" align=middle width=9.075367949999992pt height=22.831056599999986pt/>NN) graph, which is distance-based and regular with
 constant degree <img src="svgs/63bb9849783d01d91403bc9a5fea12a2.svg" align=middle width=9.075367949999992pt height=22.831056599999986pt/>. In practice, the precursor algorithms are also
 limited up to 2D embedding or suffer from overly long latency in 3D
 embedding. SG-t-SNE removes the algorithmic restrictions and enables
 <img src="svgs/2103f85b8b1477f430fc407cad462224.svg" align=middle width=8.55596444999999pt height=22.831056599999986pt/>-dimensional embedding of arbitrary stochastic graphs, including, but
-not restricted to, <img src="svgs/63bb9849783d01d91403bc9a5fea12a2.svg" align=middle width=9.075367949999992pt height=22.831056599999986pt/>NN graphs. SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/> expedites the
+not restricted to, <img src="svgs/63bb9849783d01d91403bc9a5fea12a2.svg" align=middle width=9.075367949999992pt height=22.831056599999986pt/>NN graphs. SG-t-SNE-Π expedites the
 computation with high-performance functions and materializes 3D
 embedding in shorter time than 2D embedding with any precursor algorithm
 on modern laptop/desktop computers.
@@ -160,14 +160,14 @@ the graph sparsity. We determine rescaling parameters <img src="svgs/9766609a482
 
 where <img src="svgs/f10fc2142d969a09dda2eea96cede2fb.svg" align=middle width=39.72592304999999pt height=22.831056599999986pt/> is an input parameter and <img src="svgs/f50853d41be7d55874e952eb0d80c53e.svg" align=middle width=9.794543549999991pt height=22.831056599999986pt/> is a monotonically
 increasing function. We set <img src="svgs/0816c17505ab3faeea94b82afa429bbe.svg" align=middle width=63.28758314999998pt height=24.65753399999998pt/> in the present version of
-SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/>. Unlike
+SG-t-SNE-Π. Unlike
 (2), the rescaling mechanism
 (6) imposes no constraint on the graph,
 its solution exists unconditionally. For the conventional t-SNE as a
 special case, we set <img src="svgs/cd5494d95bfaee6295fdcf130852ed2d.svg" align=middle width=39.72592304999999pt height=22.831056599999986pt/> by default. One may still make use of
 and exploit the benefit of rescaling (<img src="svgs/894e9a25f2969025d613371aa8b628c0.svg" align=middle width=39.72592304999999pt height=22.831056599999986pt/>).
 
-With the implementation SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/>, we accelerate the entire
+With the implementation SG-t-SNE-Π, we accelerate the entire
 gradient calculation of SG-t-SNE and enable practical 3D embedding of
 large sparse graphs on modern desktop and laptop computers. We
 accelerate the computation of both <img src="svgs/c6e87bbfdef510c8c42806f373d05c8f.svg" align=middle width=28.401664499999992pt height=22.55708729999998pt/> and <img src="svgs/10113745b95b6c955f7c8b1959d3e01d.svg" align=middle width=27.12314054999999pt height=22.55708729999998pt/> terms
@@ -220,7 +220,7 @@ number of grid points, i.e., the grid size. The grid size is determined
 by the range of the embedding points at each iteration, with respect to
 the error tolerance set by default or specified by the user. In the
 current implementation, the local interpolation method employed by
-SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/> is accurate up to cubic polynomials in <img src="svgs/2103f85b8b1477f430fc407cad462224.svg" align=middle width=8.55596444999999pt height=22.831056599999986pt/> separable
+SG-t-SNE-Π is accurate up to cubic polynomials in <img src="svgs/2103f85b8b1477f430fc407cad462224.svg" align=middle width=8.55596444999999pt height=22.831056599999986pt/> separable
 variables (<img src="svgs/3fa1f779de09763d248814c0c4f40d07.svg" align=middle width=69.74298869999998pt height=22.831056599999986pt/>).
 
 Although the arithmetic complexity is substantially reduced in
@@ -233,7 +233,7 @@ memory when the grid is periodically extended in all sides at once by
 zero padding. The exponential memory growth with <img src="svgs/2103f85b8b1477f430fc407cad462224.svg" align=middle width=8.55596444999999pt height=22.831056599999986pt/> limits the
 embedding dimension or the graph size.
 
-We resolve these memory latency and capacity issues in SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/>.
+We resolve these memory latency and capacity issues in SG-t-SNE-Π.
 Prior to `S2G`, we relocate the scattered data points to the grid bins.
 This binning process has two immediate benefits. It improves data
 locality in the subsequent interpolation. It also establishes a data
@@ -255,8 +255,8 @@ in memory the embedding data points between the two terms, at every
 iteration step. The inter-term data relocation is carried out at
 multiple layers, exploiting block-wise memory hierarchy. The data
 permutation overhead is well paid-off by the much shortened time for
-arithmetic calculation with the permuted data. We use <img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/> in the
-software name SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/> to signify the importance and the role of
+arithmetic calculation with the permuted data. We use Π in the
+software name SG-t-SNE-Π to signify the importance and the role of
 the permutations in accelerating t-SNE algorithms, including the
 conventional one, and enabling 3D embeddings.
 
@@ -296,7 +296,7 @@ Algorithms and Architectures*, pp. 233–244, 2009.
 
 ### System environment 
 
-SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/> is developed for shared-memory computers with
+SG-t-SNE-Π is developed for shared-memory computers with
 multi-threading, running Linux or macOS operating system. The source
 code is (to be) compiled by a C++ compiler supporting Cilk. The
 current release is tested with the GNU `g++` compiler 7.4.0 and the
@@ -304,7 +304,7 @@ Intel `icpc` compiler 19.0.4.233.
 
 ### Prerequisites 
 
-SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/> uses the following open-source software:
+SG-t-SNE-Π uses the following open-source software:
 
 -   [FFTW3](http://www.fftw.org/) 3.3.8
 	
@@ -328,7 +328,7 @@ On macOS:
 
 #### Basic instructions 
 
-To generate the SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/> library, test and demo programs:
+To generate the SG-t-SNE-Π library, test and demo programs:
 
     ./configure
     make all
@@ -347,7 +347,7 @@ To generate the documentation:
 
 #### Support of the conventional t-SNE 
 
-SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/> supports the conventional t-SNE algorithm, through a set
+SG-t-SNE-Π supports the conventional t-SNE algorithm, through a set
 of preprocessing functions. Issue
 
     make tsnepi
@@ -357,7 +357,7 @@ to generate the `bin/tsnepi` binary, which is fully compatible with the [existin
 
 #### MATLAB interface 
 
-To compile the SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/> MATLAB wrappers, use the
+To compile the SG-t-SNE-Π MATLAB wrappers, use the
 `--enable-matlab` option in the `configure` command. The default
 MATLAB installation path is `/opt/local/matlab`; otherwise, set
 `MATLABROOT`:
@@ -367,7 +367,7 @@ MATLAB installation path is `/opt/local/matlab`; otherwise, set
 ### Usage demo 
 
 We provide two data sets of modest size for demonstrating stochastic
-graph embedding with SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/>:
+graph embedding with SG-t-SNE-Π:
 
     tar -xvzf data/mobius-graph.tar.gz
     bin/demo_stochastic_matrix mobius-graph.mtx
@@ -380,9 +380,9 @@ by van der Maaten [[3](#VanDerMaaten2014)].
 
 ## License and community guidelines 
 
-The SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/> library is licensed under the [GNU general public
+The SG-t-SNE-Π library is licensed under the [GNU general public
 license v3.0](https://github.com/fcdimitr/sgtsnepi/blob/master/LICENSE).
-To contribute to SG-t-SNE-<img src="svgs/0c4cdff2a5c675458f5a6629892c26d1.svg" align=middle width=12.32879834999999pt height=22.465723500000017pt/> or report any problem, follow our
+To contribute to SG-t-SNE-Π or report any problem, follow our
 [contribution
 guidelines](https://github.com/fcdimitr/sgtsnepi/blob/master/CONTRIBUTING.md)
 and [code of
