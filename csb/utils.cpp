@@ -367,14 +367,15 @@ void extractDimensions(double *y, double *x, CS_INT N, CS_INT ldim, CS_INT d){
 
 }
 
-void setThreadsNum(int nworkers){
+// [DEPRECATED]
+// void setThreadsNum(int nworkers){
 
-  char strw[10];
-  sprintf(strw, "%d", nworkers);
-  __cilkrts_end_cilk();
-  __cilkrts_set_param("nworkers",strw);
+//   char strw[10];
+//   sprintf(strw, "%d", nworkers);
+//   __cilkrts_end_cilk();
+//   __cilkrts_set_param("nworkers",strw);
 
-}
+// }
 
 CS_INT StartsWith(const char *a, const char *b)
 {

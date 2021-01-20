@@ -23,7 +23,7 @@ MV = mv
 CP = cp
 
 CXX      = @CXX@
-CFLAGS  += @CXXFLAGS@ -fcilkplus
+CFLAGS  += @CXXFLAGS@
 LIBS     = @LIBS@
 CPPFLAGS = @CPPFLAGS@
 
@@ -71,7 +71,9 @@ else        # linux
 
         # relative paths for linux
         MEXRPATH     = -Wl,-rpath=$(MATLABROOT)/bin/$(ARCH)
-        MEXRPATH    += -Wl,-rpath=$(INTELROOT)/linux/lib/intel64_lin
+		ifeq ($(CILK_LDFLAGS),-lcilkrts)
+		        MEXRPATH    += -Wl,-rpath=$(INTELROOT)/linux/lib/intel64_lin
+		endif
 
         # MEX symbol map
         MEXSYM = -shared -Wl,--version-script,$(MATLABROOT)/extern/lib/$(ARCH)/mexFunction.map
@@ -84,12 +86,17 @@ MEXINC   = -I$(MATLABROOT)/extern/include
 MEXLIB   = -L$(MATLABROOT)/bin/$(ARCH)
 MEXLIB  += -fno-common $(MEXSYM)
 MEXLIB  += -lmx -lmex -lmat
-LIBS    += -lcilkrts
 
+
+# icpc-specific flags
 ifeq ($(CXX), icpc)
     LIBS   += -lirc -limf -lsvml
     CFLAGS += -wd3947,3946,10006,3950
 endif
+
+# Cilk flags
+CFLAGS += @CILK_CFLAGS@
+LDFLAGS += @CILK_LDFLAGS@
 
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SOURCES / DIRECTORIES
 
