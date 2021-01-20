@@ -268,28 +268,35 @@ Supplementary material and performance plots are found at
 
 ## References
 
-[1] <a name="Pitsianis2019"></a> N. Pitsianis, A.-S. Iliopoulos, D. Floros,
-and X. Sun. [Spaceland embedding of sparse stochastic graphs](https://arxiv.org/abs/1906.05582). In
-*Proceedings of IEEE High Performance Extreme Computing
-Conference*, 2019. (To appear.)
+[1] <a name="Pitsianis2019"></a> N. Pitsianis, A.-S. Iliopoulos, D. Floros, and
+X. Sun. [Spaceland embedding of sparse stochastic
+graphs](https://doi.org/10.1109/HPEC.2019.8916505). In *IEEE High Performance
+Extreme Computing Conference*, 2019.
 
-[2] <a name="Maaten2008"></a> L. van der Maaten and G. Hinton. [Visualizing data using
-t-SNE](http://www.jmlr.org/papers/v9/vandermaaten08a.html). *Journal of Machine Learning Research* 9(Nov):2579–2605, 2008.
+[2] <a name="Maaten2008"></a> L. van der Maaten and G. Hinton. [Visualizing data
+using t-SNE](http://www.jmlr.org/papers/v9/vandermaaten08a.html). *Journal of
+Machine Learning Research* 9(Nov):2579–2605, 2008.
 
-[3] <a name="VanDerMaaten2014"></a> L. van der Maaten. [Accelerating t-SNE using tree-based
-algorithms](http://jmlr.org/papers/v15/vandermaaten14a.html). *Journal of Machine Learning Research* 15(Oct):3221–3245,
-2014.
+[3] <a name="VanDerMaaten2014"></a> L. van der Maaten. [Accelerating t-SNE using
+tree-based algorithms](http://jmlr.org/papers/v15/vandermaaten14a.html).
+*Journal of Machine Learning Research* 15(Oct):3221–3245, 2014.
 
-[4] <a name="Linderman2019"></a> G. C. Linderman, M. Rachh, J. G. Hoskins,
-S. Steinerberger, and Y. Kluger. [Fast interpolation-based t-SNE
-for improved visualization of single-cell RNA-seq data](https://doi.org/10.1038/s41592-018-0308-4). *Nature
-Methods* 16(3):243–245, 2019.
+[4] <a name="Linderman2019"></a> G. C. Linderman, M. Rachh, J. G. Hoskins, S.
+Steinerberger, and Y. Kluger. [Fast interpolation-based t-SNE for improved
+visualization of single-cell RNA-seq
+data](https://doi.org/10.1038/s41592-018-0308-4). *Nature Methods*
+16(3):243–245, 2019.
 
-[5] <a name="Buluc2009"></a> A. Buluç, J. T. Fineman, M. Frigo,
-J. R. Gilbert, and C. E. Leiserson. [Parallel sparse matrix-vector and
-matrix-transpose-vector multiplication using compressed sparse
-blocks](https://doi.org/10.1145/1583991.1584053). In *Proceedings of Annual Symposium on Parallelism in
-Algorithms and Architectures*, pp. 233–244, 2009.
+[5] <a name="Buluc2009"></a> A. Buluç, J. T. Fineman, M. Frigo, J. R. Gilbert,
+and C. E. Leiserson. [Parallel sparse matrix-vector and matrix-transpose-vector
+multiplication using compressed sparse
+blocks](https://doi.org/10.1145/1583991.1584053). In *Proceedings of Annual
+Symposium on Parallelism in Algorithms and Architectures*, pp. 233–244, 2009.
+
+[6] <a name="Pitsianis2019b"></a> N. Pitsianis, D. Floros, A.-S. Iliopoulos, and
+X. Sun. [SG-t-SNE-Π: Swift neighbor embedding of sparse stochastic
+graphs](https://doi.org/10.21105/joss.01577). *Journal of Open Source Software*
+4(39):1577, 2019.
 
 
 ## Getting started 
