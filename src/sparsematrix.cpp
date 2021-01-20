@@ -198,8 +198,8 @@ void permuteMatrix( sparse_matrix *P, int *perm, int *iperm ){
 void printSparseMatrix( sparse_matrix P ){
 
   std::cout << "m = " << P.m
-            << "| n = " << P.n
-            << "| nnnz = " << P.nnz
+            << " | n = " << P.n
+            << " | nnz = " << P.nnz
             << std::endl;
   
   if ( P.nnz < 150 )
