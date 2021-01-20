@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <random>
+#include <cstring>
 
 #include <cilk/cilk.h>
 #include "utils.hpp"
@@ -133,7 +134,7 @@ bool testRepulsiveTerm( int n, int d, int np){
   
   for (int i = 0; i<H_NUM; i++){
 
-    Ft[0:(n*d)] = 0.0;
+    std::memset( Ft, 0, n*d * sizeof(double) );
     double zt = computeFrepulsive_interp(Ft, y, n, d, h[i], np);
 
     double maxErr = 0;
