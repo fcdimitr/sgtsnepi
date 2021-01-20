@@ -624,7 +624,7 @@ GREP
 CXXCPP
 LTLIBOBJS
 LIBOBJS
-INCS
+INTELROOT
 MATLABROOT
 MEX
 MEXFLAGS
@@ -2547,7 +2547,8 @@ printf "\nSetup MATLAB linker (for optional MEX wrappers)\n\n"
 
 : ${MEX="${CXX}"}
 : ${MEXFLAGS="${CXXFLAGS}"}
-: ${MATLABROOT="/opt/local/matlab"}
+: ${MATLABROOT="/usr/local/MATLAB/latest"}
+: ${INTELROOT="/opt/intel/compilers_and_libraries"}
 
 printf "using C++ flags: $CXXFLAGS\n"
 printf "variable \$MATLABROOT is set to: $MATLABROOT\n"
