@@ -330,7 +330,9 @@ On macOS:
 
 ### Installation 
 
-#### Basic instructions 
+#### Using configure + make 
+
+##### Basic instructions 
 
 To generate the SG-t-SNE-Π library, test and demo programs:
 
@@ -349,7 +351,7 @@ To generate the documentation:
 
     make documentation
 
-#### Support of the conventional t-SNE 
+##### Support of the conventional t-SNE 
 
 SG-t-SNE-Π supports the conventional t-SNE algorithm, through a set
 of preprocessing functions. Issue
@@ -359,7 +361,7 @@ of preprocessing functions. Issue
 
 to generate the `bin/tsnepi` binary, which is fully compatible with the [existing wrappers](https://github.com/lvdmaaten/bhtsne/) provided by van der Maaten [[3](#VanDerMaaten2014)], and replace the `bh_tsne` binary. `<BHTSNEPATH>` in the installation path of [`bhtsne`](https://github.com/lvdmaaten/bhtsne/).
 
-#### MATLAB interface 
+##### MATLAB interface 
 
 To compile the SG-t-SNE-Π MATLAB wrappers, use the
 `--enable-matlab` option in the `configure` command. The default
@@ -367,6 +369,70 @@ MATLAB installation path is `/opt/local/matlab`; otherwise, set
 `MATLABROOT`:
 
     ./configure --enable-matlab MATLABROOT=<matlab-path>
+
+#### Using meson 
+
+First, install the [Meson build system](https://mesonbuild.com/), for example
+via the [Python Package Index (PyPI)](https://pypi.python.org/pypi/meson/):
+
+    pip3 install --user meson
+
+For more information and alternative methods for installing Meson, see [Getting
+meson](https://mesonbuild.com/Getting-meson.html).
+
+##### Basic instructions 
+
+To configure the SG-t-SNE-Π library, demos, conventional t-SNE interface, and
+documentation, issue the following:
+
+    CXX=<compiler-executable> meson <build-options> <build-path>
+
+This will create and configure the build directory at `<build-path>`.  The
+`<build-options>` flags are optional and described below.
+
+To compile SG-t-SNE-Π within the build directory, issue:
+
+    meson compile -C <build-path>
+
+To install all relevant targets, issue:
+
+    meson install -C <build-path>
+
+By default, this will install targets in sub-directories `lib`, `bin`,
+`include`, and `doc` within the SG-t-SNE-Π project directory.  To change the
+installation prefix, specify the `-Dprefix=<install-prefix>` option when
+configuring with Meson.
+
+You may test the installation with:
+
+    <install-prefix>/bin/test_modules
+
+##### MATLAB interface 
+
+To compile the SG-t-SNE-Π MATLAB wrappers, specify `-Denable_matlab=true` and
+`-Dmatlabroot=<path-to-matlab-installation>` when configuring.
+
+If building with a compiler which uses an Intel Cilk Plus implementation, you
+may also need to set `-Ddir_libcilkrts=<path-to-libcilkrts.so-parent-dir>`.
+This option is ignored when building with OpenCilk.  *(Warning: Intel Cilk Plus
+is deprecated and not supported in newer versions of GNU `g++` and Intel
+`icpc`.)*
+
+##### Cilktool instrumentation (OpenCilk only) 
+
+The Meson build script also supports building the SG-t-SNE-Π library and
+executables with the OpenCilk Cilktools instrumentation.  Specifically, the
+Meson script supports instrumentation with the [Cilksan][cilksan] determinacy
+race detector and the [Cilkscale][cilkscale] scalability analyzer.  Building
+with OpenCilk Cilktool instrumentation is controlled via the
+`-Dcilktool=<none|cilksan|cilkscale>` option when configuring.
+
+The SG-t-SNE-Π code has already been tested and analyzed with the OpenCilk
+instrumentation tools.  The relevant configuration options are provided to
+facilitate further development of SG-t-SNE-Π or projects that interact with it.
+
+[cilksan]:      https://cilk.mit.edu/tools/#the-cilksan-determinacy-race-detector
+[cilkscale]:    https://cilk.mit.edu/tools/#the-cilkscale-scalability-analyzer
 
 ### Usage demo 
 
