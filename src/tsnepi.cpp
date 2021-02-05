@@ -71,9 +71,9 @@ int main()
 
     std::cout << "Running k-neareast neighbor search for " << nn << " neighbors..."
               << std::flush;
-  
-    double * D = (double *)malloc(params.n * (nn + 1) * sizeof(double));
-    int    * I = (int *)malloc(params.n * (nn + 1) * sizeof(int));
+
+    double * D = new double [params.n * (nn+1)];
+    int    * I = new int    [params.n * (nn+1)];
 
     allKNNsearch(I, D, data, N, L, nn+1);
 
@@ -85,24 +85,24 @@ int main()
     sparse_matrix P = perplexityEqualization( I, D, N, nn, perplexity );
 
     std::cout << "DONE" << std::endl;
-    
-    free( D ); free( I );
+
+    delete [] D;
+    delete [] I;
 
     // ~~~~~~~~~~ Run SG-t-SNE
     y = sgtsne( P, params );
-    
-    int* landmarks = (int*) malloc(N * sizeof(int));
+
+    int* landmarks = new int [N];
     for(int n = 0; n < N; n++) landmarks[n] = n;
 
-    double* costs = (double*) calloc(N, sizeof(double));
+    double* costs = new double [N] ();
     vdm_save_data(y, landmarks, costs, N, no_dims);
 
     // Clean up the memory
-    free(data); 
-    free(y); 
-    free(costs);
-    free(landmarks);
-    
+    delete [] data;
+    delete [] y;
+    delete [] costs;
+    delete [] landmarks;
   }
   
   

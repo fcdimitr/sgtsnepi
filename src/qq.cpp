@@ -25,7 +25,7 @@ coord computeFrepulsive_exact(coord * frep,
                               int N,
                               int d){
   
-  coord *zetaVec = (coord *) calloc( N, sizeof( coord ) );
+  coord *zetaVec = new coord [N] ();
   
   cilk_for (int i = 0; i < N; i++) {
     coord Yi[10] = {0};
@@ -64,8 +64,7 @@ coord computeFrepulsive_exact(coord * frep,
     for (int j = 0; j < d; j++)
       frep[(i*d) + j] /= zeta;
 
-  free( zetaVec );
-  
+  delete [] zetaVec;
   return zeta;
   
 }
@@ -139,8 +138,8 @@ coord computeFrepulsive_interp(coord * Frep,
                                double *timeInfo){
 
   // ~~~~~~~~~~ make temporary data copies
-  coord *yt = static_cast<coord *> ( malloc(n*d*sizeof(coord)) );
-  coord *yr = static_cast<coord *> ( malloc(n*d*sizeof(coord)) );
+  coord *yt = new coord [n*d];
+  coord *yr = new coord [n*d];
 
   struct timeval start;
   
@@ -175,12 +174,12 @@ coord computeFrepulsive_interp(coord * Frep,
   // ~~~~~~~~~~ setup inputs to nuConv
   
   std::copy( y, y + (n*d), yt );
-  
-  coord *VScat    = (coord *) malloc( n*(d+1) * sizeof( coord ) );
-  coord *PhiScat  = (coord *) calloc( n*(d+1), sizeof( coord ) );
-  uint32_t *iPerm = (uint32_t *) malloc( n * sizeof( uint32_t ) );
-  uint32_t *ib    = (uint32_t *) calloc( nGrid, sizeof( uint32_t ) );
-  uint32_t *cb    = (uint32_t *) calloc( nGrid, sizeof( uint32_t ) );
+
+  coord *VScat    = new coord [n*(d+1)];
+  coord *PhiScat  = new coord [n*(d+1)] ();
+  uint32_t *iPerm = new uint32_t [n];
+  uint32_t *ib    = new uint32_t [nGrid] ();
+  uint32_t *cb    = new uint32_t [nGrid] ();
 
   cilk_for( int i = 0; i < n; i++ ){
     iPerm[i] = i;
@@ -228,13 +227,13 @@ coord computeFrepulsive_interp(coord * Frep,
   else
     tsne_stop_timer("F&Z", start);
   
-  free( yt      );
-  free( yr      );
-  free( VScat   );
-  free( PhiScat );
-  free( iPerm   );
-  free( ib      );
-  free( cb      );
+  delete [] yt;
+  delete [] yr;
+  delete [] VScat;
+  delete [] PhiScat;
+  delete [] iPerm;
+  delete [] ib;
+  delete [] cb;
   return zeta;
   
 }

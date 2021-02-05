@@ -60,10 +60,10 @@ sparse_matrix buildPFromMTX( const char *filename ){
   fin >> P.m >> P.n >> P.nnz;
 
   // allocate space for COO format
-  val_coo = static_cast<matval *>( malloc(P.nnz * sizeof(matval)) );
-  row_coo = static_cast<matidx *>( malloc(P.nnz * sizeof(matidx)) );
-  col_coo = static_cast<matidx *>( malloc(P.nnz * sizeof(matidx)) );
-  
+  val_coo = new matval [P.nnz];
+  row_coo = new matidx [P.nnz];
+  col_coo = new matidx [P.nnz];
+
   // read the COO data
   for (int l = 0; l < P.nnz; l++)
     fin >> row_coo[l] >> col_coo[l] >> val_coo[l];
@@ -72,9 +72,9 @@ sparse_matrix buildPFromMTX( const char *filename ){
   fin.close();
 
   // ~~~~~~~~~~ transform COO to CSC
-  P.val = static_cast<matval *>( malloc( P.nnz   * sizeof(matval)) );
-  P.row = static_cast<matidx *>( malloc( P.nnz   * sizeof(matidx)) );
-  P.col = static_cast<matidx *>( calloc( (P.n+1),  sizeof(matidx)) );
+  P.val = new matval [P.nnz];
+  P.row = new matidx [P.nnz];
+  P.col = new matidx [P.n+1] ();
 
   // ----- find the correct column sizes
   for (int l = 0; l < P.nnz; l++){            
@@ -107,9 +107,9 @@ sparse_matrix buildPFromMTX( const char *filename ){
   }
 
   // ~~~~~~~~~~ deallocate memory
-  free( val_coo );
-  free( row_coo );
-  free( col_coo );
+  delete [] val_coo;
+  delete [] row_coo;
+  delete [] col_coo;
 
   // ~~~~~~~~~~ return value
   return P;
@@ -176,8 +176,8 @@ double * readXfromMTX( const char *filename, int *n, int *d ){
   fin >> n[0] >> d[0];
 
   // allocate space for COO format
-  X = static_cast<double *>( malloc( n[0] * d[0] * sizeof(matval)) );
-  
+  X = new double [n[0] * d[0]];
+
   // read the COO data
   for (int j = 0; j < d[0]; j++)
     for (int l = 0; l < n[0]; l++)
@@ -212,7 +212,7 @@ bool vdm_load_data(double** data, int* n, int* d, int* no_dims, double* theta, d
   fread(perplexity, sizeof(double), 1, h); // perplexity
   fread(no_dims, sizeof(int), 1, h);       // output dimensionality
   fread(max_iter, sizeof(int),1,h);        // maximum number of iterations
-  *data = (double*) malloc(*d * *n * sizeof(double));
+  *data = new double [*d * *n];
   if(*data == NULL) { printf("Memory allocation failed!\n"); exit(1); }
   fread(*data, sizeof(double), *n * *d, h);         // the data
   if(!feof(h)) fread(rand_seed, sizeof(int), 1, h); // random seed

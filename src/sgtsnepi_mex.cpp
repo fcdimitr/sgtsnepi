@@ -74,9 +74,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   parseInputs( params, &y_in, nrhs-1, &prhs[1] );
   
   // ---------- prepare local matrices
-  matidx *rows = (matidx *) malloc( nnz      * sizeof(matidx) );
-  matidx *cols = (matidx *) malloc( (nPts+1) * sizeof(matidx) );
-  matval *vals = (matval *) malloc( nnz      * sizeof(matval) );
+  matidx *rows = new matidx [nnz];
+  matidx *cols = new matidx [nPts+1];
+  matval *vals = new matval [nnz];
 
   std::copy( vv, vv + nnz   , vals );
   std::copy( ir, ir + nnz   , rows );
@@ -89,8 +89,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   if (flagTime){
     plhs[1] = mxCreateNumericMatrix(6, params.maxIter, mxDOUBLE_CLASS, mxREAL);
-    timeInfo = (double **) malloc( params.maxIter * sizeof(double *) );
-    
+    timeInfo = new double* [params.maxIter];
+
     double *mxTime = (double *)mxGetData(plhs[1]);
 
     for (int i=0; i<params.maxIter; i++)
@@ -129,7 +129,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       y_mx[ j*nPts + i ] = y[ i*params.d + j ];
   
   // ~~~~~~~~~~~~~~~~~~~~ DE-ALLOCATE TEMPORARY MEMORY
-  free( y );
-  if (flagTime) free(timeInfo);
+  delete [] y;
+  if (flagTime) delete [] timeInfo;
   
 }

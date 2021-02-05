@@ -175,7 +175,7 @@ void doSort( uint64_t * const Cs, uint64_t * const Ct,
   
   // delete BinCursor;
   parallel_free( BinCursor );
-  delete code;
+  delete [] code;
 
 }
 
@@ -265,7 +265,7 @@ void doSort_top( uint64_t * const Cs, uint64_t * const Ct,
   
   // delete BinCursor;
   parallel_free( BinCursor );
-  delete code;
+  delete [] code;
 
 }
 
@@ -350,12 +350,12 @@ void relocateCoarseGrid( dataval  ** Yptr,        // Scattered point coordinates
 
   dataval  * Y = *Yptr;
   uint32_t * iPerm = *iPermptr;
-  
-  uint64_t  * const C1     = (uint64_t *  ) malloc(sizeof(uint64_t) * 1    * nPts);
-  uint64_t  * const C2     = (uint64_t *  ) malloc(sizeof(uint64_t) * 1    * nPts);
 
-  dataval   * const Y2     = (dataval   * ) malloc(sizeof(dataval)  * nDim * nPts);
-  uint32_t  * const iPerm2 = (uint32_t  * ) malloc(sizeof(uint32_t) * 1    * nPts);;
+  uint64_t  * const C1     = new uint64_t [1    * nPts];
+  uint64_t  * const C2     = new uint64_t [1    * nPts];
+
+  dataval   * const Y2     = new dataval  [nDim * nPts];
+  uint32_t  * const iPerm2 = new uint32_t [1    * nPts];
 
   
 
@@ -380,9 +380,9 @@ void relocateCoarseGrid( dataval  ** Yptr,        // Scattered point coordinates
 
     // ========== get starting index and size of each grid box
     gridSizeAndIdx( ib, cb, C2, nPts, nDim, nGridDim );
-    
-    free( Y     );
-    free( iPerm );
+
+    delete [] Y;
+    delete [] iPerm;
 
     *Yptr = Y2;
     *iPermptr = iPerm2;
@@ -391,11 +391,12 @@ void relocateCoarseGrid( dataval  ** Yptr,        // Scattered point coordinates
 
     // ========== get starting index and size of each grid box
     gridSizeAndIdx( ib, cb, C1, nPts, nDim, nGridDim );
-    
-    free( Y2 );
-    free(iPerm2);
+
+    delete [] Y2;
+    delete [] iPerm2;
   }
-  free( C1 ); free( C2 );
+  delete [] C1;
+  delete [] C2;
 
   return;
   

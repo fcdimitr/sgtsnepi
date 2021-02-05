@@ -123,17 +123,18 @@ int main(int argc, char **argv)
 
   std::cout << "Running k-neareast neighbor search for " << nn << " neighbors..."
             << std::flush;
-  
-  double * D = (double *)malloc(params.n * (nn + 1) * sizeof(double));
-  int    * I = (int *)malloc(params.n * (nn + 1) * sizeof(int));
+
+  double * D = new double [params.n * (nn+1)];
+  int    * I = new int    [params.n * (nn+1)];
 
   allKNNsearch(I, D, X, n, d, nn+1);
 
   std::cout << "DONE" << std::endl;
   
   sparse_matrix P = perplexityEqualization( I, D, n, nn, u );
-  
-  free( D ); free( I );
+
+  delete [] D;
+  delete [] I;
 
   params.n = n;
 
@@ -143,7 +144,6 @@ int main(int argc, char **argv)
   // ~~~~~~~~~~ export results
   extractEmbedding( y, params.n, params.d );
 
-  free( y );
-  
-}
+  delete [] y;
 
+}

@@ -99,9 +99,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       nnz  = (uint32_t) mxGetM( prhs[1] );
       
       // ---------- prepare local matrices
-      matidx *rows = (matidx *) malloc( nnz      * sizeof(matidx) );
-      matidx *cols = (matidx *) malloc( (nPts+1) * sizeof(matidx) );
-      matval *vals = (matval *) malloc( nnz      * sizeof(matval) );
+      matidx *rows = new matidx [nnz];
+      matidx *cols = new matidx [nPts+1];
+      matval *vals = new matval [nnz];
 
       std::copy( vv, vv + nnz   , vals );
       std::copy( ir, ir + nnz   , rows );
@@ -111,9 +111,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
       
       buildCSB( rows, cols, vals, nPts, nPts, nnz );
 
-      // free(rows);
-      // free(cols);
-      // free(vals);
+      // delete [] rows;
+      // delete [] cols;
+      // delete [] vals;
       
     }
     break;

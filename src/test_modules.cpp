@@ -25,7 +25,7 @@
 
 double * generateRandomCoord( int n, int d ){
 
-  double *y = (double *) malloc( n*d*sizeof(double) );
+  double *y = new double [n*d];
 
   std::uniform_real_distribution<double> unif(0,1);
   std::default_random_engine re;
@@ -39,11 +39,11 @@ double * generateRandomCoord( int n, int d ){
 
 sparse_matrix *generateRandomCSC(int n){
 
-  sparse_matrix *P = (sparse_matrix *) malloc(sizeof(sparse_matrix));
+  sparse_matrix *P = new sparse_matrix;
   
   P->n = n; P->m = n;
   
-  P->col = (matidx *) malloc( (n+1)*sizeof(matidx) );
+  P->col = new matidx [n+1];
 
   for (int j=0 ; j<n ; j++)
     P->col[j] = rand() % 10 + 2;
@@ -57,8 +57,8 @@ sparse_matrix *generateRandomCSC(int n){
   P->col[P->n] = cumsum;
   P->nnz = cumsum;
 
-  P->row = (matidx *) malloc( (P->nnz)*sizeof(matidx) );
-  P->val = (matval *) malloc( (P->nnz)*sizeof(matval) );
+  P->row = new matidx [P->nnz];
+  P->val = new matval [P->nnz];
 
   std::uniform_real_distribution<double> unif(0,1);
   std::default_random_engine re;
@@ -83,8 +83,8 @@ bool testAttractiveTerm( int n, int d){
   symmetrizeMatrix( P );
  
 
-  double *Fg = (double *) calloc( n*d , sizeof(double) );
-  double *Ft = (double *) calloc( n*d , sizeof(double) );
+  double *Fg = new double [n*d] ();
+  double *Ft = new double [n*d] ();
 
   pq( Fg, y, P->val, P->row, P->col, n, d);
   
@@ -111,11 +111,10 @@ bool testAttractiveTerm( int n, int d){
     flag = false;
   
   deallocate(csb);
-  free( P );
-  free(y);
-  free(Fg);
-  free(Ft);
-  
+  delete P;
+  delete [] y;
+  delete [] Fg;
+  delete [] Ft;
   return flag;
   
 }
@@ -125,8 +124,8 @@ bool testRepulsiveTerm( int n, int d, int np){
   bool flag = true;
 
   double *y  = generateRandomCoord( n, d );
-  double *Fg = (double *) calloc( n*d , sizeof(double) );
-  double *Ft = (double *) malloc( n*d * sizeof(double) );
+  double *Fg = new double [n*d] ();
+  double *Ft = new double [n*d];
 
   double h[H_NUM] = {0.05, 0.08, 0.13};
 
@@ -148,9 +147,9 @@ bool testRepulsiveTerm( int n, int d, int np){
     
   }
       
-  free(y);
-  free(Fg);
-  free(Ft);
+  delete [] y;
+  delete [] Fg;
+  delete [] Ft;
 
   return flag;
   

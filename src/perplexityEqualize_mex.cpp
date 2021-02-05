@@ -75,8 +75,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
   std::cout << "Running k-neareast neighbor search for " << nn << " neighbors..."
             << std::flush;
   
-  double * D = (double *)malloc(nPts * (nn + 1) * sizeof(double));
-  int    * I = (int *)malloc(nPts * (nn + 1) * sizeof(int));
+  double * D = new double [nPts * (nn+1)];
+  int    * I = new int    [nPts * (nn+1)];
 
   allKNNsearch(I, D, X, nPts, nDim, nn+1);
 
@@ -84,8 +84,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 
   sparse_matrix P = perplexityEqualization( I, D, nPts, nn, u );
 
-  free( D ); free( I );
-  
+  delete [] D;
+  delete [] I;
+
   // ~~~~~~~~~~~~~~~~~~~~ SETUP OUTPUS
   plhs[0] = mxCreateSparse(nPts,nPts,P.nnz,mxREAL);
 
