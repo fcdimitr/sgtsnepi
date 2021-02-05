@@ -96,7 +96,6 @@ int main(int argc, char **argv)
             << std::endl << " to visualize the embedding" << std::endl << std::endl;
   
 
-  free( y );
-  
-}
+  delete [] y;
 
+}

@@ -12,6 +12,7 @@
 #include <cilk/reducer_max.h>
 #include <limits>
 #include <cmath>
+#include <vector>
 
 #include "nuconv.hpp"
 #include "timers.hpp"
@@ -51,30 +52,31 @@ void nuconv( coord *PhiScat, coord *y, coord *VScat,
   
   // ~~~~~~~~~~ scat2grid
   int szV = pow( nGridDim+2, d ) * m;
-  coord *VGrid = static_cast<coord *> ( calloc( szV * np, sizeof(coord) ) );
+
+  ::std::vector<coord> VGrid (szV*np, 0);
 
   start = tsne_start_timer();
   switch (d) {
 
   case 1:
     if (nGridDim <= GRID_SIZE_THRESHOLD)
-      s2g1d( VGrid, y, VScat, nGridDim+2, np, n, d, m );
+      s2g1d( VGrid.data(), y, VScat, nGridDim+2, np, n, d, m );
     else
-      s2g1drb( VGrid, y, VScat, ib, cb, nGridDim+2, np, n, d, m );
+      s2g1drb( VGrid.data(), y, VScat, ib, cb, nGridDim+2, np, n, d, m );
     break;
     
   case 2:
     if (nGridDim <= GRID_SIZE_THRESHOLD)
-      s2g2d( VGrid, y, VScat, nGridDim+2, np, n, d, m );
+      s2g2d( VGrid.data(), y, VScat, nGridDim+2, np, n, d, m );
     else
-      s2g2drb( VGrid, y, VScat, ib, cb, nGridDim+2, np, n, d, m );
+      s2g2drb( VGrid.data(), y, VScat, ib, cb, nGridDim+2, np, n, d, m );
     break;
 
   case 3:
     if (nGridDim <= GRID_SIZE_THRESHOLD)
-      s2g3d( VGrid, y, VScat, nGridDim+2, np, n, d, m );
+      s2g3d( VGrid.data(), y, VScat, nGridDim+2, np, n, d, m );
     else
-      s2g3drb( VGrid, y, VScat, ib, cb, nGridDim+2, np, n, d, m );
+      s2g3drb( VGrid.data(), y, VScat, ib, cb, nGridDim+2, np, n, d, m );
     break;
     
   }
@@ -84,7 +86,7 @@ void nuconv( coord *PhiScat, coord *y, coord *VScat,
     for (int j=1; j<np; j++)
       VGrid[i] += VGrid[ j*szV + i ];
 
-  VGrid = static_cast<coord *> ( realloc( VGrid, szV*sizeof(coord) ) );  
+  VGrid.resize( szV );
 
   if (timeInfo != nullptr)
     timeInfo[0] = tsne_stop_timer("S2G", start);
@@ -93,8 +95,8 @@ void nuconv( coord *PhiScat, coord *y, coord *VScat,
 
   
   // ~~~~~~~~~~ grid2grid
-  coord *PhiGrid = static_cast<coord *> ( calloc( szV, sizeof(coord) ) );
-  uint32_t * const nGridDims = new uint32_t [d]();
+  coord *PhiGrid = new coord [szV] ();
+  uint32_t * const nGridDims = new uint32_t [d] ();
   for (int i = 0; i < d; i++)
     nGridDims[i] = nGridDim + 2;
 
@@ -103,15 +105,15 @@ void nuconv( coord *PhiScat, coord *y, coord *VScat,
   switch (d) {
 
   case 1:
-    conv1dnopad( PhiGrid, VGrid, h, nGridDims, m, d, np );
+    conv1dnopad( PhiGrid, VGrid.data(), h, nGridDims, m, d, np );
     break;
 
   case 2:
-    conv2dnopad( PhiGrid, VGrid, h, nGridDims, m, d, np );
+    conv2dnopad( PhiGrid, VGrid.data(), h, nGridDims, m, d, np );
     break;
 
   case 3:
-    conv3dnopad( PhiGrid, VGrid, h, nGridDims, m, d, np );
+    conv3dnopad( PhiGrid, VGrid.data(), h, nGridDims, m, d, np );
     break;
 
   }
@@ -147,9 +149,8 @@ void nuconv( coord *PhiScat, coord *y, coord *VScat,
     tsne_stop_timer("G2S", start);
 
   // ~~~~~~~~~~ deallocate memory
-  free( VGrid );
-  free( PhiGrid );
-
-  delete nGridDims;
+  // VGrid freed by ::std::vector destructor
+  delete [] PhiGrid;
+  delete [] nGridDims;
   
 }

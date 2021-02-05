@@ -93,8 +93,8 @@ double compute_gradient(dataPoint *dy,
   struct timeval start;
 
   // ----- Allocate memory
-  dataPoint    * Fattr = (dataPoint*) calloc(n * d, sizeof(dataPoint));
-  dataPoint    * Frep  = (dataPoint*) calloc(n * d, sizeof(dataPoint));
+  dataPoint * Fattr = new dataPoint [n*d] ();
+  dataPoint * Frep  = new dataPoint [n*d] ();
 
   // ------ Compute PQ (fattr)
   start = tsne_start_timer();
@@ -120,8 +120,8 @@ double compute_gradient(dataPoint *dy,
   compute_dy(dy, Fattr, Frep, n, d, params.alpha);
   
   // ----- Free-up memory
-  free(Fattr);
-  free(Frep);
+  delete [] Fattr;
+  delete [] Frep;
   return zeta;
 }
 
@@ -148,10 +148,10 @@ void kl_minimization(coord* y,
   coord zeta = 0;
 
   // ----- Allocate memory
-  coord* dy    = (coord*) malloc( n * d * sizeof(coord));
-  coord* uy    = (coord*) malloc( n * d * sizeof(coord));
-  coord* gains = (coord*) malloc( n * d * sizeof(coord));  
-  
+  coord* dy    = new coord [n*d];
+  coord* uy    = new coord [n*d];
+  coord* gains = new coord [n*d];
+
   // ------ Initialize
   for(int i = 0; i < n*d; i++){
     uy[i] =  .0;
@@ -217,10 +217,10 @@ void kl_minimization(coord* y,
             << " sec [" << timeFrep / (timeFattr + timeFrep) * 100
             << "%]" << std::endl;
 
-  
-  free(dy);
-  free(uy);
-  free(gains);
+
+  delete [] dy;
+  delete [] uy;
+  delete [] gains;
 }
 
 

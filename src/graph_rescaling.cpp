@@ -20,7 +20,7 @@ void lambdaRescaling( sparse_matrix P, double lambda, bool dist, bool dropLeafEd
 
   double tolBinary   = 1e-5;
   int    maxIter     = 100;
-  double *sig2       = static_cast<double *>( malloc(P.n*sizeof(double)) );
+  double *sig2       = new double [P.n];
 
   if (dist)  std::cout << "Input considered as distances" << std::endl;
   
@@ -99,6 +99,5 @@ void lambdaRescaling( sparse_matrix P, double lambda, bool dist, bool dropLeafEd
     if ( dropLeafEdge && (P.col[i+1]-P.col[i] == 1) ) P.val[ P.col[i] ] = 0;
   }
 
-  free( sig2 );
-  
+  delete [] sig2;
 }

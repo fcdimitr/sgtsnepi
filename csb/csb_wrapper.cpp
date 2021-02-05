@@ -47,7 +47,7 @@ BiCsb<NT,IT> * prepareCSB( NT *values, IT *rows, IT *cols,
   BiCsb<NT,IT> *bicsb = new BiCsb<NT, IT>(*csc, workers, forcelogbeta);
 
   // clean CSB-type CSC object
-  delete( csc );
+  delete csc;
 
   return bicsb;
 }
@@ -162,8 +162,8 @@ float tsne_cost
   float * const x_in, int N,
   int dim, float alpha, float zeta) {
   
-  float *y_out = (float*) calloc(N, sizeof(float));
-  
+  float *y_out = new float [N] ();
+
   // prepare template type for CSB routine
   typedef PTSR<float,float> PTDD;
 
@@ -176,7 +176,7 @@ float tsne_cost
   
   for (int i =0; i<N; i++) total_cost += y_out[i];
   // NT total_cost = __sec_reduce_add( y_out[0:N] );
-  free( y_out );
+  delete [] y_out;
 
   return total_cost;
   
@@ -186,9 +186,9 @@ double tsne_cost
 ( BiCsb<double, INDEXTYPE> * bicsb,
   double * const x_in, int N,
   int dim, double alpha, double zeta) {
-  
-  double *y_out = (double*) calloc(N, sizeof(double));
-  
+
+  double *y_out = new double [N] ();
+
   // prepare template type for CSB routine
   typedef PTSR<double,double> PTDD;
 
@@ -201,7 +201,7 @@ double tsne_cost
   
   for (int i =0; i<N; i++) total_cost += y_out[i];
   // NT total_cost = __sec_reduce_add( y_out[0:N] );
-  free( y_out );
+  delete [] y_out;
 
   return total_cost;
   

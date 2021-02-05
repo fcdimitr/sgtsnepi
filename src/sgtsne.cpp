@@ -84,8 +84,8 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
 
   
   // ~~~~~~~~~~ extracting BSDB permutation
-  idx_t *perm = static_cast<idx_t *>( malloc(P.n * sizeof(idx_t)) );
-  idx_t *iperm = static_cast<idx_t *>( malloc(P.n * sizeof(idx_t)) );
+  idx_t *perm  = new idx_t [P.n];
+  idx_t *iperm = new idx_t [P.n];
 
 #ifdef FLAG_BSDB_PERM
   
@@ -136,8 +136,8 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
       0, 0 );
 
   // ~~~~~~~~~~ initial embedding coordinates
-  
-  coord *y = static_cast<coord *> ( malloc( params.n * params.d * sizeof(coord) ) );
+
+  coord *y = new coord [params.n * params.d];
 
   if (y_in == NULL){
     
@@ -157,7 +157,7 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
 
 
   // ~~~~~~~~~~ inverse permutation
-  coord *y_inv = static_cast<coord *> ( malloc( params.n * params.d * sizeof(coord) ) );
+  coord *y_inv = new coord [params.n * params.d];
 
   for (int i=0; i<params.n; i++)
     for (int j=0; j<params.d; j++)
@@ -167,9 +167,9 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
   // ~~~~~~~~~~ dellocate memory
   
   deallocate(csb);
-  free( y );
-  free( perm );
-  free( iperm );
+  delete [] y;
+  delete [] perm;
+  delete [] iperm;
 
   return y_inv;
   
@@ -240,9 +240,9 @@ sparse_matrix perplexityEqualization( int *I, double *D, int n, int nn, double u
   matidx *row, *col;
 
   // allocate space for CSC format
-  val = static_cast<matval *>( malloc( n*nn   * sizeof(matval)) );
-  row = static_cast<matidx *>( malloc( n*nn   * sizeof(matidx)) );
-  col = static_cast<matidx *>( calloc( (n+1) , sizeof(matidx)) );
+  val = new matval [n*nn];
+  row = new matidx [n*nn];
+  col = new matidx [n+1] ();
 
   // perplexity-equalization of kNN input
   cilk_for(int i = 0; i < n; i++) {

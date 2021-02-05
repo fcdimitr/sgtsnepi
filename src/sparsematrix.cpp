@@ -18,15 +18,15 @@
 
 void free_sparse_matrix(sparse_matrix * P){
 
-  free(P->row);
-  free(P->col);
-  free(P->val);
-  
+  delete [] P->row;
+  delete [] P->col;
+  delete [] P->val;
+
 }
 
 uint32_t makeStochastic(sparse_matrix P){
 
-  int *stoch = static_cast< int *>( calloc(P.n, sizeof(int)) );
+  int *stoch = new int [P.n] ();
   
   cilk_for (int j=0; j<P.n; j++){
 
@@ -60,7 +60,7 @@ uint32_t makeStochastic(sparse_matrix P){
     nStoch += stoch[j];
   }
 
-  free( stoch );
+  delete [] stoch;
 
   return nStoch;
   
@@ -76,7 +76,7 @@ void symmetrizeMatrix( sparse_matrix *P ){
   matidx N = P->n;
   
   // Count number of elements and row counts of symmetric matrix
-  int* row_counts = (int*) calloc(N, sizeof(int));
+  int* row_counts = new int [N] ();
   if(row_counts == NULL) { printf("Memory allocation failed!\n"); exit(1); }
   for(matidx n = 0; n < N; n++) {
     for(matidx i = row_P[n]; i < row_P[n + 1]; i++) {
@@ -97,9 +97,9 @@ void symmetrizeMatrix( sparse_matrix *P ){
   for(matidx n = 0; n < N; n++) no_elem += row_counts[n];
   
   // Allocate memory for symmetrized matrix
-  matidx* sym_row_P = (matidx*) malloc((N + 1) * sizeof(matidx));
-  matidx* sym_col_P = (matidx*) malloc(no_elem * sizeof(matidx));
-  matval* sym_val_P = (matval*) malloc(no_elem * sizeof(matval));
+  matidx* sym_row_P = new matidx [N+1];
+  matidx* sym_col_P = new matidx [no_elem];
+  matval* sym_val_P = new matval [no_elem];
   if(sym_row_P == NULL || sym_col_P == NULL || sym_val_P == NULL) {
     printf("Memory allocation failed!\n");
     exit(1);
@@ -112,7 +112,7 @@ void symmetrizeMatrix( sparse_matrix *P ){
   }
   
   // Fill the result matrix
-  int* offset = (int*) calloc(N, sizeof(int));
+  int* offset = new int [N] ();
   if(offset == NULL) { printf("Memory allocation failed!\n"); exit(1); }
   for(matidx n = 0; n < N; n++) {
     for(matidx i = row_P[n]; i < row_P[n + 1]; i++) {                                  // considering element(n, col_P[i])
@@ -148,15 +148,15 @@ void symmetrizeMatrix( sparse_matrix *P ){
   }
   
   // Return symmetrized matrices
-  free(P->row); P->row = sym_col_P;
-  free(P->col); P->col = sym_row_P;
-  free(P->val); P->val = sym_val_P;
+  delete [] P->row; P->row = sym_col_P;
+  delete [] P->col; P->col = sym_row_P;
+  delete [] P->val; P->val = sym_val_P;
 
   P->nnz = no_elem;
   
   // Free up some memery
-  free(offset); offset = NULL;
-  free(row_counts); row_counts  = NULL;
+  delete [] offset; offset = NULL;
+  delete [] row_counts; row_counts  = NULL;
 
   return;
   
@@ -173,9 +173,9 @@ void permuteMatrix( sparse_matrix *P, int *perm, int *iperm ){
   int N = P->n; matidx nnz = P->nnz;
   
   // Allocate memory for permuted matrix
-  matidx* perm_row_P = (matidx*) malloc( nnz    * sizeof(matidx));
-  matidx* perm_col_P = (matidx*) malloc((N + 1) * sizeof(matidx));
-  matval* perm_val_P = (matval*) malloc( nnz    * sizeof(matval));
+  matidx* perm_row_P = new matidx [nnz];
+  matidx* perm_col_P = new matidx [N+1];
+  matval* perm_val_P = new matval [nnz];
   if(perm_row_P == NULL || perm_col_P == NULL || perm_val_P == NULL) {
     printf("Memory allocation failed!\n");
     exit(1);
@@ -197,9 +197,9 @@ void permuteMatrix( sparse_matrix *P, int *perm, int *iperm ){
   perm_col_P[N] = nz ; 
   
   // Return symmetrized matrices
-  free(P->row); P->row = perm_row_P;
-  free(P->col); P->col = perm_col_P;
-  free(P->val); P->val = perm_val_P;
+  delete [] P->row; P->row = perm_row_P;
+  delete [] P->col; P->col = perm_col_P;
+  delete [] P->val; P->val = perm_val_P;
 
   return;
   
