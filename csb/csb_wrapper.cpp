@@ -175,7 +175,6 @@ float tsne_cost
   float total_cost = 0;
   
   for (int i =0; i<N; i++) total_cost += y_out[i];
-  // NT total_cost = __sec_reduce_add( y_out[0:N] );
   delete [] y_out;
 
   return total_cost;
@@ -200,7 +199,6 @@ double tsne_cost
   double total_cost = 0;
   
   for (int i =0; i<N; i++) total_cost += y_out[i];
-  // NT total_cost = __sec_reduce_add( y_out[0:N] );
   delete [] y_out;
 
   return total_cost;
