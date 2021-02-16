@@ -306,8 +306,11 @@ graphs](https://doi.org/10.21105/joss.01577). *Journal of Open Source Software*
 SG-t-SNE-Π is developed for shared-memory computers with multi-threading,
 running Linux or macOS operating system. The source code must be compiled with a
 C++ compiler which supports Cilk. The current release is tested with
-[OpenCilk](http://opencilk.org) 1.0 `clang`, GNU `g++` 7.4.0, and Intel
-`icpc` 19.0.4.233.
+[OpenCilk](http://opencilk.org) 1.0 (based on LLVM/Tapir `clang++` 10.0.1) and
+Intel Cilk Plus (GNU `g++` 7.4.0 and Intel `icpc` 19.0.4.233).
+
+> WARNING: Intel Cilk Plus is deprecated and not supported in newer versions of
+> GNU `g++` and Intel `icpc`.)
 
 ### Prerequisites 
 
@@ -359,7 +362,11 @@ of preprocessing functions. Issue
     make tsnepi
     cp bin/tsnepi <BHTSNEPATH>/bh_tsne
 
-to generate the `bin/tsnepi` binary, which is fully compatible with the [existing wrappers](https://github.com/lvdmaaten/bhtsne/) provided by van der Maaten [[3](#VanDerMaaten2014)], and replace the `bh_tsne` binary. `<BHTSNEPATH>` in the installation path of [`bhtsne`](https://github.com/lvdmaaten/bhtsne/).
+to generate the `bin/tsnepi` binary, which is fully compatible with the
+[existing wrappers](https://github.com/lvdmaaten/bhtsne/) provided by van der
+Maaten [[3](#VanDerMaaten2014)], and replace the `bh_tsne`
+binary. `<BHTSNEPATH>` is the installation path of
+[`bhtsne`](https://github.com/lvdmaaten/bhtsne/).
 
 ##### MATLAB interface 
 
@@ -388,7 +395,8 @@ documentation, issue the following:
     CXX=<compiler-executable> meson <build-options> <build-path>
 
 This will create and configure the build directory at `<build-path>`.  The
-`<build-options>` flags are optional and described below.
+`<build-options>` flags are optional.  For more information on the available
+Meson build options, see [meson_options.txt](meson_options.txt).
 
 To compile SG-t-SNE-Π within the build directory, issue:
 
@@ -414,9 +422,7 @@ To compile the SG-t-SNE-Π MATLAB wrappers, specify `-Denable_matlab=true` and
 
 If building with a compiler which uses an Intel Cilk Plus implementation, you
 may also need to set `-Ddir_libcilkrts=<path-to-libcilkrts.so-parent-dir>`.
-This option is ignored when building with OpenCilk.  *(Warning: Intel Cilk Plus
-is deprecated and not supported in newer versions of GNU `g++` and Intel
-`icpc`.)*
+This is not necessary when building with OpenCilk.
 
 ##### Cilktool instrumentation (OpenCilk only) 
 
@@ -463,9 +469,9 @@ conduct](https://github.com/fcdimitr/sgtsnepi/blob/master/CODE_OF_CONDUCT.md).
 *Design and development*:\
 Nikos Pitsianis<sup>1,2</sup>, Dimitris Floros<sup>1</sup>,
 Alexandros-Stavros Iliopoulos<sup>2</sup>, Xiaobai
-Sun<sup>2</sup>\
+Sun<sup>2</sup>
+
 <sup>1</sup> Department of Electrical and Computer Engineering,
 Aristotle University of Thessaloniki, Thessaloniki 54124, Greece\
 <sup>2</sup> Department of Computer Science, Duke University, Durham, NC
 27708, USA
-
