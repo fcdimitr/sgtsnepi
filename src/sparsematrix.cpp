@@ -34,7 +34,18 @@ uint32_t makeStochastic(sparse_matrix P){
 
     for ( uint32_t t = P.col [j] ; t < P.col[j+1] ; t++) 
       sum += P.val[t];
-    
+
+    if ( sum == 0.0 && P.val[P.col[j]] == 0.0 ) {
+#ifdef VERBOSE
+      std::cerr << "WARNING: Explicit zero weight"
+                << " [(i,j)=(" << P.row[P.col[t]] << "," << j << ")"
+                << " in a zero-sum row."
+                << "Skipping stochastic rescaling of row."
+                << std::endl;
+#endif
+      continue;
+    }
+
     if ( std::abs(sum - 1) > 1e-12 )
       for ( uint32_t t = P.col [j] ; t < P.col [j+1] ; t++) 
         P.val[t] /= sum;
