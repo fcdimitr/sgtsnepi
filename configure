@@ -4500,7 +4500,9 @@ if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
 else
-  as_fn_error $? "A parallel FFTW3 installation is required. Issue make dependencies and re-run configure." "$LINENO" 5
+  CXXFLAGS+=" -DFFTW_NO_PARALLEL"
+                { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Could not find \`fftw3_threads\` library.  Using single-threaded FFTW3 execution." >&5
+$as_echo "$as_me: WARNING: Could not find \`fftw3_threads\` library.  Using single-threaded FFTW3 execution." >&2;}
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing scalable_malloc" >&5

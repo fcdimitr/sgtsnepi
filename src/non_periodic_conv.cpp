@@ -74,8 +74,10 @@ void conv1dnopad( double * const PhiGrid,
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP PARALLELISM
 
+#ifndef FFTW_NO_PARALLEL
   fftw_init_threads();
   fftw_plan_with_nthreads(nProc);
+#endif
   
   
   // ~~~~~~~~~~~~~~~~~~~~ SETUP FFTW PLANS
@@ -208,8 +210,9 @@ void conv1dnopad( double * const PhiGrid,
   fftw_destroy_plan( planc_kernel );
   fftw_destroy_plan( planc_rhs );
   fftw_destroy_plan( planc_inverse );
-
+#ifndef FFTW_NO_PARALLEL
   fftw_cleanup_threads();
+#endif
   
   // ~~~~~~~~~~~~~~~~~~~~ DE-ALLOCATE MEMORIES
   fftw_free( K );
@@ -268,8 +271,10 @@ void conv2dnopad( double * const PhiGrid,
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP PARALLELISM
 
+#ifndef FFTW_NO_PARALLEL
   fftw_init_threads();
   fftw_plan_with_nthreads(nProc);
+#endif
   
   // ~~~~~~~~~~~~~~~~~~~~ SETUP FFTW PLANS
 
@@ -579,8 +584,9 @@ void conv2dnopad( double * const PhiGrid,
   fftw_destroy_plan( planc_kernel );
   fftw_destroy_plan( planc_rhs );
   fftw_destroy_plan( planc_inverse );
-
+#ifndef FFTW_NO_PARALLEL
   fftw_cleanup_threads();
+#endif
 
   // ~~~~~~~~~~~~~~~~~~~~ DE-ALLOCATE MEMORIES
   fftw_free( K );
@@ -639,8 +645,10 @@ void conv3dnopad( double * const PhiGrid,
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP PARALLELISM
 
+#ifndef FFTW_NO_PARALLEL
   fftw_init_threads();
   fftw_plan_with_nthreads(nProc);
+#endif
   
   // ~~~~~~~~~~~~~~~~~~~~ SETUP FFTW PLANS
 
@@ -708,7 +716,9 @@ void conv3dnopad( double * const PhiGrid,
   fftw_destroy_plan( planc_kernel );
   fftw_destroy_plan( planc_rhs );
   fftw_destroy_plan( planc_inverse );
+#ifndef FFTW_NO_PARALLEL
   fftw_cleanup_threads();
+#endif
   
   // ~~~~~~~~~~~~~~~~~~~~ DE-ALLOCATE MEMORIES
   fftw_free( K );
