@@ -5,9 +5,9 @@ option('enable_demos',
 
 option('fftw_parallel_lib',
        type : 'combo',
-       choices : ['threads', 'omp', 'cilk'],
-       value : 'threads',
-       description : 'Parallel FFTW3 library implementation suffix')
+       choices : ['', 'threads', 'omp', 'cilk'],
+       value : '',
+       description : 'Parallel FFTW3 library implementation suffix (use single-threaded FFTW if empty)')
 
 option('fftw_parallel_lib_dir',
        type : 'string',

@@ -50,18 +50,24 @@ endif
 
 fftw_par_lib_dir = get_option('fftw_parallel_lib_dir')
 if not (fftw_par_lib_dir == '' or fs.is_absolute(fftw_par_lib_dir))
-  error('The \'fftw_parallel_lib_dir\' option must be empty or an *absolute* path'
-        + ' (input path: ' + fftw_par_libdir + ')')
+  error('The \'fftw_parallel_lib_dir\' option must be empty or an *absolute* path' +
+        ' (input path: ' + fftw_par_libdir + ')')
 endif
 if fftw_par_lib_dir == ''
   fftw_par_lib_dir = []
 endif
-fftw_par_dep = cc.find_library('fftw3_' + get_option('fftw_parallel_lib'),
-                               dirs : fftw_par_lib_dir, required : true)
+if get_option('fftw_parallel_lib') != ''
+  fftw_par_dep = cc.find_library('fftw3_' + get_option('fftw_parallel_lib'),
+                                 dirs : fftw_par_lib_dir, required : false)
+  if not fftw_par_dep.found()
+    warning('Could not find fftw3_' + get_option('fftw_parallel_lib') + 'library.' +
+            ' Using single-threaded FFTW3 execution.')
+  endif
+else
+  fftw_par_dep = dependency('', required : false)
+endif
 if not fftw_par_dep.found()
-  error('Could not find fftw3_' + get_option('fftw_parallel_lib') + 'library. ' +
-        'A threaded FFTW3 library is required. ' +
-        'Please issue `make dependencies` and retry.')
+  add_project_arguments(['-DFFTW_NO_PARALLEL'], language : 'cpp')
 endif
 
 metis_dep = cc.find_library('metis', required : true)
