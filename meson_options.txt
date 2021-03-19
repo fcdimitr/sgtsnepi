@@ -3,6 +3,11 @@ option('enable_demos',
        value : true,
        description : 'Build the SG-t-SNE-Pi demos?')
 
+option('tune_native',
+       type : 'boolean',
+       value : true,
+       description : 'Use compilation tuning flags for native/host architecture?')
+
 option('fftw_parallel_lib',
        type : 'combo',
        choices : ['', 'threads', 'omp', 'cilk'],
