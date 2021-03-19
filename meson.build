@@ -40,6 +40,14 @@ elif use_cilkplus               # Cilk Plus flags
   add_project_link_arguments(['-lcilkrts'], language : 'cpp')
 endif
 
+if get_option('tune_native')
+  if is_icpc
+    add_project_arguments(['-xHost'], language : 'cpp')
+  else # clang/gcc
+    add_project_arguments(['-march=native','-mtune=native'], language : 'cpp')
+  endif
+endif
+
 # ========== dependencies
 
 # TODO When looking for library dependencies, allow the user to specify a
