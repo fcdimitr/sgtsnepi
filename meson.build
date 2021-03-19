@@ -42,12 +42,20 @@ endif
 
 # ========== dependencies
 
-fftw_dep = cc.find_library('fftw3', required : true)
-if not fftw_dep.found()
-  error('The FFTW3 library is required. ' +
-        'Please issue `make dependencies` and retry.')
-endif
+# TODO When looking for library dependencies, allow the user to specify a
+# static/shared library object to use instead of whatever system package is
+# found by `dependency()`.  See https://mesonbuild.com/Dependencies.html
 
+str_lib_not_found = 'The @0@ library is required. Issue `make dependencies` and retry.'
+
+# FFTW
+fftw_dep = dependency('fftw3', required : false)
+if not fftw_dep.found()
+  fftw_dep = cc.find_library('fftw3', required : true)
+endif
+if not fftw_dep.found()
+  error(str_lib_not_found.format('FFTW3'))
+endif
 fftw_par_lib_dir = get_option('fftw_parallel_lib_dir')
 if not (fftw_par_lib_dir == '' or fs.is_absolute(fftw_par_lib_dir))
   error('The \'fftw_parallel_lib_dir\' option must be empty or an *absolute* path' +
@@ -57,8 +65,12 @@ if fftw_par_lib_dir == ''
   fftw_par_lib_dir = []
 endif
 if get_option('fftw_parallel_lib') != ''
-  fftw_par_dep = cc.find_library('fftw3_' + get_option('fftw_parallel_lib'),
-                                 dirs : fftw_par_lib_dir, required : false)
+  fftw_par_dep = dependency('fftw3_' + get_option('fftw_parallel_lib'),
+                            required : false)
+  if not fftw_par_dep.found()
+    fftw_par_dep = cc.find_library('fftw3_' + get_option('fftw_parallel_lib'),
+                                   dirs : fftw_par_lib_dir, required : false)
+  endif
   if not fftw_par_dep.found()
     warning('Could not find fftw3_' + get_option('fftw_parallel_lib') + 'library.' +
             ' Using single-threaded FFTW3 execution.')
@@ -70,26 +82,47 @@ if not fftw_par_dep.found()
   add_project_arguments(['-DFFTW_NO_PARALLEL'], language : 'cpp')
 endif
 
-metis_dep = cc.find_library('metis', required : true)
+# METIS
+metis_dep = dependency('metis', required : false)
 if not metis_dep.found()
-  error('The METIS library is required. ' +
-        'Please issue `make dependencies` and retry.')
+  metis_dep = cc.find_library('metis', required : true,
+                              has_headers : ['metis.h'])
+endif
+if not metis_dep.found()
+  error(str_lib_not_found.format('METIS'))
 endif
 
-tbbmalloc_dep = cc.find_library('tbbmalloc', required : true)
+# TBB malloc
+tbbmalloc_dep = dependency('tbbmalloc', required : false)
 if not tbbmalloc_dep.found()
-  error('The TBB scalable malloc library is required. ' +
-        'Please issue `make dependencies` and retry.')
+  tbbmalloc_dep = cc.find_library('tbbmalloc', required : true,
+                                  has_headers : ['tbb/scalable_allocator.h'])
+endif
+if not tbbmalloc_dep.found()
+  error(str_lib_not_found.format('TBB scalable allocator'))
 endif
 
-flann_dep = cc.find_library('flann', required : true,
-                            has_headers : ['flann/flann.h'])
+# FLANN
+flann_dep = dependency('flann', required : false)
 if not flann_dep.found()
-  error('The FLANN library is required. ' +
-        'Please issue `make dependencies` and retry.')
+  flann_dep = cc.find_library('flann', required : true,
+                              has_headers : ['flann/flann.h'])
+endif
+if not flann_dep.found()
+  error(str_lib_not_found.format('FLANN'))
 endif
 
-lz4_dep = cc.find_library('lz4', required : true)
+# LZ4
+lz4_dep = dependency('liblz4', required : false)
+if not lz4_dep.found()
+  lz4_dep = cc.find_library('lz4', required : true)
+endif
+if not lz4_dep.found()
+  error(str_lib_not_found.format('LZ4'))
+endif
+
+# REVIEW Are the FLANN and LZ4 dependencies only relevant for
+# `demo_perplexity_equalization`?
 
 libs_dep = [fftw_par_dep, fftw_dep, metis_dep, tbbmalloc_dep, flann_dep, lz4_dep]
 
