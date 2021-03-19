@@ -29,11 +29,8 @@ void compute_dy(dataPoint       * const dy,
                 dataPoint         const alpha){
 
 
-  cilk_for(int i=0; i<N; i++){
-    for(int d=0; d<dim; d++){
-      dy[i*dim + d] = ( alpha * Fattr[i*dim + d] - Frep[i*dim + d] );
-    }
-  }
+  cilk_for (int k = 0; k < N*dim; k++)
+    dy[k] = alpha * Fattr[k] - Frep[k];
 
 }
 
