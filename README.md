@@ -424,22 +424,6 @@ If building with a compiler which uses an Intel Cilk Plus implementation, you
 may also need to set `-Ddir_libcilkrts=<path-to-libcilkrts.so-parent-dir>`.
 This is not necessary when building with OpenCilk.
 
-##### Cilktool instrumentation (OpenCilk only) 
-
-The Meson build script also supports building the SG-t-SNE-Π library and
-executables with the OpenCilk Cilktools instrumentation.  Specifically, the
-Meson script supports instrumentation with the [Cilksan][cilksan] determinacy
-race detector and the [Cilkscale][cilkscale] scalability analyzer.  Building
-with OpenCilk Cilktool instrumentation is controlled via the
-`-Dcilktool=<none|cilksan|cilkscale>` option when configuring.
-
-The SG-t-SNE-Π code has already been tested and analyzed with the OpenCilk
-instrumentation tools.  The relevant configuration options are provided to
-facilitate further development of SG-t-SNE-Π or projects that interact with it.
-
-[cilksan]:      https://cilk.mit.edu/tools/#the-cilksan-determinacy-race-detector
-[cilkscale]:    https://cilk.mit.edu/tools/#the-cilkscale-scalability-analyzer
-
 ### Usage demo 
 
 We provide two data sets of modest size for demonstrating stochastic
