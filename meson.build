@@ -1,7 +1,7 @@
 project('sgtsnepi', 'cpp',
         version : '1.0.2',
         license : 'GPL-3.0-or-later',
-        meson_version : '>=0.50.0',
+        meson_version : '>=0.53.0',
         default_options : ['optimization=2',
                            'debug=false',
                            'cpp_std=c++11',
@@ -15,6 +15,7 @@ vso = '0'                       # shared library version ID
 
 cc = meson.get_compiler('cpp')
 
+# compiler properties and Cilk support
 is_icpc      = cc.get_id().contains('intel')
 use_opencilk = not is_icpc \
                and cc.has_argument('-fopencilk') and cc.has_header('cilk/cilk.h')
@@ -27,19 +28,22 @@ if not (use_opencilk or use_cilkplus)
   error('The specified compiler (' + cc_str + ') does not support Cilk')
 endif
 
-if is_icpc                      # icpc-specific flags
+# icpc-specific flags
+if is_icpc
   add_project_arguments(['-wd3947,3946,10006,3950'], language : 'cpp')
   add_project_link_arguments(['-lirc','-limf','-lsvml'], language : 'cpp')
 endif
 
-if use_opencilk                 # OpenCilk flags
+# Cilk flags
+if use_opencilk
   add_project_arguments(['-fopencilk','-DOPENCILK'], language : 'cpp')
   add_project_link_arguments(['-fopencilk'], language : 'cpp')
-elif use_cilkplus               # Cilk Plus flags
+elif use_cilkplus
   add_project_arguments(['-fcilkplus'], language : 'cpp')
   add_project_link_arguments(['-lcilkrts'], language : 'cpp')
 endif
 
+# compiler optimizations for host computer
 if get_option('tune_native')
   if is_icpc
     add_project_arguments(['-xHost'], language : 'cpp')
@@ -54,30 +58,38 @@ endif
 # static/shared library object to use instead of whatever system package is
 # found by `dependency()`.  See https://mesonbuild.com/Dependencies.html
 
+libs_dep          = []
+libs_dep_dict     = {}
 str_lib_not_found = 'The @0@ library is required. Issue `make dependencies` and retry.'
 
-# FFTW
-fftw_dep = dependency('fftw3', required : false)
-if not fftw_dep.found()
-  fftw_dep = cc.find_library('fftw3', required : true)
-endif
-if not fftw_dep.found()
-  error(str_lib_not_found.format('FFTW3'))
-endif
-fftw_par_lib_dir = get_option('fftw_parallel_lib_dir')
-if not (fftw_par_lib_dir == '' or fs.is_absolute(fftw_par_lib_dir))
-  error('The \'fftw_parallel_lib_dir\' option must be empty or an *absolute* path' +
-        ' (input path: ' + fftw_par_libdir + ')')
-endif
-if fftw_par_lib_dir == ''
-  fftw_par_lib_dir = []
-endif
-if get_option('fftw_parallel_lib') != ''
+# Search for all required dependencies, first using `dependency()` and then
+# using `cc.find_library()` (if `dependency()` pkg-config or CMake search
+# fails).  Format per dependency: [<lib pkg name>, <lib name>, [<lib headers>]].
+# REVIEW Header dependencies.
+required_lib_deps = [['fftw3'    , 'FFTW3'                 , []],
+                     ['metis'    , 'METIS'                 , ['metis.h']],
+                     ['tbbmalloc', 'TBB scalable allocator', ['tbb/scalable_allocator.h']],
+                     ['flann'    , 'FLANN'                 , ['flann/flann.h']],
+                     ['lz4'      , 'LZ4'                   , []]]
+foreach l : required_lib_deps
+  buf_dep = dependency(l[0], required : false)
+  if not buf_dep.found()
+    buf_dep = cc.find_library(l[0], required : true, has_headers : l[2])
+  endif
+  if not buf_dep.found()
+    error(str_lib_not_found.format(l[1]))
+  endif
+  libs_dep      += buf_dep
+  libs_dep_dict += {l[0] : buf_dep}
+endforeach
+
+# parallel FFTW library
+if not ['', 'none'].contains(get_option('fftw_parallel_lib'))
   fftw_par_dep = dependency('fftw3_' + get_option('fftw_parallel_lib'),
                             required : false)
   if not fftw_par_dep.found()
     fftw_par_dep = cc.find_library('fftw3_' + get_option('fftw_parallel_lib'),
-                                   dirs : fftw_par_lib_dir, required : false)
+                                   required : false)
   endif
   if not fftw_par_dep.found()
     warning('Could not find fftw3_' + get_option('fftw_parallel_lib') + 'library.' +
@@ -89,51 +101,8 @@ endif
 if not fftw_par_dep.found()
   add_project_arguments(['-DFFTW_NO_PARALLEL'], language : 'cpp')
 endif
-
-# METIS
-metis_dep = dependency('metis', required : false)
-if not metis_dep.found()
-  metis_dep = cc.find_library('metis', required : true,
-                              has_headers : ['metis.h'])
-endif
-if not metis_dep.found()
-  error(str_lib_not_found.format('METIS'))
-endif
-
-# TBB malloc
-tbbmalloc_dep = dependency('tbbmalloc', required : false)
-if not tbbmalloc_dep.found()
-  tbbmalloc_dep = cc.find_library('tbbmalloc', required : true,
-                                  has_headers : ['tbb/scalable_allocator.h'])
-endif
-if not tbbmalloc_dep.found()
-  error(str_lib_not_found.format('TBB scalable allocator'))
-endif
-
-# FLANN
-flann_dep = dependency('flann', required : false)
-if not flann_dep.found()
-  flann_dep = cc.find_library('flann', required : true,
-                              has_headers : ['flann/flann.h'])
-endif
-if not flann_dep.found()
-  error(str_lib_not_found.format('FLANN'))
-endif
-
-# LZ4
-lz4_dep = dependency('liblz4', required : false)
-if not lz4_dep.found()
-  lz4_dep = cc.find_library('lz4', required : true)
-endif
-if not lz4_dep.found()
-  error(str_lib_not_found.format('LZ4'))
-endif
-
-# REVIEW Are the FLANN and LZ4 dependencies only relevant for
-# `demo_perplexity_equalization`?
-
-libs_dep = [fftw_par_dep, fftw_dep, metis_dep, tbbmalloc_dep, flann_dep, lz4_dep]
-
+libs_dep = [fftw_par_dep] + libs_dep # NOTE -lfftw3_<parallel> should precede -lfftw3
+libs_dep_dict += {'fftw3_parallel' : fftw_par_dep}
 
 # ========== build targets
 
@@ -151,7 +120,8 @@ sgtsnepi_lib = library('sgtsnepi', [sgtsnepi_src],
 # conventional t-SNE implementation
 tsnepi_exe = executable('tsnepi', tsnepi_src,
                         link_with : sgtsnepi_lib,
-                        dependencies : [flann_dep, lz4_dep],
+                        dependencies : [libs_dep_dict['flann'],
+                                        libs_dep_dict['lz4']],
                         install : true, install_dir : 'bin',
                         install_rpath : get_option('prefix') / 'lib')
 
@@ -165,7 +135,8 @@ if get_option('enable_demos')
   demo_perplexity_equalization = executable('demo_perplexity_equalization',
                                             demo_perplexity_equalization_src,
                                             link_with : sgtsnepi_lib,
-                                            dependencies : [flann_dep, lz4_dep],
+                                            dependencies : [libs_dep_dict['flann'],
+                                                            libs_dep_dict['lz4']],
                                             install : true, install_dir : 'bin',
                                             install_rpath : get_option('prefix') / 'lib')
 endif
@@ -262,11 +233,13 @@ if get_option('cilktool') == 'cilkscale' # ----- Cilkscale
       demo_perplexity_cs = executable('demo_perplexity_equalization_cs',
                                       demo_perplexity_equalization_src,
                                       link_with : sgtsnepi_lib_cs,
-                                      dependencies : [flann_dep, lz4_dep])
+                                      dependencies : [libs_dep_dict['flann'],
+                                                      libs_dep_dict['lz4']])
       demo_perplexity_cs_bench = executable('demo_perplexity_equalization_cs_bench',
                                             demo_perplexity_equalization_src,
                                             link_with : sgtsnepi_lib_cs_bench,
-                                            dependencies : [flann_dep, lz4_dep])
+                                            dependencies : [libs_dep_dict['flann'],
+                                                            libs_dep_dict['lz4']])
     endif
   endif
 endif
@@ -297,7 +270,8 @@ if get_option('cilktool') == 'cilksan' # ----- Cilksan
                                        demo_perplexity_equalization_src,
                                        link_with : sgtsnepi_lib_san,
                                        link_args : args_san,
-                                       dependencies : [flann_dep, lz4_dep])
+                                       dependencies : [libs_dep_dict['flann'],
+                                                       libs_dep_dict['lz4']])
     endif
   endif
 endif

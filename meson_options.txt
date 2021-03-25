@@ -10,19 +10,14 @@ option('tune_native',
 
 option('fftw_parallel_lib',
        type : 'combo',
-       choices : ['', 'threads', 'omp', 'cilk'],
-       value : '',
+       choices : ['', 'none', 'threads', 'omp'],
+       value : 'none',
        description : 'Parallel FFTW3 library implementation suffix (use single-threaded FFTW if empty)')
-
-option('fftw_parallel_lib_dir',
-       type : 'string',
-       value : '',
-       description : '*Absolute* path to directory with local FFTW3 libraries (to override system-wide libraries)')
 
 option('cilktool',
        type : 'combo',
        choices : ['', 'none', 'cilkscale', 'cilksan'],
-       value : '',
+       value : 'none',
        description : 'OpenCilk instrumentation tool')
 
 option('enable_matlab',
@@ -35,15 +30,10 @@ option('matlabroot',
        value : '/usr/local/MATLAB/latest',
        description : 'Matlab root path (issue `matlabroot` within Matlab to find it)')
 
-option('dir_cilkplus_include',
-       type : 'string',
-       value : '/opt/intel/compilers_and_libraries/linux/include/icc',
-       description : '*Absolute* path to Intel Cilk Plus include "cilk" parent directory (only useful if building with g++ 7.x.x)')
-
 option('dir_libcilkrts',
        type : 'string',
        value : '/opt/intel/compilers_and_libraries/linux/lib/intel64_lin',
-       description : '*Absolute* path to parent directory of libcilkrts.so (only useful if building the Matlab interface and using the GNU g++ compiler)')
+       description : '*Absolute* path to parent directory of libcilkrts.so (only useful if building the Matlab interface and using g++ 7.x.x)')
 
 option('enable_documentation',
        type : 'boolean',

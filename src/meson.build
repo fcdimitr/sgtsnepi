@@ -28,4 +28,5 @@ test_modules_src = files('test_modules.cpp')
 # Matlab interface files: [src_file, dependencies]
 mex_src_all = [[files('sgtsnepi_mex.cpp'), []],
                [files('computegrad_mex.cpp'), []],
-               [files('perplexityEqualize_mex.cpp'), [flann_dep, lz4_dep]]]
+               [files('perplexityEqualize_mex.cpp'), [libs_dep_dict['flann'],
+                                                      libs_dep_dict['lz4']]]]
