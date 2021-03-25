@@ -18,10 +18,13 @@ cc = meson.get_compiler('cpp')
 # compiler properties and Cilk support
 is_icpc      = cc.get_id().contains('intel')
 use_opencilk = not is_icpc \
-               and cc.has_argument('-fopencilk') and cc.has_header('cilk/cilk.h')
+               and cc.has_argument('-fopencilk') \
+               and cc.has_header('cilk/cilk.h') \
+               and cc.has_header('cilk/cilk_api.h')
 use_cilkplus = not use_opencilk \
                and (is_icpc or cc.has_argument('-fcilkplus')) \
-               and cc.has_header('cilk/cilk.h')
+               and cc.has_header('cilk/cilk.h') \
+               and cc.has_header('cilk/cilk_api.h')
 
 if not (use_opencilk or use_cilkplus)
   cc_str = cc.get_id() + ' ' + cc.version()
@@ -65,12 +68,11 @@ str_lib_not_found = 'The @0@ library is required. Issue `make dependencies` and 
 # Search for all required dependencies, first using `dependency()` and then
 # using `cc.find_library()` (if `dependency()` pkg-config or CMake search
 # fails).  Format per dependency: [<lib pkg name>, <lib name>, [<lib headers>]].
-# REVIEW Header dependencies.
-required_lib_deps = [['fftw3'    , 'FFTW3'                 , []],
+required_lib_deps = [['fftw3'    , 'FFTW3'                 , ['fftw3.h']],
                      ['metis'    , 'METIS'                 , ['metis.h']],
                      ['tbbmalloc', 'TBB scalable allocator', ['tbb/scalable_allocator.h']],
                      ['flann'    , 'FLANN'                 , ['flann/flann.h']],
-                     ['lz4'      , 'LZ4'                   , []]]
+                     ['lz4'      , 'LZ4'                   , ['lz4.h']]]
 foreach l : required_lib_deps
   buf_dep = dependency(l[0], required : false)
   if not buf_dep.found()
