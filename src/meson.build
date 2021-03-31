@@ -1,5 +1,4 @@
 # SG-t-SNE-Pi library source files
-
 sgtsnepi_src = files(['sgtsne.cpp',
                       'sparsematrix.cpp',
                       'utils.cpp',
@@ -12,7 +11,6 @@ sgtsnepi_src = files(['sgtsne.cpp',
                       'pq.cpp'])
 
 # SG-t-SNE-Pi library headers
-
 install_headers('sgtsne.hpp')
 
 # conventional t-SNE implementation source files
@@ -25,8 +23,8 @@ demo_perplexity_equalization_src = files('demo_perplexity_equalization.cpp')
 # test source files
 test_modules_src = files('test_modules.cpp')
 
-# Matlab interface files: [src_file, dependencies]
-mex_src_all = [[files('sgtsnepi_mex.cpp'), []],
-               [files('computegrad_mex.cpp'), []],
+# Matlab interface files: [[src_file, dependencies]...]
+mex_src_all = [[files('sgtsnepi_mex.cpp'),           []],
+               [files('computegrad_mex.cpp'),        []],
                [files('perplexityEqualize_mex.cpp'), [libs_dep_dict['flann'],
                                                       libs_dep_dict['lz4']]]]
