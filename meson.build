@@ -160,7 +160,7 @@ if get_option('enable_matlab')
   # MEX compilation flags
   if host_machine.system() == 'darwin' # macOS
     mexext   = 'mexmaci64'
-    mexarch  = 'maxi64'
+    mexarch  = 'maci64'
     mexrpath = []
     mexsym   = ['-bundle',
                 '-Wl,-exported_symbols_list,' + mroot / 'extern' / 'lib' / mexarch / 'mexFunction.map']
