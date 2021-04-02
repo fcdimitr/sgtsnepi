@@ -39,11 +39,11 @@ OSNAME := $(shell uname)
 ifeq ($(OSNAME),Darwin)   # OS X
 
         # package manager
-        PKGMANAGER = port
+        PKGMANAGER   = port
         DEPENDENCIES = flann tbb metis fftw-3 lz4
 
         # architectures 
-        ARCH   = maci64
+        ARCH = maci64
 
         # MEX extension
         MEXEXT = mexmaci64
@@ -57,23 +57,23 @@ ifeq ($(OSNAME),Darwin)   # OS X
 else        # linux
 
         # package manager
-        PKGMANAGER = apt-get
+        PKGMANAGER   = apt-get
         DEPENDENCIES = libtbb-dev libflann-dev libmetis-dev libfftw3-dev liblz4-dev
 
-        MEX     = $(CXX)
-        MEXFLAGS= $(CFLAGS)
+        MEX      = $(CXX)
+        MEXFLAGS = $(CFLAGS)
 
         # architectures 
-        ARCH   = glnxa64
+        ARCH = glnxa64
 
         # MEX extension
         MEXEXT = mexa64
 
         # relative paths for linux
-        MEXRPATH     = -Wl,-rpath=$(MATLABROOT)/bin/$(ARCH)
-		ifeq ($(CILK_LDFLAGS),-lcilkrts)
-		        MEXRPATH    += -Wl,-rpath=$(INTELROOT)/linux/lib/intel64_lin
-		endif
+        MEXRPATH = -Wl,-rpath=$(MATLABROOT)/bin/$(ARCH)
+        ifeq ($(CILK_LDFLAGS),-lcilkrts)
+                MEXRPATH += -Wl,-rpath=$(INTELROOT)/linux/lib/intel64_lin
+        endif
 
         # MEX symbol map
         MEXSYM = -shared -Wl,--version-script,$(MATLABROOT)/extern/lib/$(ARCH)/mexFunction.map
@@ -82,10 +82,10 @@ endif
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% COMPILATION INCLUDES/LIBRARIES
 
 # MATLAB linking
-MEXINC   = -I$(MATLABROOT)/extern/include
-MEXLIB   = -L$(MATLABROOT)/bin/$(ARCH)
-MEXLIB  += -fno-common $(MEXSYM)
-MEXLIB  += -lmx -lmex -lmat
+MEXINC  = -I$(MATLABROOT)/extern/include
+MEXLIB  = -L$(MATLABROOT)/bin/$(ARCH)
+MEXLIB += -fno-common $(MEXSYM)
+MEXLIB += -lmx -lmex -lmat
 
 
 # icpc-specific flags
