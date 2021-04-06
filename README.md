@@ -331,72 +331,28 @@ On macOS:
 
     sudo port install flann tbb metis fftw-3 lz4 doxygen
 
-### Installation 
+### Building SG-t-SNE-Π
 
-#### Using configure + make 
-
-##### Basic instructions 
-
-To generate the SG-t-SNE-Π library, test and demo programs:
-
-    ./configure
-    make all
-
-To specify the `C++` compiler:
-
-    ./configure CXX=<compiler-executable>
-
-To test whether the installation is successful:
-
-    bin/test_modules
-
-To generate the documentation:
-
-    make documentation
-
-##### Support of the conventional t-SNE 
-
-SG-t-SNE-Π supports the conventional t-SNE algorithm, through a set
-of preprocessing functions. Issue
-
-    make tsnepi
-    cp bin/tsnepi <BHTSNEPATH>/bh_tsne
-
-to generate the `bin/tsnepi` binary, which is fully compatible with the
-[existing wrappers](https://github.com/lvdmaaten/bhtsne/) provided by van der
-Maaten [[3](#VanDerMaaten2014)], and replace the `bh_tsne`
-binary. `<BHTSNEPATH>` is the installation path of
-[`bhtsne`](https://github.com/lvdmaaten/bhtsne/).
-
-##### MATLAB interface 
-
-To compile the SG-t-SNE-Π MATLAB wrappers, use the
-`--enable-matlab` option in the `configure` command. The default
-MATLAB installation path is `/opt/local/matlab`; otherwise, set
-`MATLABROOT`:
-
-    ./configure --enable-matlab MATLABROOT=<matlab-path>
-
-#### Using meson 
-
-First, install the [Meson build system](https://mesonbuild.com/), for example
-via the [Python Package Index (PyPI)](https://pypi.python.org/pypi/meson/):
+We use the [Meson build system](https://mesonbuild.com/) to configure, build,
+and install the SG-t-SNE-Π library.  Meson can be installed via the [Python
+Package Index (PyPI)](https://pypi.python.org/pypi/meson/):
 
     pip3 install --user meson
 
 For more information and alternative methods for installing Meson, see [Getting
 meson](https://mesonbuild.com/Getting-meson.html).
 
-##### Basic instructions 
+#### Basic instructions 
 
 To configure the SG-t-SNE-Π library, demos, conventional t-SNE interface, and
 documentation, issue the following:
 
-    CXX=<compiler-executable> meson <build-options> <build-path>
+    CXX=<c++-compiler> meson <build-options> <build-path>
 
-This will create and configure the build directory at `<build-path>`.  The
-`<build-options>` flags are optional.  For more information on the available
-Meson build options, see [meson_options.txt](meson_options.txt).
+This will create and configure the build directory at `<build-path>`.  The `CXX`
+environment variable specifies the C++ compiler to use.  The `<build-options>`
+flags are optional; for more information on the available Meson build options,
+see [meson_options.txt](meson_options.txt).
 
 To compile SG-t-SNE-Π within the build directory, issue:
 
@@ -415,7 +371,7 @@ You may test the installation with:
 
     <install-prefix>/bin/test_modules
 
-##### MATLAB interface 
+#### MATLAB interface 
 
 To compile the SG-t-SNE-Π MATLAB wrappers, specify `-Denable_matlab=true` and
 `-Dmatlabroot=<path-to-matlab-installation>` when configuring.
