@@ -28,10 +28,14 @@ void nuconv( coord *PhiScat, coord *y, coord *VScat,
              double *timeInfo){
 
   struct timeval start;
-  
+
   // ~~~~~~~~~~ normalize coordinates and scale to [0,ng-1] (inside bins)
 
-  cilk::reducer< cilk::op_max<coord> > maxy_reducer;
+  static const coord _INF =
+    (std::numeric_limits<coord>::is_iec559 ? std::numeric_limits<coord>::infinity()
+                                           : 1.2e-38); // IEEE-754 smallest float
+
+  cilk::reducer< cilk::op_max<coord> > maxy_reducer (-_INF);
   cilk_for (int i = 0; i < n*d; i++)
     maxy_reducer->calc_max( y[i] );
   coord maxy = maxy_reducer.get_value();
