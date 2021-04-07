@@ -1,0 +1,233 @@
+# ####################################################################
+# 
+#			   C/C++ Makefile
+# 
+# Author: Dimitris Floros <fcdimitr@auth.gr>
+# 
+# ####################################################################
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% ENVIROMENT
+
+# set SHELL to bash
+SHELL := /bin/bash
+
+MACHINESPEC = -mtune=native
+
+MATLABROOT = @MATLABROOT@
+INTELROOT  = @INTELROOT@
+
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% COMMANDS - FLAGS
+
+MV = mv
+CP = cp
+
+CXX      = @CXX@
+CFLAGS  += @CXXFLAGS@
+LIBS     = @LIBS@
+CPPFLAGS = @CPPFLAGS@
+
+MEX      = @MEX@
+MEXFLAGS = @MEXFLAGS@
+LDFLAGS  = @LDFLAGS@
+BUILDMEX = @ENABLE_MATLAB@
+
+# # get OS name-type (OSX or linux setup)
+OSNAME := $(shell uname)
+
+
+ifeq ($(OSNAME),Darwin)   # OS X
+
+        # package manager
+        PKGMANAGER   = port
+        DEPENDENCIES = flann tbb metis fftw-3 lz4
+
+        # architectures 
+        ARCH = maci64
+
+        # MEX extension
+        MEXEXT = mexmaci64
+
+        # (nothing in OS X)
+        MEXRPATH = 
+
+        # MEX symbol map
+        MEXSYM = -bundle -Wl,-exported_symbols_list,$(MATLABROOT)/extern/lib/$(ARCH)/mexFunction.map
+
+else        # linux
+
+        # package manager
+        PKGMANAGER   = apt-get
+        DEPENDENCIES = libtbb-dev libflann-dev libmetis-dev libfftw3-dev liblz4-dev
+
+        MEX      = $(CXX)
+        MEXFLAGS = $(CFLAGS)
+
+        # architectures 
+        ARCH = glnxa64
+
+        # MEX extension
+        MEXEXT = mexa64
+
+        # relative paths for linux
+        MEXRPATH = -Wl,-rpath=$(MATLABROOT)/bin/$(ARCH)
+        ifeq ($(CILK_LDFLAGS),-lcilkrts)
+                MEXRPATH += -Wl,-rpath=$(INTELROOT)/linux/lib/intel64_lin
+        endif
+
+        # MEX symbol map
+        MEXSYM = -shared -Wl,--version-script,$(MATLABROOT)/extern/lib/$(ARCH)/mexFunction.map
+endif
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% COMPILATION INCLUDES/LIBRARIES
+
+# MATLAB linking
+MEXINC  = -I$(MATLABROOT)/extern/include
+MEXLIB  = -L$(MATLABROOT)/bin/$(ARCH)
+MEXLIB += -fno-common $(MEXSYM)
+MEXLIB += -lmx -lmex -lmat
+
+
+# icpc-specific flags
+ifeq ($(CXX), icpc)
+    LIBS   += -lirc -limf -lsvml
+    CFLAGS += -wd3947,3946,10006,3950
+endif
+
+# Cilk flags
+CFLAGS += @CILK_CFLAGS@
+LDFLAGS += @CILK_LDFLAGS@
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SOURCES / DIRECTORIES
+
+SRCS =  sgtsne.cpp sparsematrix.cpp utils.cpp		\
+	gradient_descend.cpp csb_wrapper.cpp	\
+	qq.cpp nuconv.cpp graph_rescaling.cpp		\
+	dataReloc.cpp timers.cpp pq.cpp
+
+MEXS =  sgtsnepi.$(MEXEXT) perplexityEqualize.$(MEXEXT) \
+	computegrad.$(MEXEXT)
+
+DEMOS = demo_perplexity_equalization demo_stochastic_matrix
+
+MEXS  := $(addprefix matlab/, $(MEXS) )
+OBJS  := $(addprefix build/, $(SRCS:.cpp=.o) )
+DEMOS := $(addprefix bin/, $(DEMOS) )
+
+# update SRCS for dependencies
+SRCS += $(MEXS:.$(MEXEXT)=.cpp) knn.cpp test_modules.cpp
+
+DEPDIR  = build/.d
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DEFINE TARGET RULES
+
+# default "make" target
+.DEFAULT_GOAL = all
+
+# ==================== Target rules
+
+dependencies:			## Build dependencies
+	$(PKGMANAGER) install $(DEPENDENCIES)
+
+ifeq ($(BUILDMEX),yes)
+all: sgtsnepi demos test matlab		## Build library, demos, and MEX wrappers
+else
+all: sgtsnepi demos test
+endif
+
+sgtsnepi: lib/libsgtsnepi.a	## Build static library
+
+tsnepi: bin/tsnepi
+
+demos: $(DEMOS)			## Build demo scripts
+
+test: bin/test_modules		## Build and run testing scripts
+
+matlab: $(MEXS)			## Build MEX wrappers (MATLAB required)
+
+lib/libsgtsnepi.a: $(OBJS)
+	ar rcs $@ $(OBJS)
+
+# ==================== Documentation
+
+documentation: 			## Build doxygen documentation
+	doxygen docs/doxygen.config
+
+# ==================== Demo scripts
+
+bin/tsnepi: build/tsnepi.o lib/libsgtsnepi.a ## Stochastic matrix | λ rescale
+	$(LINK.o) $+ $(OUTPUT_OPTION) $(LIBS)
+
+bin/demo_stochastic_matrix: build/demo_stochastic_matrix.o lib/libsgtsnepi.a ## Stochastic matrix | λ rescale
+	$(LINK.o) $+ $(OUTPUT_OPTION) $(LIBS)
+
+bin/demo_perplexity_equalization:	## Conventional t-SNE | Perplexity equalize
+bin/demo_perplexity_equalization: build/demo_perplexity_equalization.o lib/libsgtsnepi.a
+	$(LINK.o) $+ $(OUTPUT_OPTION) $(LIBS)
+
+bin/test_modules: build/test_modules.o lib/libsgtsnepi.a
+	$(LINK.o) $+ $(OUTPUT_OPTION) $(LIBS)
+
+matlab/%.$(MEXEXT): build/%_mex.o lib/libsgtsnepi.a
+	$(LINKMEX.o) $+ $(OUTPUT_OPTION) $(LIBS) $(MEXLIB)
+
+
+# ==================== Miscellaneous
+
+clean:				## Clean-up intermediate outputs
+	$(RM) build/*.o src/*~
+	$(RM) build/.d/*
+
+cleandocs:			## Remove documentation outputs
+	$(RM) -r docs/html
+
+purge: clean			## Remove library and executables
+	$(RM) $(MEXS)
+	$(RM) $(DEMOS)
+	$(RM) bin/test_modules
+	$(RM) bin/tsnepi
+	$(RM) lib/libsgtsnepi.a
+
+help:				## Echo Makefile documentation
+	@echo 
+	@grep -E '(^[a-zA-Z_-]+:.*?##.*$$)|(^# ====================)' $(firstword $(MAKEFILE_LIST)) | awk 'BEGIN {FS = ":.*?## "}{printf "\033[32m %-35s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m # ====================/[33m===============/'
+	@echo ""
+	@echo -e "\033[033m*** DEFAULT:\033[0m \033[032m$(.DEFAULT_GOAL)\033[0m"
+	@echo ""
+
+
+# %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% COMPILATION RULES (DO NOT CHANGE)
+
+$(shell mkdir -p build >/dev/null)
+$(shell mkdir -p $(DEPDIR) >/dev/null)
+$(shell mkdir -p bin >/dev/null)
+$(shell mkdir -p lib >/dev/null)
+
+DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$(notdir $*.Td)
+
+LINKMEX.o     = $(MEX) $(MEXFLAGS) $(LIBPATH) $(LDFLAGS) $(TARGET_ARCH) 
+COMPILEMEX.cc = $(CXX) $(DEPFLAGS) $(CFLAGS) $(MEXINC) $(MEXRPATH) $(TARGET_ARCH) $(CPPFLAGS) -c
+LINK.o        = $(CXX) $(CFLAGS)  $(LIBPATH) $(LDFLAGS) $(TARGET_ARCH)
+COMPILE.cc    = $(CXX) $(DEPFLAGS) $(CFLAGS) $(TARGET_ARCH) $(CPPFLAGS) -c
+POSTCOMPILE   = @mv -f $(DEPDIR)/$(notdir $*.Td) $(DEPDIR)/$(notdir $*.d) && touch $@
+
+build/%_mex.o : src/%_mex.cpp
+build/%_mex.o : src/%_mex.cpp $(DEPDIR)/%.d
+	$(COMPILEMEX.cc) $(OUTPUT_OPTION) $<
+	$(POSTCOMPILE)
+
+build/%.o : src/%.cpp
+build/%.o : src/%.cpp $(DEPDIR)/%.d
+	$(COMPILE.cc) $(OUTPUT_OPTION) $<
+	$(POSTCOMPILE)
+
+build/%.o : csb/%.cpp
+build/%.o : csb/%.cpp $(DEPDIR)/%.d
+	$(COMPILE.cc) $(OUTPUT_OPTION) $< -DALIGN=64
+	$(POSTCOMPILE)
+
+$(DEPDIR)/%.d: ;
+.PRECIOUS: $(DEPDIR)/%.d
+
+include $(wildcard $(patsubst %,$(DEPDIR)/%.d,$(basename $(SRCS))))
+
