@@ -18,18 +18,20 @@ cc = meson.get_compiler('cpp')
 # compiler properties and Cilk support
 is_icpc      = cc.get_id().contains('intel')
 use_opencilk = not is_icpc \
-               and cc.has_argument('-fopencilk') \
-               and cc.has_header('cilk/cilk.h') \
-               and cc.has_header('cilk/cilk_api.h')
+               and cc.has_argument('-fopencilk')
 use_cilkplus = not use_opencilk \
-               and (is_icpc or cc.has_argument('-fcilkplus')) \
-               and cc.has_header('cilk/cilk.h') \
-               and cc.has_header('cilk/cilk_api.h')
+               and (is_icpc or cc.has_argument('-fcilkplus'))
 
 if not (use_opencilk or use_cilkplus)
   cc_str = cc.get_id() + ' ' + cc.version()
-  error('The specified compiler (' + cc_str + ') does not support Cilk')
+  error('The specified compiler (' + cc_str + ') does not support Cilk.')
 endif
+
+# relevant Cilk headers
+cc.has_header('cilk/cilk.h'         , required : true)
+cc.has_header('cilk/cilk_api.h'     , required : true)
+cc.has_header('cilk/reducer_opadd.h', required : true)
+cc.has_header('cilk/reducer_max.h'  , required : true)
 
 # icpc-specific flags
 if is_icpc
@@ -63,7 +65,7 @@ endif
 
 libs_dep          = []
 libs_dep_dict     = {}
-str_lib_not_found = 'The @0@ library is required. Issue `make dependencies` and retry.'
+str_lib_not_found = 'The @0@ library is required.'
 
 # Search for all required dependencies, first using `dependency()` and then
 # using `cc.find_library()` (if `dependency()` pkg-config or CMake search
@@ -204,6 +206,6 @@ if get_option('enable_matlab')
 
 endif
 
-# ========== Documentation
+# ========== documentation
 
 subdir('docs')
