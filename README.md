@@ -28,6 +28,7 @@
 -   [License and community guidelines](#license-and-community-guidelines)
 -   [Contributors](#contributors)
 
+
 ## Overview 
 
 We introduce SG-t-SNE-Π, a high-performance software for swift
@@ -79,10 +80,7 @@ self-loops), and <img src="svgs/2ccee0b78bcd2047f49b3b53962d20a4.svg" align=midd
 <img src="svgs/796df3d6b2c0926fcde961fd14b100e7.svg" align=middle width=16.08162434999999pt height=14.611878600000017pt/>. The Gaussian parameters <img src="svgs/e61ae7f2cb94c8418c30517775fde77d.svg" align=middle width=14.04400634999999pt height=14.15524440000002pt/> are determined by the
 point-wise equations related to the same perplexity value <img src="svgs/6dbb78540bd76da3f1625782d42d6d16.svg" align=middle width=9.41027339999999pt height=14.15524440000002pt/>,
 
-
 <p align="center"><img src="svgs/210a56bcf471bf05338f2704cbee406c.svg" align=middle width=424.26428549999997pt height=38.89287435pt/></p>
-
-
 
 The next stage is to determine and locate the embedding coordinates
 <img src="svgs/9f88162984437603577c62bf6f319682.svg" align=middle width=98.79627284999998pt height=24.65753399999998pt/> by minimizing the
@@ -90,13 +88,10 @@ Kullback-Leibler divergence
 
 <p align="center"><img src="svgs/8a31e14108bb84cf778034dddfdf62bd.svg" align=middle width=359.40184665pt height=24.0502251pt/></p>
 
-
 where matrix <img src="svgs/3c30cbd100ce5ab96f26034f73886774.svg" align=middle width=89.28989189999999pt height=24.65753399999998pt/> is made of the
 ensemble <img src="svgs/69b7d411a46d4a8f33a3ed4f1937f0c5.svg" align=middle width=12.337954199999992pt height=22.465723500000017pt/> regulated by the Student t-distribution,
 
-
 <p align="center"><img src="svgs/0715f18ccb81de1afebc36e276b851da.svg" align=middle width=534.2742883499999pt height=43.7234787pt/></p>
-
 
 In other words, the objective of
 (3) is to find the optimal
@@ -113,9 +108,7 @@ The computation per iteration step is dominated by the calculation of
 the gradient. Van der Maaten reformulated the gradient into two
 terms [[3](#VanDerMaaten2014)]:
 
-
 <p align="center"><img src="svgs/0ee6b599fe43800a72b9c4450d8862a7.svg" align=middle width=521.24979885pt height=71.90601659999999pt/></p>
-
 
 The attractive interaction term can be cast as the sum of <img src="svgs/7f926a99555bec4c6525305cdea81193.svg" align=middle width=16.77517379999999pt height=22.831056599999986pt/>
 matrix-vector products with the sparse matrix
@@ -154,9 +147,7 @@ restricted to the form of
 We introduce a parametrized, non-linear rescaling mechanism to explore
 the graph sparsity. We determine rescaling parameters <img src="svgs/9766609a48282e6f30837a712595b37c.svg" align=middle width=13.16154179999999pt height=14.15524440000002pt/> by
 
-
 <p align="center"><img src="svgs/5c2a663f87e1bd635fb1636f3ec048bd.svg" align=middle width=296.7352509pt height=40.5367314pt/></p>
-
 
 where <img src="svgs/f10fc2142d969a09dda2eea96cede2fb.svg" align=middle width=39.72592304999999pt height=22.831056599999986pt/> is an input parameter and <img src="svgs/f50853d41be7d55874e952eb0d80c53e.svg" align=middle width=9.794543549999991pt height=22.831056599999986pt/> is a monotonically
 increasing function. We set <img src="svgs/0816c17505ab3faeea94b82afa429bbe.svg" align=middle width=63.28758314999998pt height=24.65753399999998pt/> in the present version of
@@ -334,10 +325,13 @@ On macOS:
 ### Building SG-t-SNE-Π
 
 We use the [Meson build system](https://mesonbuild.com/) to configure, build,
-and install the SG-t-SNE-Π library.  Meson can be installed via the [Python
-Package Index (PyPI)](https://pypi.python.org/pypi/meson/):
+and install the SG-t-SNE-Π library.  By default, Meson uses
+[Ninja](https://ninja-build.org/) as its build backend.  Both Meson and Ninja
+can be installed via the [Python Package Index
+(PyPI)](https://pypi.python.org/pypi/meson/):
 
     pip3 install --user meson
+    pip3 install --user ninja
 
 For more information and alternative methods for installing Meson, see [Getting
 meson](https://mesonbuild.com/Getting-meson.html).
@@ -351,8 +345,8 @@ documentation, issue the following:
 
 This will create and configure the build directory at `<build-path>`.  The `CXX`
 environment variable specifies the C++ compiler to use.  The `<build-options>`
-flags are optional; for more information on the available Meson build options,
-see [meson_options.txt](meson_options.txt).
+flags are optional; to check the available Meson build options, see
+[meson_options.txt](meson_options.txt).
 
 To compile SG-t-SNE-Π within the build directory, issue:
 
@@ -394,6 +388,7 @@ graph embedding with SG-t-SNE-Π:
 The [MNIST data set](http://yann.lecun.com/exdb/mnist/) can be tested using [existing wrappers](https://github.com/lvdmaaten/bhtsne/) provided
 by van der Maaten [[3](#VanDerMaaten2014)].
 
+
 ## License and community guidelines 
 
 The SG-t-SNE-Π library is licensed under the [GNU general public
@@ -404,14 +399,15 @@ guidelines](https://github.com/fcdimitr/sgtsnepi/blob/master/CONTRIBUTING.md)
 and [code of
 conduct](https://github.com/fcdimitr/sgtsnepi/blob/master/CODE_OF_CONDUCT.md).
 
+
 ## Contributors 
 
-*Design and development*:\
+*Design and development*:  
 Nikos Pitsianis<sup>1,2</sup>, Dimitris Floros<sup>1</sup>,
 Alexandros-Stavros Iliopoulos<sup>2</sup>, Xiaobai
 Sun<sup>2</sup>
 
 <sup>1</sup> Department of Electrical and Computer Engineering,
-Aristotle University of Thessaloniki, Thessaloniki 54124, Greece\
+Aristotle University of Thessaloniki, Thessaloniki 54124, Greece  
 <sup>2</sup> Department of Computer Science, Duke University, Durham, NC
 27708, USA
