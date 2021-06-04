@@ -282,15 +282,20 @@ sparse_matrix perplexityEqualization( int *I, double *D, int n, int nn, double u
 
 extern "C"{
 
-  void tsnepi_c( double       * const Y, // output
-                 double const * const X, // inputs
-                 int const d_Y,
-                 double const lambda,
-                 double const perplexity,
-                 int const maxIter,
-                 int const earlyExag,
-                 int const rand_seed,
-                 int const n, int const d_X) { // aux
+  double *  tsnepi_c(
+    matidx const * const adj_rows,
+    matidx const * const adj_cols,
+    matval const * const adj_vals,
+    int    const adj_nnz,
+    int    const d_Y,
+    double const lambda,
+    int    const maxIter,
+    int    const earlyExag,
+    int    const rand_seed,
+    int    const n) {
+
+    double *y_in = NULL;
+    double **timeInfo = nullptr;
 
     tsneparams params;
 
@@ -299,10 +304,31 @@ extern "C"{
     params.d = d_Y;
     params.n = n;
 
-    for (int i = 0; i < n*d_Y; i++)
-      Y[i] = X[i];
+    sparse_matrix P;
 
-    return;
+     // ---------- prepare local matrices
+    matidx *rows = new matidx [adj_nnz];
+    matidx *cols = new matidx [n+1];
+    matval *vals = new matval [adj_nnz];
+
+    std::copy( adj_rows, adj_rows + adj_nnz   , rows );
+    std::copy( adj_cols, adj_cols + n + 1     , cols );
+    std::copy( adj_vals, adj_vals + adj_nnz   , vals );
+
+    P.m = n;
+    P.n = n;
+    P.nnz = adj_nnz;
+    P.row = rows;
+    P.col = cols;
+    P.val = vals;
+
+    double *Y = sgtsne( P, params, y_in, timeInfo );
+
+    delete[] rows;
+    delete[] cols;
+    delete[] vals;
+
+    return Y;
 
   }
 
