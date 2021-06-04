@@ -333,13 +333,7 @@ extern "C"{
 
     std::cout << "input nnz: " << P.nnz;
 
-    double *Y = sgtsne( P, params, y_in, timeInfo );
-
-    delete[] rows;
-    delete[] cols;
-    delete[] vals;
-
-    return Y;
+    return sgtsne( P, params, y_in, timeInfo );
 
   }
 
