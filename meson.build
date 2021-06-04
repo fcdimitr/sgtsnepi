@@ -70,8 +70,7 @@ str_lib_not_found = 'The @0@ library is required.'
 # Search for all required dependencies, first using `dependency()` and then
 # using `cc.find_library()` (if `dependency()` pkg-config or CMake search
 # fails).  Format per dependency: [<lib pkg name>, <lib name>, [<lib headers>]].
-required_lib_deps = [['fftw3'    , 'FFTW3'                 , ['fftw3.h']],
-                     ['lz4'      , 'LZ4'                   , ['lz4.h']]]
+required_lib_deps = [['fftw3'    , 'FFTW3'                 , ['fftw3.h']]]
 foreach l : required_lib_deps
   buf_dep = dependency(l[0], required : false)
   if not buf_dep.found()
