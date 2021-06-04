@@ -274,3 +274,36 @@ sparse_matrix perplexityEqualization( int *I, double *D, int n, int nn, double u
   return P;
   
 }
+
+
+///////////////////////////////////////////////////////////////////////////////
+//                  C extern (to call through Julia/Python)                  //
+///////////////////////////////////////////////////////////////////////////////
+
+extern "C"{
+
+  void tsnepi_c( double       * const Y, // output
+                 double const * const X, // inputs
+                 int const d_Y,
+                 double const lambda,
+                 double const perplexity,
+                 int const maxIter,
+                 int const earlyExag,
+                 int const rand_seed,
+                 int const n, int const d_X) { // aux
+
+    tsneparams params;
+
+    params.lambda = 1;
+    params.maxIter = maxIter;
+    params.d = d_Y;
+    params.n = n;
+
+    for (int i = 0; i < n*d_Y; i++)
+      Y[i] = X[i];
+
+    return;
+
+  }
+
+}
