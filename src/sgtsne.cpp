@@ -298,7 +298,6 @@ extern "C"{
     double const lambda,
     int    const maxIter,
     int    const earlyExag,
-    int    const rand_seed,
     int    const n) {
 
     double *y_in = NULL;
@@ -306,7 +305,7 @@ extern "C"{
 
     tsneparams params;
 
-    params.lambda = 1;
+    params.lambda = lambda;
     params.maxIter = maxIter;
     params.d = d_Y;
     params.n = n;
