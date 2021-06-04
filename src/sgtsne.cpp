@@ -147,7 +147,10 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
   coord *y = new coord [params.n * params.d];
 
   if (y_in == NULL){
-    
+
+    std::cout << "WARNING: Randomizing initial points; non-reproducible results"
+              << std::endl;
+
     // ----- Initialize Y
     for(int i = 0; i < params.n*params.d; i++){
       y[i] = randn() * .0001;
@@ -293,6 +296,7 @@ extern "C"{
     matidx const * const adj_rows,
     matidx const * const adj_cols,
     matval const * const adj_vals,
+    double const * const y_in,
     int    const adj_nnz,
     int    const d_Y,
     double const lambda,
@@ -300,7 +304,7 @@ extern "C"{
     int    const earlyExag,
     int    const n) {
 
-    double *y_in = NULL;
+    
     double **timeInfo = nullptr;
 
     tsneparams params;
