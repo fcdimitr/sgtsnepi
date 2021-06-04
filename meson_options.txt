@@ -1,11 +1,11 @@
-option('enable_demos',
-       type : 'boolean',
-       value : true,
-       description : 'Build the SG-t-SNE-Pi demos?')
+# option('enable_demos',
+#        type : 'boolean',
+#        value : true,
+#        description : 'Build the SG-t-SNE-Pi demos?')
 
 option('tune_native',
        type : 'boolean',
-       value : true,
+       value : false,
        description : 'Use compilation tuning flags for native/host architecture?')
 
 option('fftw_parallel_lib',
@@ -14,22 +14,22 @@ option('fftw_parallel_lib',
        value : 'none',
        description : 'Parallel FFTW3 library implementation suffix (use single-threaded FFTW if empty)')
 
-option('enable_matlab',
-       type : 'boolean',
-       value : false,
-       description : 'Build Matlab interface (MEX) functions?')
+# option('enable_matlab',
+#        type : 'boolean',
+#        value : false,
+#        description : 'Build Matlab interface (MEX) functions?')
 
-option('matlabroot',
-       type : 'string',
-       value : '/usr/local/MATLAB/latest',
-       description : 'Matlab root path (issue `matlabroot` within Matlab to find it)')
+# option('matlabroot',
+#        type : 'string',
+#        value : '/usr/local/MATLAB/latest',
+#        description : 'Matlab root path (issue `matlabroot` within Matlab to find it)')
 
-option('dir_libcilkrts',
-       type : 'string',
-       value : '/opt/intel/compilers_and_libraries/linux/lib/intel64_lin',
-       description : '*Absolute* path to parent directory of libcilkrts.so (only useful if building the Matlab interface and using g++ 7.x.x)')
+# option('dir_libcilkrts',
+#        type : 'string',
+#        value : '/opt/intel/compilers_and_libraries/linux/lib/intel64_lin',
+#        description : '*Absolute* path to parent directory of libcilkrts.so (only useful if building the Matlab interface and using g++ 7.x.x)')
 
-option('enable_documentation',
-       type : 'boolean',
-       value : true,
-       description : 'Build/install documentation when building/installing project?')
+# option('enable_documentation',
+#        type : 'boolean',
+#        value : true,
+#        description : 'Build/install documentation when building/installing project?')

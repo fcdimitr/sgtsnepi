@@ -14,17 +14,17 @@ sgtsnepi_src = files(['sgtsne.cpp',
 install_headers('sgtsne.hpp')
 
 # conventional t-SNE implementation source files
-tsnepi_src = files('tsnepi.cpp')
+# tsnepi_src = files('tsnepi.cpp')
 
 # demo source files
-demo_stochastic_matrix_src       = files('demo_stochastic_matrix.cpp')
-demo_perplexity_equalization_src = files('demo_perplexity_equalization.cpp')
+# demo_stochastic_matrix_src       = files('demo_stochastic_matrix.cpp')
+# demo_perplexity_equalization_src = files('demo_perplexity_equalization.cpp')
 
 # test source files
-test_modules_src = files('test_modules.cpp')
+# test_modules_src = files('test_modules.cpp')
 
 # Matlab interface files: [[src_file, dependencies]...]
-mex_src_all = [[files('sgtsnepi_mex.cpp'),           []],
-               [files('computegrad_mex.cpp'),        []],
-               [files('perplexityEqualize_mex.cpp'), [libs_dep_dict['flann'],
-                                                      libs_dep_dict['lz4']]]]
+# mex_src_all = [[files('sgtsnepi_mex.cpp'),           []],
+#                [files('computegrad_mex.cpp'),        []],
+#                [files('perplexityEqualize_mex.cpp'), [libs_dep_dict['flann'],
+#                                                       libs_dep_dict['lz4']]]]

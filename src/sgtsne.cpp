@@ -28,7 +28,7 @@
 #include <cilk/cilk.h>
 #include <cilk/cilk_api.h>
 
-#include <metis.h>
+// #include <metis.h>
 #include "../csb/csb_wrapper.hpp"
 
 // #define FLAG_BSDB_PERM
@@ -91,41 +91,41 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
 
   
   // ~~~~~~~~~~ extracting BSDB permutation
-  idx_t *perm  = new idx_t [P.n];
-  idx_t *iperm = new idx_t [P.n];
+  // idx_t *perm  = new idx_t [P.n];
+//   idx_t *iperm = new idx_t [P.n];
 
-#ifdef FLAG_BSDB_PERM
-  
-  std::cout << "Nested dissection permutation..." << std::flush;
-  // idx_t options[METIS_NOPTIONS];
-  // METIS_SetDefaultOptions(options);
-  // options[METIS_OPTION_NUMBERING] = 0;
-  
-  int status = METIS_NodeND( &P.n,
-                             reinterpret_cast<idx_t *> (P.col), 
-                             reinterpret_cast<idx_t *> (P.row),
-                             NULL, NULL,
-                             perm, iperm );
+// #ifdef FLAG_BSDB_PERM
+
+//   std::cout << "Nested dissection permutation..." << std::flush;
+//   // idx_t options[METIS_NOPTIONS];
+//   // METIS_SetDefaultOptions(options);
+//   // options[METIS_OPTION_NUMBERING] = 0;
+
+//   int status = METIS_NodeND( &P.n,
+//                              reinterpret_cast<idx_t *> (P.col),
+//                              reinterpret_cast<idx_t *> (P.row),
+//                              NULL, NULL,
+//                              perm, iperm );
 
 
-  permuteMatrix( &P, perm, iperm );
-  
-  
-  if( status != METIS_OK ) {
-    std::cerr << "METIS error."; exit(1);
-  }
+//   permuteMatrix( &P, perm, iperm );
 
-  std::cout << "DONE" << std::endl;
 
-#else
+//   if( status != METIS_OK ) {
+//     std::cerr << "METIS error."; exit(1);
+//   }
 
-  for( int i = 0; i < P.n; i++ ){
-    perm[i]  = i;
-    iperm[i] = i;
-  }
+//   std::cout << "DONE" << std::endl;
 
-#endif
-  
+// #else
+
+//   for( int i = 0; i < P.n; i++ ){
+//     perm[i]  = i;
+//     iperm[i] = i;
+//   }
+
+// #endif
+
   printSparseMatrix(P);
 
 
@@ -167,21 +167,21 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
 
 
   // ~~~~~~~~~~ inverse permutation
-  coord *y_inv = new coord [params.n * params.d];
+  // coord *y_inv = new coord [params.n * params.d];
 
-  for (int i=0; i<params.n; i++)
-    for (int j=0; j<params.d; j++)
-      y_inv[i*params.d + j] = y[ iperm[i]*params.d + j ];
-  
+  // for (int i=0; i<params.n; i++)
+  //   for (int j=0; j<params.d; j++)
+  //     y_inv[i*params.d + j] = y[ iperm[i]*params.d + j ];
+
 
   // ~~~~~~~~~~ dellocate memory
   
   deallocate(csb);
-  delete [] y;
-  delete [] perm;
-  delete [] iperm;
+  // delete [] y;
+  // delete [] perm;
+  // delete [] iperm;
 
-  return y_inv;
+  return y;
   
 }
 

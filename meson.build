@@ -71,9 +71,6 @@ str_lib_not_found = 'The @0@ library is required.'
 # using `cc.find_library()` (if `dependency()` pkg-config or CMake search
 # fails).  Format per dependency: [<lib pkg name>, <lib name>, [<lib headers>]].
 required_lib_deps = [['fftw3'    , 'FFTW3'                 , ['fftw3.h']],
-                     ['metis'    , 'METIS'                 , ['metis.h']],
-                     ['tbbmalloc', 'TBB scalable allocator', ['tbb/scalable_allocator.h']],
-                     ['flann'    , 'FLANN'                 , ['flann/flann.h']],
                      ['lz4'      , 'LZ4'                   , ['lz4.h']]]
 foreach l : required_lib_deps
   buf_dep = dependency(l[0], required : false)
@@ -122,90 +119,90 @@ sgtsnepi_lib = library('sgtsnepi', [sgtsnepi_src],
                        soversion : vso)
 
 # conventional t-SNE implementation
-tsnepi_exe = executable('tsnepi', tsnepi_src,
-                        link_with : sgtsnepi_lib,
-                        dependencies : [libs_dep_dict['flann'],
-                                        libs_dep_dict['lz4']],
-                        install : true, install_dir : 'bin',
-                        install_rpath : get_option('prefix') / 'lib')
+# tsnepi_exe = executable('tsnepi', tsnepi_src,
+#                         link_with : sgtsnepi_lib,
+#                         dependencies : [libs_dep_dict['flann'],
+#                                         libs_dep_dict['lz4']],
+#                         install : true, install_dir : 'bin',
+#                         install_rpath : get_option('prefix') / 'lib')
 
 # demos
-if get_option('enable_demos')
-  demo_stochastic_matrix = executable('demo_stochastic_matrix',
-                                      demo_stochastic_matrix_src,
-                                      link_with : sgtsnepi_lib,
-                                      install : true, install_dir : 'bin',
-                                      install_rpath : get_option('prefix') / 'lib')
-  demo_perplexity_equalization = executable('demo_perplexity_equalization',
-                                            demo_perplexity_equalization_src,
-                                            link_with : sgtsnepi_lib,
-                                            dependencies : [libs_dep_dict['flann'],
-                                                            libs_dep_dict['lz4']],
-                                            install : true, install_dir : 'bin',
-                                            install_rpath : get_option('prefix') / 'lib')
-endif
+# if get_option('enable_demos')
+#   demo_stochastic_matrix = executable('demo_stochastic_matrix',
+#                                       demo_stochastic_matrix_src,
+#                                       link_with : sgtsnepi_lib,
+#                                       install : true, install_dir : 'bin',
+#                                       install_rpath : get_option('prefix') / 'lib')
+#   demo_perplexity_equalization = executable('demo_perplexity_equalization',
+#                                             demo_perplexity_equalization_src,
+#                                             link_with : sgtsnepi_lib,
+#                                             dependencies : [libs_dep_dict['flann'],
+#                                                             libs_dep_dict['lz4']],
+#                                             install : true, install_dir : 'bin',
+#                                             install_rpath : get_option('prefix') / 'lib')
+# endif
 
-# test
-test_modules = executable('test_modules', test_modules_src,
-                          link_with : sgtsnepi_lib,
-                          install : true, install_dir : 'bin',
-                          install_rpath : get_option('prefix') / 'lib')
-test('SG-t-SNE-Pi test modules', test_modules, is_parallel : false)
+# # test
+# test_modules = executable('test_modules', test_modules_src,
+#                           link_with : sgtsnepi_lib,
+#                           install : true, install_dir : 'bin',
+#                           install_rpath : get_option('prefix') / 'lib')
+# test('SG-t-SNE-Pi test modules', test_modules, is_parallel : false)
 
 
-# ========== Matlab interface
+# # ========== Matlab interface
 
-if get_option('enable_matlab')
+# if get_option('enable_matlab')
 
-  mroot = get_option('matlabroot')
+#   mroot = get_option('matlabroot')
 
-  # MEX compilation flags
-  if host_machine.system() == 'darwin' # macOS
-    mexext   = 'mexmaci64'
-    mexarch  = 'maci64'
-    mexrpath = []
-    mexsym   = ['-bundle',
-                '-Wl,-exported_symbols_list,' + mroot / 'extern' / 'lib' / mexarch / 'mexFunction.map']
-  else                                 # Linux
-    if host_machine.system() != 'linux'
-      warning('Not sure how to configure MEX compilation for detected system' \
-              + ' (' + host_machine.system() + ').  Using Linux configuration.')
-    endif
-    mexext   = 'mexa64'
-    mexarch  = 'glnxa64'
-    mexrpath = ['-Wl,-rpath=' + mroot / 'bin' / mexarch]
-    if not is_icpc and use_cilkplus
-      mexrpath += ['-Wl,-rpath=' + get_option('dir_libcilkrts')]
-    endif
-    mexsym   = ['-shared',
-                '-Wl,--version-script,' + mroot / 'extern' / 'lib' / mexarch / 'mexFunction.map']
-  endif
-  mex_cpp_args  = ['-I' + mroot / 'extern' / 'include'] + mexrpath + ['-fPIC']
-  mex_link_args = ['-L' + mroot / 'bin' / mexarch, '-fno-common'] \
-                  + mexsym + ['-lmx', '-lmex', '-lmat']
+#   # MEX compilation flags
+#   if host_machine.system() == 'darwin' # macOS
+#     mexext   = 'mexmaci64'
+#     mexarch  = 'maci64'
+#     mexrpath = []
+#     mexsym   = ['-bundle',
+#                 '-Wl,-exported_symbols_list,' + mroot / 'extern' / 'lib' / mexarch / 'mexFunction.map']
+#   else                                 # Linux
+#     if host_machine.system() != 'linux'
+#       warning('Not sure how to configure MEX compilation for detected system' \
+#               + ' (' + host_machine.system() + ').  Using Linux configuration.')
+#     endif
+#     mexext   = 'mexa64'
+#     mexarch  = 'glnxa64'
+#     mexrpath = ['-Wl,-rpath=' + mroot / 'bin' / mexarch]
+#     if not is_icpc and use_cilkplus
+#       mexrpath += ['-Wl,-rpath=' + get_option('dir_libcilkrts')]
+#     endif
+#     mexsym   = ['-shared',
+#                 '-Wl,--version-script,' + mroot / 'extern' / 'lib' / mexarch / 'mexFunction.map']
+#   endif
+#   mex_cpp_args  = ['-I' + mroot / 'extern' / 'include'] + mexrpath + ['-fPIC']
+#   mex_link_args = ['-L' + mroot / 'bin' / mexarch, '-fno-common'] \
+#                   + mexsym + ['-lmx', '-lmex', '-lmat']
 
-  # build MEX executables
-  mex_bin_all = []
-  foreach mex_src : mex_src_all
-    # <path/to/filename>_mex.cpp --> <filename>.<mexext>
-    mex_bin = fs.name('@0@'.format(mex_src[0]).split('_mex')[0])
-    mex_bin = fs.replace_suffix(mex_bin, '.'+mexext)
-    mex_bin_all += mex_bin
-    executable(mex_bin, mex_src[0],
-               cpp_args : mex_cpp_args,
-               link_args : mex_link_args,
-               link_with : sgtsnepi_lib,
-               dependencies : mex_src[1],
-               build_rpath : meson.current_build_dir(),
-               install : true, install_dir : 'matlab',
-               install_rpath : get_option('prefix') / 'lib')
-  endforeach
+#   # build MEX executables
+#   mex_bin_all = []
+#   foreach mex_src : mex_src_all
+#     # <path/to/filename>_mex.cpp --> <filename>.<mexext>
+#     mex_bin = fs.name('@0@'.format(mex_src[0]).split('_mex')[0])
+#     mex_bin = fs.replace_suffix(mex_bin, '.'+mexext)
+#     mex_bin_all += mex_bin
+#     executable(mex_bin, mex_src[0],
+#                cpp_args : mex_cpp_args,
+#                link_args : mex_link_args,
+#                link_with : sgtsnepi_lib,
+#                dependencies : mex_src[1],
+#                build_rpath : meson.current_build_dir(),
+#                install : true, install_dir : 'matlab',
+#                install_rpath : get_option('prefix') / 'lib')
+#   endforeach
 
-  # install M-files
-  install_subdir('matlab', install_dir : '', exclude_files : mex_bin_all)
+#   # install M-files
+#   install_subdir('matlab', install_dir : '', exclude_files : mex_bin_all)
 
-endif
+# endif
 
-# ========== documentation
+# # ========== documentation
 
-subdir('docs')
+# subdir('docs')

@@ -10,7 +10,7 @@
 #include <iostream>
 #include <limits>
 #include <cilk/cilk.h>
-#include <tbb/scalable_allocator.h>
+// #include <tbb/scalable_allocator.h>
 #include <cmath>
 
 #include "dataReloc.hpp"
@@ -20,7 +20,7 @@
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ALLOCATION UTILITIES
 
 void* parallel_malloc(size_t items, size_t size, const char * message){
-  void *ptr = scalable_malloc(items*size);
+  void *ptr = malloc(items*size);
   if(ptr == 0){
     printf("Out of memory at %s\n", message);
   }
@@ -28,7 +28,7 @@ void* parallel_malloc(size_t items, size_t size, const char * message){
 }
 
 void* parallel_calloc(size_t items, size_t size, const char * message){
-  void *ptr = scalable_calloc(items,size);
+  void *ptr = calloc(items,size);
   if(ptr == 0){
     printf("Out of memory at %s\n", message);
   }
@@ -36,7 +36,7 @@ void* parallel_calloc(size_t items, size_t size, const char * message){
 }
 
 void parallel_free(void *ptr){
-  scalable_free(ptr);
+  free(ptr);
 }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOCAL FUNCTIONS (NOT IN HEADERS)
