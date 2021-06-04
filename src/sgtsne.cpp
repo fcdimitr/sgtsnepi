@@ -310,6 +310,8 @@ extern "C"{
     params.maxIter = maxIter;
     params.d = d_Y;
     params.n = n;
+    params.earlyIter = earlyExag;
+    params.np = getWorkers();
 
     sparse_matrix P;
 
