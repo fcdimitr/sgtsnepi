@@ -55,11 +55,15 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
   // ~~~~~~~~~~ print input parameters
   printParams( params );
 
+  printSparseMatrix(P);
+
   // ~~~~~~~~~~ make sure input matrix is column stochastic
   uint32_t nStoch = makeStochastic( P );
   std::cout << nStoch << " out of " << P.n
             << " nodes already stochastic"
             << std::endl;
+
+  printSparseMatrix(P);
   
   // ~~~~~~~~~~ prepare graph for SG-t-SNE
   
@@ -68,10 +72,13 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
     std::cout << "Skipping λ rescaling..." << std::endl;
   else
     lambdaRescaling( P, params.lambda, false, params.dropLeaf );
-  
+
+  printSparseMatrix(P);
+
   // ----- symmetrizing
   symmetrizeMatrix( &P );
 
+  printSparseMatrix(P);
  
   // ----- normalize matrix (total sum is 1.0)
   double sum_P = .0;
@@ -321,6 +328,8 @@ extern "C"{
     P.row = rows;
     P.col = cols;
     P.val = vals;
+
+    std::cout << "input nnz: " << P.nnz;
 
     double *Y = sgtsne( P, params, y_in, timeInfo );
 
