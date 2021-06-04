@@ -31,7 +31,7 @@
 #include <metis.h>
 #include "../csb/csb_wrapper.hpp"
 
-#define FLAG_BSDB_PERM
+// #define FLAG_BSDB_PERM
 
 coord * sgtsne(sparse_matrix P, tsneparams params,
                coord *y_in,
