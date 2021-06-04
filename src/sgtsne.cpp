@@ -296,7 +296,7 @@ extern "C"{
     matidx const * const adj_rows,
     matidx const * const adj_cols,
     matval const * const adj_vals,
-    double const * const y_in,
+    double       * const y_in,
     int    const adj_nnz,
     int    const d_Y,
     double const lambda,
