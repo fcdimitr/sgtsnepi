@@ -293,6 +293,7 @@ sparse_matrix perplexityEqualization( int *I, double *D, int n, int nn, double u
 extern "C"{
 
   double *  tsnepi_c(
+    double      ** const timeInfo,
     matidx const * const adj_rows,
     matidx const * const adj_cols,
     matval const * const adj_vals,
@@ -305,7 +306,7 @@ extern "C"{
     int    const n) {
 
     
-    double **timeInfo = nullptr;
+    // double **timeInfo = nullptr;
 
     tsneparams params;
 
