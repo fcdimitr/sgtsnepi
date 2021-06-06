@@ -319,7 +319,7 @@ extern "C"{
     params.d = d_Y;
     params.n = n;
     params.earlyIter = earlyExag;
-    params.np = ( params.np <= 0 ) ? getWorkers() : np;
+    params.np = ( np <= 0 ) ? getWorkers() : np;
 
     sparse_matrix P;
 
