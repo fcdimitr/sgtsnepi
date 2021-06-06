@@ -13,12 +13,17 @@
 #include <limits>
 #include <cmath>
 
+#include <vector>
+
 #include "timers.hpp"
 #include "qq.hpp"
 #include "nuconv.hpp"
 #include "dataReloc.hpp"
 
 #define N_GRID_SIZE 137
+
+// global vector to report grid sizes
+std::vector<int> GLOBAL_GRID_SIZES;
 
 coord computeFrepulsive_exact(coord * frep,
                               coord * pointsX,
@@ -166,6 +171,8 @@ coord computeFrepulsive_interp(coord * Frep,
   
   int nGrid = std::max( (int) std::ceil( maxy / h ), 14 );
   nGrid = getBestGridSize(nGrid);
+
+  GLOBAL_GRID_SIZES.push_back( nGrid );
 
 #ifdef VERBOSE
   std::cout << "Grid: " << nGrid << " h: " << h << std::endl;

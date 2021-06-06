@@ -17,6 +17,7 @@
 #include <unistd.h>
 #include <limits>
 #include <cmath>
+#include <vector>
 
 #include "types.hpp"
 #include <string>
@@ -290,10 +291,13 @@ sparse_matrix perplexityEqualization( int *I, double *D, int n, int nn, double u
 //                  C extern (to call through Julia/Python)                  //
 ///////////////////////////////////////////////////////////////////////////////
 
+extern std::vector<int> GLOBAL_GRID_SIZES;
+
 extern "C"{
 
   double *  tsnepi_c(
     double      ** const timeInfo,
+    int          * const gridSizes,
     matidx const * const adj_rows,
     matidx const * const adj_cols,
     matval const * const adj_vals,
@@ -305,8 +309,7 @@ extern "C"{
     int    const earlyExag,
     int    const n) {
 
-    
-    // double **timeInfo = nullptr;
+    if  ( !GLOBAL_GRID_SIZES.empty() ) GLOBAL_GRID_SIZES.clear();
 
     tsneparams params;
 
@@ -335,9 +338,15 @@ extern "C"{
     P.col = cols;
     P.val = vals;
 
-    std::cout << "input nnz: " << P.nnz;
+    std::cout << "input nnz: " << P.nnz << std::endl;
 
-    return sgtsne( P, params, y_in, timeInfo );
+    double * Y = sgtsne( P, params, y_in, timeInfo );
+
+    if (gridSizes != nullptr)
+      for (int i = 0; i < params.maxIter; i++)
+        gridSizes[i] = GLOBAL_GRID_SIZES[i];
+
+    return Y;
 
   }
 

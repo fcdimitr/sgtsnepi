@@ -1,4 +1,4 @@
-using LinearAlgebra, SparseArrays, MAT, CairoMakie, Colors
+using LinearAlgebra, SparseArrays, MAT
 
 # A = sprand(500,500,0.03); A = A + A'; A = A - spdiagm( 0=>diag(A) );
 
@@ -19,20 +19,35 @@ earlyExag = 250
 timers = zeros( Float64, 6, maxIter );
 ptr_timers = Ref{Ptr{Cdouble}}([Ref(timers,i) for i=1:size(timers,1):length(timers)]);
 
+grid_sizes = zeros( Int32, maxIter );
+
 # lib = libsgtsnepi  # [if JLL is available]
 lib = "./build/libsgtsnepi.dylib"
 
 dotsne() = ccall( (:tsnepi_c, lib ), Ptr{Cdouble},
-                  (Ptr{Ptr{Cdouble}}, Ptr{Cint}, Ptr{Cint},
-                   Ptr{Cdouble}, Ptr{Cdouble}, Cint, Cint,
-                   Cdouble, Cint, Cint, Cint),
-                  ptr_timers, rows, cols, vals, C_NULL, Int32.( nnz(P) ),
-                  2, 1.0, maxIter, earlyExag, Int32.( size(P,1) ) )
+                  ( Ptr{Ptr{Cdouble}}, Ptr{Cint},
+                    Ptr{Cint}, Ptr{Cint}, Ptr{Cdouble},
+                    Ptr{Cdouble},
+                    Cint,
+                    Cint, Cdouble, Cint, Cint,
+                    Cint ),
+                  ptr_timers, grid_sizes,
+                  rows, cols, vals,
+                  C_NULL,
+                  Int32.( nnz(P) ),
+                  2, 1.0, maxIter, earlyExag,
+                  Int32.( size(P,1) ) )
 
 Y = permutedims( unsafe_wrap( Array, dotsne(), (2, size(P,1)) ) )
 
+
 timers2d = copy( timers )
 Y2d = copy( Y )
+
+return
+
+
+
 
 timers = zeros( Float64, 6, maxIter );
 ptr_timers = Ref{Ptr{Cdouble}}([Ref(timers,i) for i=1:size(timers,1):length(timers)]);
@@ -48,6 +63,34 @@ Y = permutedims( unsafe_wrap( Array, dotsne(), (3, size(P,1)) ) )
 
 timers3d = copy( timers )
 Y3d = copy( Y )
+
+
+
+return
+
+
+
+using CairoMakie, Colors, GLMakie
+
+GLMakie.activate!()
+
+f = Figure()
+ax1 = Axis(f[1, 1])
+ax2 = Axis(f[1, 1], yticklabelcolor = :blue, yaxisposition = :right)
+
+hidespines!(ax2)
+hidexdecorations!(ax2)
+
+vec_colors = distinguishable_colors(size(timers2d, 1))
+tsum = zeros( maxIter )
+for i = 1:size( timers2d, 1 )
+  band!(ax1, 1:maxIter, tsum, tsum + vec( timers2d[i,:] ),
+        label = str_module[i],
+        color = vec_colors[i] )
+  tsum .+= timers2d[i,:]
+end
+
+lines!(ax2, 1..maxIter, grid_sizes, color = :blue, linewidth = 3)
 
 str_module = [
   "PQ", "Gridding", "S2G", "G2G", "G2S", "F&Z"
