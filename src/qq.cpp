@@ -20,7 +20,7 @@
 #include "nuconv.hpp"
 #include "dataReloc.hpp"
 
-#define N_GRID_SIZE 137
+#define N_GRID_SIZE 136
 // #define N_GRID_SIZE 7
 
 // global vector to report grid sizes
