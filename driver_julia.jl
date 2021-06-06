@@ -2,12 +2,18 @@ using LinearAlgebra, SparseArrays, MAT
 
 # A = sprand(500,500,0.03); A = A + A'; A = A - spdiagm( 0=>diag(A) );
 
-A = matread( "/tmp/mnist_hog-euclidean_k-25.mat" )["A"];
+# A = matread( "/tmp/mnist_hog-euclidean_k-25.mat" )["A"];
+# lib = "./build/libsgtsnepi.dylib"
+
+using sgtsnepi_jll
+A = matread("../mnist_hog-euclidean_k-25.mat")["A"]
+lib = libsgtsnepi
+
 
 maxIter = 1000
 earlyExag = 250
 
-lib = "./build/libsgtsnepi.dylib"
+
 
 function dotsne(A, d_Y, maxIter, earlyExag)
 

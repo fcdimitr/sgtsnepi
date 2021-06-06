@@ -307,7 +307,8 @@ extern "C"{
     double const lambda,
     int    const maxIter,
     int    const earlyExag,
-    int    const n) {
+    int    const n
+    int    const np) {
 
     if  ( !GLOBAL_GRID_SIZES.empty() ) GLOBAL_GRID_SIZES.clear();
 
@@ -318,7 +319,7 @@ extern "C"{
     params.d = d_Y;
     params.n = n;
     params.earlyIter = earlyExag;
-    params.np = getWorkers();
+    params.np = ( params.np <= 0 ) ? getWorkers() : np;
 
     sparse_matrix P;
 
