@@ -307,7 +307,7 @@ extern "C"{
     double const lambda,
     int    const maxIter,
     int    const earlyExag,
-    int    const n
+    int    const n,
     int    const np) {
 
     if  ( !GLOBAL_GRID_SIZES.empty() ) GLOBAL_GRID_SIZES.clear();

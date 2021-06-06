@@ -40,13 +40,13 @@ function dotsne(A, d_Y, maxIter, earlyExag)
                     Ptr{Cdouble},
                     Cint,
                     Cint, Cdouble, Cint, Cint,
-                    Cint ),
+                    Cint, Cint ),
                   ptr_timers, grid_sizes,
                   rows, cols, vals,
                   C_NULL,
                   Int32.( nnz(P) ),
                   d_Y, 1.0, maxIter, earlyExag,
-                  Int32.( size(P,1) ) )
+                  Int32.( size(P,1) ), 0 )
 
   Y = permutedims( unsafe_wrap( Array, dotsne(), (2, size(P,1)) ) )
 
@@ -124,6 +124,10 @@ axs       = [Axis(f[i+1, 1], title = "$(i)-D") for i in 1:3]
 axs_right = [Axis(f[i+1, 1], title = "$(i)-D",
                   yticklabelcolor = :blue,
                   yaxisposition = :right) for i in 1:3]
+
+str_module = [
+  "PQ", "Gridding", "S2G", "G2G", "G2S", "F&Z"
+]
 
 vec_colors = distinguishable_colors(size(timers1d, 1));
 
