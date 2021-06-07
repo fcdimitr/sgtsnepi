@@ -5,8 +5,8 @@ project('sgtsnepi', 'cpp',
         default_options : ['optimization=2',
                            'debug=false',
                            'cpp_std=c++11',
-                           'default_library=both',
-                           'prefix=' + meson.current_source_dir()])
+                           'default_library=both'])
+                           # 'prefix=' + meson.current_source_dir()])
 
 fs  = import('fs')              # filesystem module
 vso = '0'                       # shared library version ID

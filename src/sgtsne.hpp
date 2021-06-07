@@ -82,6 +82,7 @@ coord* sgtsne(sparse_matrix P,            //!< The sparse stochastic graph P in 
 
   \return The CSC sparse column-stochastic all-kNN, after perplexity equalization.
 */
+extern "C" {
 sparse_matrix perplexityEqualization( int *I,    //!< [(k+1)-by-N] array with the neighbor IDs
                                       double *D, //!< [(k+1)-by-N] array with the neighbor distances
                                       int n,     //!< [scalar] Number of data points N
@@ -89,5 +90,6 @@ sparse_matrix perplexityEqualization( int *I,    //!< [(k+1)-by-N] array with th
                                       double u   //!< [scalar] Perplexity u
                                       );
 
+}
 
 #endif /* _SGTSNE_H_ */

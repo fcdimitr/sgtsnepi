@@ -20,6 +20,8 @@
 #include "timers.hpp"
 #include "qq.hpp"
 
+#define MAX_NV_EXACT 4000  // maximum number of vertices to run exact
+
 template <class dataPoint>
 void compute_dy(dataPoint       * const dy,
 		dataPoint const * const Fattr,
@@ -105,11 +107,15 @@ double compute_gradient(dataPoint *dy,
   // ------ Compute QQ (frep)
   start = tsne_start_timer();
   double zeta;
-  if (timeInfo != nullptr)
-    zeta = computeFrepulsive_interp(Frep, y, n, d, params.h, params.np,
-                                           &timeInfo[1]);
+  if (n <= MAX_NV_EXACT)
+    zeta = computeFrepulsive_exact(Frep, y, n, d);
   else
-    zeta = computeFrepulsive_interp(Frep, y, n, d, params.h, params.np);
+    if (timeInfo != nullptr)
+      zeta = computeFrepulsive_interp(Frep, y, n, d, params.h, params.np,
+                                      &timeInfo[1]);
+    else
+      zeta = computeFrepulsive_interp(Frep, y, n, d, params.h, params.np);
+
   *timeFrep += tsne_stop_timer("QQ", start);
   // double zeta = computeFrepulsive_exact(Frep, y, n, d);
 

@@ -13,6 +13,8 @@
 
 #include "types.hpp"
 
+extern "C" {
+
 coord computeFrepulsive_exact(coord * frep,
                               coord * pointsX,
                               int N,
@@ -25,5 +27,7 @@ coord computeFrepulsive_interp(coord * Frep,
                                double h,
                                int np,
                                double *timeInfo = nullptr);
+
+}
 
 #endif /* QQ_HPP */
