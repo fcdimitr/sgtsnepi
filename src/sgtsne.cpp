@@ -27,11 +27,24 @@
 
 #include <cilk/cilk.h>
 #include <cilk/cilk_api.h>
+#include <cilk/cilkscale.h>
 
 #include <metis.h>
 #include "../csb/csb_wrapper.hpp"
 
 #define FLAG_BSDB_PERM
+
+extern wsp_t __CS_NUCONV_PREPROC;
+extern wsp_t __CS_NUCONV_FFTW_PLAN;
+extern wsp_t __CS_NUCONV_KERNELS;
+extern wsp_t __CS_NUCONV_POSTPROC;
+
+extern wsp_t __CS_NUCONV_KERNEL_ZERO;
+extern wsp_t __CS_NUCONV_KERNEL_SETUP;
+extern wsp_t __CS_NUCONV_KERNEL_FFTW_EXEC;
+extern wsp_t __CS_NUCONV_KERNEL_HADAMARD;
+extern wsp_t __CS_NUCONV_KERNEL_POSTPROC;
+
 
 coord * sgtsne(sparse_matrix P, tsneparams params,
                coord *y_in,
@@ -162,7 +175,19 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
   for (int i=0; i<params.n; i++)
     for (int j=0; j<params.d; j++)
       y_inv[i*params.d + j] = y[ iperm[i]*params.d + j ];
-  
+
+  // ~~~~~~~~~~ Cilkscale profiling output
+
+  wsp_dump( __CS_NUCONV_PREPROC, "nuconv: preprocessing" );
+  wsp_dump( __CS_NUCONV_FFTW_PLAN, "nuconv: FFTW plan setup" );
+  wsp_dump( __CS_NUCONV_KERNELS, "nuconv: kernel computations" );
+  wsp_dump( __CS_NUCONV_POSTPROC, "nuconv: postprocessing & destructors" );
+
+  wsp_dump( __CS_NUCONV_KERNEL_ZERO, "nuconv: kernels: zero init" );
+  wsp_dump( __CS_NUCONV_KERNEL_SETUP, "nuconv: kernels: setup" );
+  wsp_dump( __CS_NUCONV_KERNEL_FFTW_EXEC, "nuconv: kernels: FFTW executions" );
+  wsp_dump( __CS_NUCONV_KERNEL_HADAMARD, "nuconv: kernels: Hadamard product" );
+  wsp_dump( __CS_NUCONV_KERNEL_POSTPROC, "nuconv: kernels: post-processing" );
 
   // ~~~~~~~~~~ dellocate memory
   

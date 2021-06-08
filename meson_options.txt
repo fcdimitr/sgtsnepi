@@ -14,6 +14,12 @@ option('fftw_parallel_lib',
        value : 'none',
        description : 'Parallel FFTW3 library implementation suffix (use single-threaded FFTW if empty)')
 
+option('cilktool',
+       type : 'combo',
+       choices : ['', 'none', 'cilkscale'],
+       value : '',
+       description : 'OpenCilk instrumentation tool')
+
 option('enable_matlab',
        type : 'boolean',
        value : false,

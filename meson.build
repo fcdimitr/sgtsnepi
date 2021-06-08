@@ -108,6 +108,32 @@ endif
 libs_dep = [fftw_par_dep] + libs_dep # NOTE -lfftw3_<parallel> should precede -lfftw3
 libs_dep_dict += {'fftw3_parallel' : fftw_par_dep}
 
+# ========== OpenCilk tools
+
+cpp_args_cs     = []
+link_args_cs    = []
+str_cs          = ''
+cpp_args_bench  = []
+link_args_bench = []
+str_bench       = ''
+
+str_warn_not_opencilk = ' tool specified but not using OpenCilk compiler.'
+                        ' Skipping instrumentation.'
+
+if get_option('cilktool') == 'cilkscale' # ----- Cilkscale
+  if not use_opencilk
+    warning('Cilkscale' + str_warn_not_opencilk)
+  else
+    cc.has_header('cilk/cilkscale.h', required : true)
+    cpp_args_cs     = ['-fcilktool=cilkscale']
+    link_args_cs    = ['-fcilktool=cilkscale']
+    str_cs          = '_cilkscale'
+    cpp_args_bench  = ['-fcilktool=cilkscale-benchmark']
+    link_args_bench = ['-fcilktool=cilkscale-benchmark']
+    str_bench       = str_cs + '_bench'
+  endif
+endif
+
 # ========== build targets
 
 # source files
@@ -115,15 +141,19 @@ subdir('src')
 subdir('csb')
 
 # SG-t-SNE-Pi library
-sgtsnepi_lib = library('sgtsnepi', [sgtsnepi_src],
+sgtsnepi_lib = library('sgtsnepi' + str_cs, [sgtsnepi_src],
                        dependencies : [libs_dep, csb_dep],
+                       cpp_args : cpp_args_cs,
+                       link_args : link_args_cs,
                        include_directories : csb_inc_dir,
                        install : true, install_dir : 'lib',
                        soversion : vso)
 
 # conventional t-SNE implementation
-tsnepi_exe = executable('tsnepi', tsnepi_src,
+tsnepi_exe = executable('tsnepi' + str_cs, tsnepi_src,
                         link_with : sgtsnepi_lib,
+                        cpp_args : cpp_args_cs,
+                        link_args : link_args_cs,
                         dependencies : [libs_dep_dict['flann'],
                                         libs_dep_dict['lz4']],
                         install : true, install_dir : 'bin',
@@ -131,14 +161,18 @@ tsnepi_exe = executable('tsnepi', tsnepi_src,
 
 # demos
 if get_option('enable_demos')
-  demo_stochastic_matrix = executable('demo_stochastic_matrix',
+  demo_stochastic_matrix = executable('demo_stochastic_matrix' + str_cs,
                                       demo_stochastic_matrix_src,
                                       link_with : sgtsnepi_lib,
+                                      cpp_args : cpp_args_cs,
+                                      link_args : link_args_cs,
                                       install : true, install_dir : 'bin',
                                       install_rpath : get_option('prefix') / 'lib')
-  demo_perplexity_equalization = executable('demo_perplexity_equalization',
+  demo_perplexity_equalization = executable('demo_perplexity_equalization' + str_cs,
                                             demo_perplexity_equalization_src,
                                             link_with : sgtsnepi_lib,
+                                            cpp_args : cpp_args_cs,
+                                            link_args : link_args_cs,
                                             dependencies : [libs_dep_dict['flann'],
                                                             libs_dep_dict['lz4']],
                                             install : true, install_dir : 'bin',
@@ -148,10 +182,49 @@ endif
 # test
 test_modules = executable('test_modules', test_modules_src,
                           link_with : sgtsnepi_lib,
+                          cpp_args : cpp_args_cs,
+                          link_args : link_args_cs,
                           install : true, install_dir : 'bin',
                           install_rpath : get_option('prefix') / 'lib')
 test('SG-t-SNE-Pi test modules', test_modules, is_parallel : false)
 
+# ----- Cilkscale benchmark targets
+
+if cpp_args_bench != []
+  sgtsnepi_lib_bench = library('sgtsnepi' + str_bench, [sgtsnepi_src],
+                               dependencies : [libs_dep, csb_dep],
+                               cpp_args : cpp_args_bench,
+                               link_args : link_args_bench,
+                               include_directories : csb_inc_dir,
+                               install : true, install_dir : 'lib',
+                               soversion : vso)
+  tsnepi_exe_bench = executable('tsnepi' + str_bench, tsnepi_src,
+                                link_with : sgtsnepi_lib_bench,
+                                cpp_args : cpp_args_bench,
+                                link_args : link_args_bench,
+                                dependencies : [libs_dep_dict['flann'],
+                                                libs_dep_dict['lz4']],
+                                install : true, install_dir : 'bin',
+                                install_rpath : get_option('prefix') / 'lib')
+  if get_option('enable_demos')
+    demo_stochastic_matrix_bench = executable('demo_stochastic_matrix' + str_bench,
+                                              demo_stochastic_matrix_src,
+                                              link_with : sgtsnepi_lib_bench,
+                                              cpp_args : cpp_args_bench,
+                                              link_args : link_args_bench,
+                                              install : true, install_dir : 'bin',
+                                              install_rpath : get_option('prefix') / 'lib')
+    demo_perplexity_equalization_bench = executable('demo_perplexity_equalization' + str_bench,
+                                                    demo_perplexity_equalization_src,
+                                                    link_with : sgtsnepi_lib_bench,
+                                                    cpp_args : cpp_args_bench,
+                                                    link_args : link_args_bench,
+                                                    dependencies : [libs_dep_dict['flann'],
+                                                                    libs_dep_dict['lz4']],
+                                                    install : true, install_dir : 'bin',
+                                                    install_rpath : get_option('prefix') / 'lib')
+  endif
+endif
 
 # ========== Matlab interface
 

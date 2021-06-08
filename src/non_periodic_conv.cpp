@@ -2,21 +2,38 @@
 #include <iostream>
 #include <complex>
 #include <fftw3.h>
-#include <cmath>
+
 #include <cilk/cilk.h>
+#include <cilk/cilkscale.h>
+
 #include "matrix_indexing.hpp"
 
 
-double kernel1d(double hsq, double i) {
-  return pow(1.0 + hsq * i*i, -2);
+wsp_t __CS_NUCONV_PREPROC   = wsp_zero();
+wsp_t __CS_NUCONV_FFTW_PLAN = wsp_zero();
+wsp_t __CS_NUCONV_KERNELS   = wsp_zero();
+wsp_t __CS_NUCONV_POSTPROC  = wsp_zero();
+
+wsp_t __CS_NUCONV_KERNEL_ZERO      = wsp_zero();
+wsp_t __CS_NUCONV_KERNEL_SETUP     = wsp_zero();
+wsp_t __CS_NUCONV_KERNEL_FFTW_EXEC = wsp_zero();
+wsp_t __CS_NUCONV_KERNEL_HADAMARD  = wsp_zero();
+wsp_t __CS_NUCONV_KERNEL_POSTPROC  = wsp_zero();
+
+
+double kernel1d(const double hsq, const double i) {
+  const double tmp = 1.0 + hsq * i*i;
+  return 1 / (tmp * tmp);
 }
 
-double kernel2d(double hsq, double i, double j) {
-  return pow(1.0 + hsq * ( i*i + j*j ), -2);
+double kernel2d(const double hsq, const double i, const double j) {
+  const double tmp = 1.0 + hsq * ( i*i + j*j );
+  return 1 / (tmp * tmp);
 }
 
-double kernel3d(double hsq, double i, double j, double k) {
-  return pow(1.0 + hsq * ( i*i + j*j + k*k ), -2);
+double kernel3d(const double hsq, const double i, const double j, const double k) {
+  const double tmp = 1.0 + hsq * ( i*i + j*j + k*k );
+  return 1 / (tmp * tmp);
 }
 
 double const pi = 4 * std::atan(1);
@@ -625,6 +642,8 @@ void conv3dnopad( double * const PhiGrid,
   int ostride = 1;
   int *inembed = NULL, *onembed = NULL;
 
+  wsp_t tic = wsp_getworkspan();
+
   // allocate memory for kernel and RHS FFTs
   K = (fftw_complex *) fftw_malloc( n1 * n2 * n3 * sizeof(fftw_complex) );
   X = (fftw_complex *) fftw_malloc( n1 * n2 * n3 * nVec * sizeof(fftw_complex) );
@@ -649,8 +668,13 @@ void conv3dnopad( double * const PhiGrid,
   fftw_init_threads();
   fftw_plan_with_nthreads(nProc);
 #endif
-  
+
+  wsp_t toc = wsp_getworkspan();
+  __CS_NUCONV_PREPROC += (toc - tic);
+
   // ~~~~~~~~~~~~~~~~~~~~ SETUP FFTW PLANS
+
+  tic = wsp_getworkspan();
 
   planc_kernel = fftw_plan_dft_3d(n1, n2, n3, K, K, FFTW_FORWARD, FFTW_ESTIMATE);
 
@@ -666,7 +690,12 @@ void conv3dnopad( double * const PhiGrid,
                                      ostride, odist,
                                      FFTW_BACKWARD, FFTW_ESTIMATE);
 
+  toc = wsp_getworkspan();
+  __CS_NUCONV_FFTW_PLAN += (toc - tic);
+
   // ============================== 8 KERNELS
+
+  tic = wsp_getworkspan();
   
   eee( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
@@ -700,6 +729,10 @@ void conv3dnopad( double * const PhiGrid,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
 
+  toc = wsp_getworkspan();
+  __CS_NUCONV_KERNELS += (toc - tic);
+
+  tic = wsp_getworkspan();
 
   for (uint32_t iVec=0; iVec<nVec; iVec++){
     for (uint32_t k=0; k<n3; k++){
@@ -724,5 +757,8 @@ void conv3dnopad( double * const PhiGrid,
   fftw_free( K );
   fftw_free( X );
   fftw_free( w );
+
+  toc = wsp_getworkspan();
+  __CS_NUCONV_POSTPROC += (toc - tic);
 
 }
