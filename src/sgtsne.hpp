@@ -34,6 +34,7 @@ typedef struct {
   bool   dropLeaf  = false;     //!< Drop edges originating from leaf nodes?
   int    np        = 0;         //!< Number of CILK workers (processes)
   double bound_box = 1e64;      //!< Bounding box (default infinite)
+  double eta       = 200.0;     //!< learning rate
 } tsneparams; 
 
 

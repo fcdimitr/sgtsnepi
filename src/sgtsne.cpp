@@ -302,6 +302,7 @@ extern "C"{
     int    const earlyExag,
     double const h,
     double const bound_box,
+    double const eta,
     int    const n,
     int    const np) {
 
@@ -314,6 +315,7 @@ extern "C"{
     params.d = d_Y;
     params.n = n;
     params.h = h;
+    params.eta = eta;
     params.earlyIter = earlyExag;
     params.np = ( np <= 0 ) ? getWorkers() : np;
     params.bound_box = bound_box;
