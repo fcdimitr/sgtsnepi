@@ -17,7 +17,6 @@
 #include <cilk/cilk_api.h>
 #include <time.h>
 #include <sys/time.h>
-#include <string>
 #include <iostream>
 #include <unistd.h>
 #include <limits.h>
@@ -88,15 +87,7 @@ void printMinTime( double *x, CS_INT n );
 
 void exportTime2csv( double *x, FILE *fp, CS_INT n );
 
-std::string getHostnameDateFilename();
-
 cs *make_sym (cs *A);
-
-void exportBenchmarkResults( std::string prefix, double **times, char **names,
-                             CS_INT nExp, CS_INT iter );
-
-void exportBenchmarkResult( std::string prefix, double *times, CS_INT iter );
-
 
 template<typename T>
 T *permuteDataPoints( T* x, CS_INT *p, CS_INT n, CS_INT ldim );

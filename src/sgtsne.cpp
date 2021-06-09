@@ -13,14 +13,12 @@
 
 
 #include <iostream>
-#include <string>
 #include <unistd.h>
 #include <limits>
 #include <cmath>
 #include <vector>
 
 #include "types.hpp"
-#include <string>
 #include "sparsematrix.hpp"
 #include "utils.hpp"
 #include "gradient_descend.hpp"

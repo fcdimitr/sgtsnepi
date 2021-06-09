@@ -13,7 +13,6 @@
 #include <stdlib.h>
 #include "mex.h"
 #include <sys/time.h>
-#include <string>
 #include <iostream>
 #include <cilk/cilk_api.h>
 #include <cmath>

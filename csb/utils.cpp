@@ -1,6 +1,5 @@
 #include "utils.hpp"
 #include "cs.hpp"
-#include <string.h>
 
 template <typename T>
 void verifyVectorEqual(T const * const f_new, T const * const f_gold,
@@ -287,58 +286,6 @@ void exportTime2csv( double *x, FILE *fp, CS_INT n ) {
   fprintf(fp,"%.3f\n",x[n-1]);
 
 }
-
-std::string getHostnameDateFilename() {
-  char hostname[1024];
-  gethostname(hostname, 1024);
-
-  time_t rawtime;
-  struct tm * timeinfo;
-
-  char buffer[80];
-  
-  time ( &rawtime );
-  timeinfo = localtime ( &rawtime );
-  strftime(buffer,sizeof(buffer),"%Y-%m-%d %H-%M-%S",timeinfo);
-  
-  std::string info(hostname);
-  std::string datetime(buffer);
-
-  info = info + " " + datetime;
-
-  std::replace( info.begin(), info.end(), ' ', '_');
-  std::replace( info.begin(), info.end(), '.', '-');
-  
-  info = info + ".csv";
-
-  return info;
-  
-}
-
-void exportBenchmarkResults( std::string prefix, double **times, char **names,
-                             CS_INT nExp, CS_INT iter ) {
-  
-  std::string fileName = prefix + "_" + getHostnameDateFilename();
-  FILE *fp = fopen( fileName.c_str(), "w" );
-  for (CS_INT i=0; i<nExp; i++){
-    fprintf(fp, names[i]);
-    fprintf(fp, ",");
-    exportTime2csv( times[i], fp, iter);
-  }
-  fclose(fp);
-            
-}
-
-void exportBenchmarkResult( std::string prefix, double *times,
-                            CS_INT iter ) {
-  
-  std::string fileName = prefix + "_" + getHostnameDateFilename();
-  FILE *fp = fopen( fileName.c_str(), "w" );
-  exportTime2csv( times, fp, iter);
-  fclose(fp);
-            
-}
-
 
 
 template<typename T>

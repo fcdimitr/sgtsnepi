@@ -10,7 +10,6 @@
 
 
 #include <iostream>
-#include <string>
 #include <cilk/cilk.h>
 #include <cmath>
 #include "matrix_indexing.hpp"

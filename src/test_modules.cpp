@@ -11,7 +11,6 @@
 
 #include <iostream>
 #include <random>
-#include <cstring>
 
 #include <cilk/cilk.h>
 #include "utils.hpp"
