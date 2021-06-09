@@ -130,7 +130,7 @@ void kl_minimization(coord* y,
   // ----- t-SNE hard coded parameters - Same as in vdM's code
   int    stop_lying_iter = params.earlyIter, mom_switch_iter = 250;
   double momentum = .5, final_momentum = .8;
-  double eta    = 200.0;
+  double eta    = params.eta;
   int    iterPrint = 50;
   
   double timeFattr = 0.0;
