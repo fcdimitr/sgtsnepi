@@ -51,7 +51,7 @@ int main(int argc, char **argv)
       params.d = atoi(optarg);
       break;
     case 'r':
-      params.eta = atoi(optarg);
+      sscanf(optarg, "%lf", &params.eta);
       break;
     case 'm':
       params.maxIter = atoi(optarg);
