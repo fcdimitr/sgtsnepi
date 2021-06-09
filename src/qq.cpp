@@ -177,9 +177,15 @@ coord computeFrepulsive_interp(coord * Frep,
   coord maxy = 0;
   for (int i = 0; i < n*d; i++)
     maxy = maxy < y[i] ? y[i] : maxy;
-  
-  int nGrid = std::max( (int) std::ceil( maxy / h ), 14 );
-  nGrid = getBestGridSize(nGrid);
+
+  int nGrid;
+
+  if (h>0){
+    nGrid = std::max( (int) std::ceil( maxy / h ), 14 );
+    nGrid = getBestGridSize(nGrid);
+  } else {
+    nGrid = (int) -h;
+  }
 
   GLOBAL_GRID_SIZES.push_back( nGrid+2 );
 

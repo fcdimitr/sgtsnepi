@@ -20,7 +20,7 @@
 #include "timers.hpp"
 #include "qq.hpp"
 
-#define MAX_NV_EXACT 4000  // maximum number of vertices to run exact
+#define MAX_NV_EXACT 2000  // maximum number of vertices to run exact
 
 template <class dataPoint>
 void compute_dy(dataPoint       * const dy,
@@ -44,7 +44,8 @@ void update_positions(dataPoint * const dY,
 		      dataPoint * const Y,
 		      dataPoint * const gains,
 		      double      const momentum,
-		      double      const eta){
+          double      const eta,
+          double      const bound_box){
 
 
   // Update gains
@@ -64,13 +65,28 @@ void update_positions(dataPoint * const dY,
     meany[i] = meany_reducer.get_value() / N;
   }
 
+  // maximum across all dimensions
+  double max_tot = 0.0;
+
   // zero-mean
   cilk_for(int n = 0; n < N; n++) {
     for(int d = 0; d < no_dims; d++) {
       Y[n*no_dims + d] -= meany[d];
+      if( std::abs( Y[n*no_dims + d] ) > max_tot )
+        max_tot = std::abs( Y[n*no_dims + d] );
     }
   }
-  
+
+  // shrink
+  if ( max_tot > bound_box ) {
+    max_tot /= bound_box;
+    cilk_for(int n = 0; n < N; n++) {
+      for(int d = 0; d < no_dims; d++) {
+        Y[n*no_dims + d] /= max_tot;
+      }
+    }
+  }
+
 }
 
 
@@ -178,7 +194,7 @@ void kl_minimization(coord* y,
       zeta = compute_gradient(dy, &timeFrep, &timeFattr, params, y, csb,
                               timeInfo[iter]);
     // ----- Position update
-    update_positions<coord>(dy, uy, n, d, y, gains, momentum, eta);
+    update_positions<coord>(dy, uy, n, d, y, gains, momentum, eta, params.bound_box);
 
     // Stop lying about the P-values after a while, and switch momentum
     if(iter == stop_lying_iter) {

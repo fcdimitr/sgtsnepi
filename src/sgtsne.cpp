@@ -40,7 +40,7 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
 {
 
   // ~~~~~~~~~~ unless h is specified, use default ones
-  if (params.h <= 0)
+  if (params.h == 0)
     switch (params.d){
     case 1:
       params.h = 0.5;
@@ -56,7 +56,6 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
   // ~~~~~~~~~~ print input parameters
   printParams( params );
 
-  printSparseMatrix(P);
 
   // ~~~~~~~~~~ make sure input matrix is column stochastic
   uint32_t nStoch = makeStochastic( P );
@@ -64,8 +63,6 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
             << " nodes already stochastic"
             << std::endl;
 
-  printSparseMatrix(P);
-  
   // ~~~~~~~~~~ prepare graph for SG-t-SNE
   
   // ----- lambda rescaling
@@ -74,13 +71,9 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
   else
     lambdaRescaling( P, params.lambda, false, params.dropLeaf );
 
-  printSparseMatrix(P);
-
   // ----- symmetrizing
   symmetrizeMatrix( &P );
 
-  printSparseMatrix(P);
- 
   // ----- normalize matrix (total sum is 1.0)
   double sum_P = .0;
   for(int i = 0; i < P.nnz; i++){
@@ -307,6 +300,8 @@ extern "C"{
     double const lambda,
     int    const maxIter,
     int    const earlyExag,
+    double const h,
+    double const bound_box,
     int    const n,
     int    const np) {
 
@@ -318,8 +313,10 @@ extern "C"{
     params.maxIter = maxIter;
     params.d = d_Y;
     params.n = n;
+    params.h = h;
     params.earlyIter = earlyExag;
     params.np = ( np <= 0 ) ? getWorkers() : np;
+    params.bound_box = bound_box;
 
     sparse_matrix P;
 
@@ -338,8 +335,6 @@ extern "C"{
     P.row = rows;
     P.col = cols;
     P.val = vals;
-
-    std::cout << "input nnz: " << P.nnz << std::endl;
 
     double * Y = sgtsne( P, params, y_in, timeInfo );
 
