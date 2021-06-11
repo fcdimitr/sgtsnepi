@@ -128,10 +128,10 @@ double compute_gradient(dataPoint *dy,
     zeta = computeFrepulsive_exact(Frep, y, n, d);
   else
     if (timeInfo != nullptr)
-      zeta = computeFrepulsive_interp(Frep, y, n, d, params.h[p], params.np,
+      zeta = computeFrepulsive_interp(Frep, y, n, d, params.h[p+1], params.np,
                                       &timeInfo[1]);
     else
-      zeta = computeFrepulsive_interp(Frep, y, n, d, params.h[p], params.np);
+      zeta = computeFrepulsive_interp(Frep, y, n, d, params.h[p+1], params.np);
 
   *timeFrep += tsne_stop_timer("QQ", start);
   // double zeta = computeFrepulsive_exact(Frep, y, n, d);
