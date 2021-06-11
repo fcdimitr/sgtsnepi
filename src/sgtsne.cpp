@@ -37,8 +37,11 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
                double **timeInfo)
 {
 
+  int h_provided = 1;
+
   // ~~~~~~~~~~ unless h is specified, use default ones
   if (params.h == NULL){
+    h_provided = 0;
     params.h = new double [2];
     params.h[0] = params.maxIter + 1;
     switch (params.d){
@@ -174,6 +177,9 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
   // delete [] y;
   // delete [] perm;
   // delete [] iperm;
+  //
+  if (!h_provided)
+    delete[] params.h;
 
   return y;
   
@@ -343,8 +349,6 @@ extern "C"{
     if (gridSizes != nullptr)
       for (int i = 0; i < params.maxIter; i++)
         gridSizes[i] = GLOBAL_GRID_SIZES[i];
-
-    delete[] params.h;
 
     return Y;
 
