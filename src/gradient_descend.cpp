@@ -94,9 +94,10 @@ template <class dataPoint>
 double compute_gradient(dataPoint *dy,
                         double *timeFrep,
                         double *timeFattr,
-			tsneparams params,
-			dataPoint *y,
-			BiCsb<dataPoint, unsigned int> * csb,
+                        tsneparams params,
+                        dataPoint *y,
+                        BiCsb<dataPoint, unsigned int> * csb,
+                        int p,
                         double *timeInfo){
 
 
@@ -127,10 +128,10 @@ double compute_gradient(dataPoint *dy,
     zeta = computeFrepulsive_exact(Frep, y, n, d);
   else
     if (timeInfo != nullptr)
-      zeta = computeFrepulsive_interp(Frep, y, n, d, params.h, params.np,
+      zeta = computeFrepulsive_interp(Frep, y, n, d, params.h[p], params.np,
                                       &timeInfo[1]);
     else
-      zeta = computeFrepulsive_interp(Frep, y, n, d, params.h, params.np);
+      zeta = computeFrepulsive_interp(Frep, y, n, d, params.h[p], params.np);
 
   *timeFrep += tsne_stop_timer("QQ", start);
   // double zeta = computeFrepulsive_exact(Frep, y, n, d);
@@ -183,15 +184,21 @@ void kl_minimization(coord* y,
   else if (sizeof(y[0]) == 8)
     std::cout << "Working with double precision" << std::endl;
 
+  // phase index
+  int p = 0;
+
   // ----- Start t-SNE iterations
   start = tsne_start_timer();
   for(int iter = 0; iter < max_iter; iter++) {
 
+    // check phase transition
+    if (iter == params.h[p]) p += 2;
+
     // ----- Gradient calculation
     if (timeInfo == nullptr)
-      zeta = compute_gradient(dy, &timeFrep, &timeFattr, params, y, csb);
+      zeta = compute_gradient(dy, &timeFrep, &timeFattr, params, y, csb, p);
     else
-      zeta = compute_gradient(dy, &timeFrep, &timeFattr, params, y, csb,
+      zeta = compute_gradient(dy, &timeFrep, &timeFattr, params, y, csb, p,
                               timeInfo[iter]);
     // ----- Position update
     update_positions<coord>(dy, uy, n, d, y, gains, momentum, eta, params.bound_box);
@@ -249,9 +256,10 @@ template
 double compute_gradient(double *dy,
                         double *timeFrep,
                         double *timeFattr,
-			tsneparams params,
-			double *y,
-			BiCsb<double, unsigned int> * csb,
+                        tsneparams params,
+                        double *y,
+                        BiCsb<double, unsigned int> * csb,
+                        int p,
                         double *timeInfo);
 
 // template

@@ -38,19 +38,21 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
 {
 
   // ~~~~~~~~~~ unless h is specified, use default ones
-  if (params.h == 0)
+  if (params.h == NULL){
+    params.h = new double [2];
+    params.h[0] = params.maxIter + 1;
     switch (params.d){
-    case 1:
-      params.h = 0.5;
-      break;
-    case 2:
-      params.h = 0.7;
-      break;
-    case 3:
-      params.h = 1.2;
-      break;
+      case 1:
+        params.h[1] = 0.5;
+        break;
+      case 2:
+        params.h[1] = 0.7;
+        break;
+      case 3:
+        params.h[1] = 1.2;
+        break;
     }
-  
+  }
   // ~~~~~~~~~~ print input parameters
   printParams( params );
 
@@ -298,7 +300,7 @@ extern "C"{
     double const lambda,
     int    const maxIter,
     int    const earlyExag,
-    double const h,
+    double       * const h,
     double const bound_box,
     double const eta,
     int    const n,
@@ -341,6 +343,8 @@ extern "C"{
     if (gridSizes != nullptr)
       for (int i = 0; i < params.maxIter; i++)
         gridSizes[i] = GLOBAL_GRID_SIZES[i];
+
+    delete[] params.h;
 
     return Y;
 

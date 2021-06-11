@@ -15,6 +15,7 @@
 #define SGTSNE_HPP
 
 #include "types.hpp"
+#include <iostream>             // NULL
 
 
 //! List of SG-t-SNE-Pi parameters
@@ -24,17 +25,17 @@
 */
 typedef struct {
 
-  int    d         = 2;         //!< Number of embedding dimensions
-  double lambda    = 1;         //!< λ rescaling parameter
-  double alpha     = 12;        //!< Early exaggeration multiplier
-  int    maxIter   = 1000;      //!< Maximum number of iterations
-  int    earlyIter = 250;       //!< Number of early exaggeration iterations
-  int    n         = 0;         //!< Number of vertices
-  double h         = -1;        //!< Grid side length (accuracy control)
-  bool   dropLeaf  = false;     //!< Drop edges originating from leaf nodes?
-  int    np        = 0;         //!< Number of CILK workers (processes)
-  double bound_box = 1e64;      //!< Bounding box (default infinite)
-  double eta       = 200.0;     //!< learning rate
+  int     d         = 2;         //!< Number of embedding dimensions
+  double  lambda    = 1;         //!< λ rescaling parameter
+  double  alpha     = 12;        //!< Early exaggeration multiplier
+  int     maxIter   = 1000;      //!< Maximum number of iterations
+  int     earlyIter = 250;       //!< Number of early exaggeration iterations
+  int     n         = 0;         //!< Number of vertices
+  double *h         = NULL;      //!< Grid side length (accuracy control)
+  bool    dropLeaf  = false;     //!< Drop edges originating from leaf nodes?
+  int     np        = 0;         //!< Number of CILK workers (processes)
+  double  bound_box = 1e64;      //!< Bounding box (default infinite)
+  double  eta       = 200.0;     //!< learning rate
 } tsneparams; 
 
 

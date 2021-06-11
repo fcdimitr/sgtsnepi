@@ -30,9 +30,10 @@ template <class dataPoint>
 double compute_gradient(dataPoint *dy,
                         double *timeFrep,
                         double *timeFattr,
-			tsneparams params,
-			dataPoint *y,
-			BiCsb<dataPoint, unsigned int> * csb,
+                        tsneparams params,
+                        dataPoint *y,
+                        BiCsb<dataPoint, unsigned int> * csb,
+                        int p,
                         double *timeInfo = nullptr);
 
 
