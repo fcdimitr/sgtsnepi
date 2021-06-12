@@ -15,10 +15,11 @@
 
 #define GRID_SIZE_THRESHOLD 20  // Differenet parallelism strategy for small grids
 
-void nuconv( coord *PhiScat, coord *y, coord *VScat,
-             uint32_t *ib, uint32_t *cb, 
-             int n, int d, int m, int np, int nGridDim,
-             double *timeInfo = nullptr);
-
+extern "C" {
+    void nuconv( coord *PhiScat, coord *y, coord *VScat,
+                 uint32_t *ib, uint32_t *cb,
+                 int n, int d, int m, int np, int nGridDim,
+                 double *timeInfo = nullptr);
+}
 
 #endif /* NUCONV_HPP */

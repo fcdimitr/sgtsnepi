@@ -52,6 +52,7 @@ double g2(double d){
 
 #endif
 
+extern "C"{
 
 void s2g1d( double * V,
             double * y,
@@ -622,3 +623,5 @@ void g2s3d( double * Phi,
 
 }
 
+
+}

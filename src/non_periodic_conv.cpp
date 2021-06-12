@@ -23,6 +23,8 @@ double const pi = 4 * std::atan(1);
 
 #include "convolution_nopadding_helper.cpp"
 
+extern "C"{
+
 void conv1dnopad( double * const PhiGrid,
                   const double * const VGrid,
                   const double h,
@@ -725,4 +727,5 @@ void conv3dnopad( double * const PhiGrid,
   fftw_free( X );
   fftw_free( w );
 
+}
 }
