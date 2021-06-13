@@ -589,12 +589,7 @@ void conv3dnopad( double * const PhiGrid,
                   uint32_t * const nGridDims,
                   const uint32_t nVec,
                   const uint32_t nDim,
-                  const uint32_t nProc,
-                  double *timeInfo ) {
-
-  struct timeval start;
-
-  start = tsne_start_timer();
+                  const uint32_t nProc ) {
   
   // ~~~~~~~~~~~~~~~~~~~~ DEFINE VARIABLES
   fftw_complex *K, *X, *w;
@@ -636,11 +631,10 @@ void conv3dnopad( double * const PhiGrid,
   cilk_for (long int i = 0; i < n1*n2*n3*nVec; i++)
     Xc[i] = 0.0;
 
-  timeInfo[0] = tsne_stop_timer("[G2G] setup", start);
+  // ~~~~~~~~~~~~~~~~~~~~ SETUP PARALLELISM
+
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP FFTW PLANS
-
-  start = tsne_start_timer();
 
   planc_kernel = fftw_plan_dft_3d(n1, n2, n3, K, K, FFTW_FORWARD, FFTW_ESTIMATE);
 
@@ -656,61 +650,40 @@ void conv3dnopad( double * const PhiGrid,
                                      ostride, odist,
                                      FFTW_BACKWARD, FFTW_ESTIMATE);
 
-  timeInfo[1] = tsne_stop_timer("[G2G] FFTW setup", start);
-
   // ============================== 8 KERNELS
-
-  start = tsne_start_timer();
-
+  
   eee( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
-
-  timeInfo[2] = tsne_stop_timer("[G2G] EEE", start); start = tsne_start_timer();
 
   oee( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
 
-  timeInfo[3] = tsne_stop_timer("[G2G] OEE", start); start = tsne_start_timer();
-
   eoe( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
-
-  timeInfo[4] = tsne_stop_timer("[G2G] EOE", start); start = tsne_start_timer();
 
   ooe( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
 
-  timeInfo[5] = tsne_stop_timer("[G2G] OOE", start); start = tsne_start_timer();
-
   eeo( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
-
-  timeInfo[6] = tsne_stop_timer("[G2G] EEO", start); start = tsne_start_timer();
 
   oeo( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
 
-  timeInfo[7] = tsne_stop_timer("[G2G] OEO", start); start = tsne_start_timer();
-
   eoo( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
-
-  timeInfo[8] = tsne_stop_timer("[G2G] EOO", start); start = tsne_start_timer();
 
   ooo( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
 
-  timeInfo[9] = tsne_stop_timer("[G2G] OOO", start);
-
-  start = tsne_start_timer();
 
   for (uint32_t iVec=0; iVec<nVec; iVec++){
     for (uint32_t k=0; k<n3; k++){
@@ -721,9 +694,7 @@ void conv3dnopad( double * const PhiGrid,
       }
     }
   }
-
-  timeInfo[10] = tsne_stop_timer("[G2G] PhiGrid", start);
-  start = tsne_start_timer();
+  
 
   // ~~~~~~~~~~~~~~~~~~~~ DESTROY FFTW PLANS
   fftw_destroy_plan( planc_kernel );
@@ -734,8 +705,6 @@ void conv3dnopad( double * const PhiGrid,
   fftw_free( K );
   fftw_free( X );
   fftw_free( w );
-
-  timeInfo[11] = tsne_stop_timer("[G2G] Destroy/deallocate", start);
 
 }
 }
