@@ -18,7 +18,6 @@
 #include <cilk/reducer_opadd.h>
 
 #include <fftw3.h>
-#include <fftw3f.h>
 
 #include "timers.hpp"
 #include "qq.hpp"
@@ -173,7 +172,6 @@ void kl_minimization(coord* y,
   // ----- setup parallel FFTW
   fftw_init_threads();
   fftw_plan_with_nthreads( params.np );
-  fftw_plan_with_nthreadsf( params.np );
 
   std::cout << "Setting-up parallel FFTW: " << params.np << std::endl;
 
