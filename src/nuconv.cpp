@@ -113,7 +113,7 @@ void nuconv( coord *PhiScat, coord *y, coord *VScat,
     break;
 
   case 3:
-    conv3dnopad( PhiGrid, VGrid.data(), h, nGridDims, m, d, np );
+    conv3dnopad( PhiGrid, VGrid.data(), h, nGridDims, m, d, np, &timeInfo[4] );
     break;
 
   }

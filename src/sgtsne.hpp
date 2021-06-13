@@ -17,6 +17,7 @@
 #include "types.hpp"
 #include <iostream>             // NULL
 
+#define VERBOSE
 
 //! List of SG-t-SNE-Pi parameters
 /*! 

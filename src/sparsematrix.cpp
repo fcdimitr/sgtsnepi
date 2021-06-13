@@ -43,13 +43,13 @@ uint32_t makeStochastic(sparse_matrix P){
         stoch[j] = 1;
     }
 #ifdef VERBOSE
-    else {
-      std::cerr << "WARNING: Explicit zero weight"
-                << " [(i,j)=(" << P.row[P.col[t]] << "," << j << ")"
-                << " in a zero-sum row."
-                << "Skipping stochastic rescaling of row."
-                << std::endl;
-    }
+    // else {
+    //   std::cerr << "WARNING: Explicit zero weight"
+    //             << " [(i,j)=(" << P.row[P.col[j]] << "," << j << ")"
+    //             << " in a zero-sum row."
+    //             << "Skipping stochastic rescaling of row."
+    //             << std::endl;
+    // }
 #endif
 
   }
