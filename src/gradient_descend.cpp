@@ -17,6 +17,8 @@
 #include <cilk/cilk.h>
 #include <cilk/reducer_opadd.h>
 
+#include <fftw3.h>
+
 #include "timers.hpp"
 #include "qq.hpp"
 
@@ -167,6 +169,10 @@ void kl_minimization(coord* y,
 
   coord zeta = 0;
 
+  // ----- setup parallel FFTW
+  fftw_init_threads();
+  fftw_plan_with_nthreads( params.np );
+
   // ----- Allocate memory
   coord* dy    = new coord [n*d];
   coord* uy    = new coord [n*d];
@@ -243,6 +249,8 @@ void kl_minimization(coord* y,
             << " sec [" << timeFrep / (timeFattr + timeFrep) * 100
             << "%]" << std::endl;
 
+  // ----- cleanup FFTW
+  fftw_cleanup_threads();
 
   delete [] dy;
   delete [] uy;
