@@ -16,6 +16,7 @@
 #include <cstdlib>
 #include <cilk/cilk.h>
 #include <cilk/reducer_opadd.h>
+#include <vector>
 
 #include <fftw3.h>
 
@@ -23,6 +24,8 @@
 #include "qq.hpp"
 
 #define MAX_NV_EXACT 2000  // maximum number of vertices to run exact
+
+extern std::vector<double> GLOBAL_GRID_SIZES;
 
 template <class dataPoint>
 void compute_dy(dataPoint       * const dy,
@@ -82,12 +85,14 @@ void update_positions(dataPoint * const dY,
   // shrink
   if ( max_tot > bound_box ) {
     max_tot /= bound_box;
+    GLOBAL_GRID_SIZES.push_back( max_tot );
     cilk_for(int n = 0; n < N; n++) {
       for(int d = 0; d < no_dims; d++) {
         Y[n*no_dims + d] /= max_tot;
       }
     }
-  }
+  } else
+    GLOBAL_GRID_SIZES.push_back( 1.0 );
 
 }
 

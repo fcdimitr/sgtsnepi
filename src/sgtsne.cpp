@@ -347,7 +347,7 @@ extern "C"{
     double * Y = sgtsne( P, params, y_in, timeInfo );
 
     if (gridSizes != nullptr)
-      for (int i = 0; i < params.maxIter*2; i++)
+      for (int i = 0; i < params.maxIter*3; i++)
         gridSizes[i] = GLOBAL_GRID_SIZES[i];
 
     return Y;
