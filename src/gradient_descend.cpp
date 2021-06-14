@@ -131,14 +131,17 @@ double compute_gradient(dataPoint *dy,
   // ------ Compute QQ (frep)
   start = tsne_start_timer();
   double zeta;
-  if (n <= MAX_NV_EXACT || params.run_exact)
+  if (n <= MAX_NV_EXACT || params.run_exact){
     zeta = computeFrepulsive_exact(Frep, y, n, d);
-  else
+    GLOBAL_GRID_SIZES.push_back( 0.0 );
+    GLOBAL_GRID_SIZES.push_back( 0.0 )
+  } else {
     if (timeInfo != nullptr)
       zeta = computeFrepulsive_interp(Frep, y, n, d, params.h[p+1], params.np,
                                       &timeInfo[1]);
     else
       zeta = computeFrepulsive_interp(Frep, y, n, d, params.h[p+1], params.np);
+  }
 
   *timeFrep += tsne_stop_timer("QQ", start);
   // double zeta = computeFrepulsive_exact(Frep, y, n, d);
