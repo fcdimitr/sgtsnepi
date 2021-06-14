@@ -24,7 +24,7 @@
 // #define N_GRID_SIZE 7
 
 // global vector to report grid sizes
-std::vector<int> GLOBAL_GRID_SIZES;
+std::vector<double> GLOBAL_GRID_SIZES;
 
 coord computeFrepulsive_exact(coord * frep,
                               coord * pointsX,
@@ -187,7 +187,8 @@ coord computeFrepulsive_interp(coord * Frep,
     nGrid = (int) -h;
   }
 
-  GLOBAL_GRID_SIZES.push_back( nGrid+2 );
+  GLOBAL_GRID_SIZES.push_back( (double) (nGrid+2) );
+  GLOBAL_GRID_SIZES.push_back( maxy );
 
 #ifdef VERBOSE
   std::cout << "Grid: " << nGrid << " h: " << h << std::endl;
