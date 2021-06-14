@@ -35,6 +35,7 @@ typedef struct {
   int     np        = 0;         //!< Number of CILK workers (processes)
   double  bound_box = 1e64;      //!< Bounding box (default infinite)
   double  eta       = 200.0;     //!< learning rate
+  bool    run_exact = false;     //!< exact qq
 } tsneparams; 
 
 

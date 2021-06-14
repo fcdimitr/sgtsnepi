@@ -310,6 +310,7 @@ extern "C"{
     double const bound_box,
     double const eta,
     int    const n,
+    int    const run_exact,
     int    const np) {
 
     if  ( !GLOBAL_GRID_SIZES.empty() ) GLOBAL_GRID_SIZES.clear();
@@ -321,6 +322,7 @@ extern "C"{
     params.d = d_Y;
     params.n = n;
     params.h = h;
+    params.run_exact = (bool) run_exact;
     params.eta = eta;
     params.earlyIter = earlyExag;
     params.np = ( np <= 0 ) ? getWorkers() : np;

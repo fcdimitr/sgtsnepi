@@ -131,7 +131,7 @@ double compute_gradient(dataPoint *dy,
   // ------ Compute QQ (frep)
   start = tsne_start_timer();
   double zeta;
-  if (n <= MAX_NV_EXACT)
+  if (n <= MAX_NV_EXACT || params.run_exact)
     zeta = computeFrepulsive_exact(Frep, y, n, d);
   else
     if (timeInfo != nullptr)
