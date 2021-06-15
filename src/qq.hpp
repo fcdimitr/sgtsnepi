@@ -26,6 +26,7 @@ coord computeFrepulsive_interp(coord * Frep,
                                int d,
                                double h,
                                int np,
+                               int single,
                                double *timeInfo = nullptr);
 
 }

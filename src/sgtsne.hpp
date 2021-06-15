@@ -36,6 +36,7 @@ typedef struct {
   double  bound_box = 1e64;      //!< Bounding box (default infinite)
   double  eta       = 200.0;     //!< learning rate
   bool    run_exact = false;     //!< exact qq
+  int     fftw_single = 0;       //!< run FFTW single precision? (default false)
 } tsneparams; 
 
 

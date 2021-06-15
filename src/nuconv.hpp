@@ -19,6 +19,7 @@ extern "C" {
     void nuconv( coord *PhiScat, coord *y, coord *VScat,
                  uint32_t *ib, uint32_t *cb,
                  int n, int d, int m, int np, int nGridDim,
+                 int single,
                  double *timeInfo = nullptr);
 }
 

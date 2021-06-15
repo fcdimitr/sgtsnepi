@@ -25,6 +25,7 @@
 void nuconv( coord *PhiScat, coord *y, coord *VScat,
              uint32_t *ib, uint32_t *cb,
              int n, int d, int m, int np, int nGridDim,
+             int single,
              double *timeInfo){
 
   struct timeval start;
@@ -101,22 +102,39 @@ void nuconv( coord *PhiScat, coord *y, coord *VScat,
     nGridDims[i] = nGridDim + 2;
 
   start = tsne_start_timer();
-  
-  switch (d) {
 
-  case 1:
-    conv1dnopad( PhiGrid, VGrid.data(), h, nGridDims, m, d, np );
-    break;
+  if (single)
+    switch (d) {
 
-  case 2:
-    conv2dnopad( PhiGrid, VGrid.data(), h, nGridDims, m, d, np );
-    break;
+      case 1:
+        conv1dnopad_f( PhiGrid, VGrid.data(), h, nGridDims, m, d, np );
+        break;
 
-  case 3:
-    conv3dnopad( PhiGrid, VGrid.data(), h, nGridDims, m, d, np );
-    break;
+      case 2:
+        conv2dnopad_f( PhiGrid, VGrid.data(), h, nGridDims, m, d, np );
+        break;
 
-  }
+      case 3:
+        conv3dnopad_f( PhiGrid, VGrid.data(), h, nGridDims, m, d, np );
+        break;
+
+    }
+  else
+    switch (d) {
+
+      case 1:
+        conv1dnopad( PhiGrid, VGrid.data(), h, nGridDims, m, d, np );
+        break;
+
+      case 2:
+        conv2dnopad( PhiGrid, VGrid.data(), h, nGridDims, m, d, np );
+        break;
+
+      case 3:
+        conv3dnopad( PhiGrid, VGrid.data(), h, nGridDims, m, d, np );
+        break;
+
+    }
 
   if (timeInfo != nullptr)
     timeInfo[1] = tsne_stop_timer("G2G", start);

@@ -19,11 +19,27 @@ double kernel3d(double hsq, double i, double j, double k) {
   return pow(1.0 + hsq * ( i*i + j*j + k*k ), -2);
 }
 
+float kernel1d(float hsq, float i) {
+  return pow(1.0 + hsq * i*i, -2);
+}
+
+float kernel2d(float hsq, float i, float j) {
+  return pow(1.0 + hsq * ( i*i + j*j ), -2);
+}
+
+float kernel3d(float hsq, float i, float j, float k) {
+  return pow(1.0 + hsq * ( i*i + j*j + k*k ), -2);
+}
+
 double const pi = 4 * std::atan(1);
 
 #include "convolution_nopadding_helper.cpp"
 
 extern "C"{
+
+#include "conv1dnopad_f.cpp"
+#include "conv2dnopad_f.cpp"
+#include "conv3dnopad_f.cpp"
 
 void conv1dnopad( double * const PhiGrid,
                   const double * const VGrid,

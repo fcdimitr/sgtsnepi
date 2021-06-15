@@ -137,10 +137,10 @@ double compute_gradient(dataPoint *dy,
     GLOBAL_GRID_SIZES.push_back( 0.0 );
   } else {
     if (timeInfo != nullptr)
-      zeta = computeFrepulsive_interp(Frep, y, n, d, params.h[p+1], params.np,
+      zeta = computeFrepulsive_interp(Frep, y, n, d, params.h[p+1], params.np, params.fftw_single,
                                       &timeInfo[1]);
     else
-      zeta = computeFrepulsive_interp(Frep, y, n, d, params.h[p+1], params.np);
+      zeta = computeFrepulsive_interp(Frep, y, n, d, params.h[p+1], params.np, params.fftw_single);
   }
 
   *timeFrep += tsne_stop_timer("QQ", start);
@@ -180,6 +180,8 @@ void kl_minimization(coord* y,
   // ----- setup parallel FFTW
   fftw_init_threads();
   fftw_plan_with_nthreads( params.np );
+  fftwf_init_threads();
+  fftwf_plan_with_nthreads( params.np );
 
   std::cout << "Setting-up parallel FFTW: " << params.np << std::endl;
 

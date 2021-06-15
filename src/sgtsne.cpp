@@ -306,6 +306,8 @@ extern "C"{
     double const lambda,
     int    const maxIter,
     int    const earlyExag,
+    double const alpha,
+    int    const single,
     double       * const h,
     double const bound_box,
     double const eta,
@@ -317,6 +319,8 @@ extern "C"{
 
     tsneparams params;
 
+    params.alpha = alpha;
+    params.fftw_single = single;
     params.lambda = lambda;
     params.maxIter = maxIter;
     params.d = d_Y;

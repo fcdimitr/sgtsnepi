@@ -70,7 +70,8 @@ str_lib_not_found = 'The @0@ library is required.'
 # Search for all required dependencies, first using `dependency()` and then
 # using `cc.find_library()` (if `dependency()` pkg-config or CMake search
 # fails).  Format per dependency: [<lib pkg name>, <lib name>, [<lib headers>]].
-required_lib_deps = [['fftw3'    , 'FFTW3'                 , ['fftw3.h']]]
+required_lib_deps = [['fftw3'     , 'FFTW3'                  , ['fftw3.h']],
+                     ['fftw3f'    , 'FFTW3f'                 , ['fftw3.h']]]
 foreach l : required_lib_deps
   buf_dep = dependency(l[0], required : false)
   if not buf_dep.found()
@@ -82,27 +83,6 @@ foreach l : required_lib_deps
   libs_dep      += buf_dep
   libs_dep_dict += {l[0] : buf_dep}
 endforeach
-
-# parallel FFTW library
-if not ['', 'none'].contains(get_option('fftw_parallel_lib'))
-  fftw_par_dep = dependency('fftw3_' + get_option('fftw_parallel_lib'),
-                            required : false)
-  if not fftw_par_dep.found()
-    fftw_par_dep = cc.find_library('fftw3_' + get_option('fftw_parallel_lib'),
-                                   required : false)
-  endif
-  if not fftw_par_dep.found()
-    warning('Could not find fftw3_' + get_option('fftw_parallel_lib') + 'library.' +
-            ' Using single-threaded FFTW3 execution.')
-  endif
-else
-  fftw_par_dep = dependency('', required : false)
-endif
-if not fftw_par_dep.found()
-  add_project_arguments(['-DFFTW_NO_PARALLEL'], language : 'cpp')
-endif
-libs_dep = [fftw_par_dep] + libs_dep # NOTE -lfftw3_<parallel> should precede -lfftw3
-libs_dep_dict += {'fftw3_parallel' : fftw_par_dep}
 
 # ========== build targets
 
@@ -117,91 +97,3 @@ sgtsnepi_lib = library('sgtsnepi', [sgtsnepi_src],
                        install : true, install_dir : 'lib',
                        soversion : vso)
 
-# conventional t-SNE implementation
-# tsnepi_exe = executable('tsnepi', tsnepi_src,
-#                         link_with : sgtsnepi_lib,
-#                         dependencies : [libs_dep_dict['flann'],
-#                                         libs_dep_dict['lz4']],
-#                         install : true, install_dir : 'bin',
-#                         install_rpath : get_option('prefix') / 'lib')
-
-# demos
-# if get_option('enable_demos')
-#   demo_stochastic_matrix = executable('demo_stochastic_matrix',
-#                                       demo_stochastic_matrix_src,
-#                                       link_with : sgtsnepi_lib,
-#                                       install : true, install_dir : 'bin',
-#                                       install_rpath : get_option('prefix') / 'lib')
-#   demo_perplexity_equalization = executable('demo_perplexity_equalization',
-#                                             demo_perplexity_equalization_src,
-#                                             link_with : sgtsnepi_lib,
-#                                             dependencies : [libs_dep_dict['flann'],
-#                                                             libs_dep_dict['lz4']],
-#                                             install : true, install_dir : 'bin',
-#                                             install_rpath : get_option('prefix') / 'lib')
-# endif
-
-# # test
-# test_modules = executable('test_modules', test_modules_src,
-#                           link_with : sgtsnepi_lib,
-#                           install : true, install_dir : 'bin',
-#                           install_rpath : get_option('prefix') / 'lib')
-# test('SG-t-SNE-Pi test modules', test_modules, is_parallel : false)
-
-
-# # ========== Matlab interface
-
-# if get_option('enable_matlab')
-
-#   mroot = get_option('matlabroot')
-
-#   # MEX compilation flags
-#   if host_machine.system() == 'darwin' # macOS
-#     mexext   = 'mexmaci64'
-#     mexarch  = 'maci64'
-#     mexrpath = []
-#     mexsym   = ['-bundle',
-#                 '-Wl,-exported_symbols_list,' + mroot / 'extern' / 'lib' / mexarch / 'mexFunction.map']
-#   else                                 # Linux
-#     if host_machine.system() != 'linux'
-#       warning('Not sure how to configure MEX compilation for detected system' \
-#               + ' (' + host_machine.system() + ').  Using Linux configuration.')
-#     endif
-#     mexext   = 'mexa64'
-#     mexarch  = 'glnxa64'
-#     mexrpath = ['-Wl,-rpath=' + mroot / 'bin' / mexarch]
-#     if not is_icpc and use_cilkplus
-#       mexrpath += ['-Wl,-rpath=' + get_option('dir_libcilkrts')]
-#     endif
-#     mexsym   = ['-shared',
-#                 '-Wl,--version-script,' + mroot / 'extern' / 'lib' / mexarch / 'mexFunction.map']
-#   endif
-#   mex_cpp_args  = ['-I' + mroot / 'extern' / 'include'] + mexrpath + ['-fPIC']
-#   mex_link_args = ['-L' + mroot / 'bin' / mexarch, '-fno-common'] \
-#                   + mexsym + ['-lmx', '-lmex', '-lmat']
-
-#   # build MEX executables
-#   mex_bin_all = []
-#   foreach mex_src : mex_src_all
-#     # <path/to/filename>_mex.cpp --> <filename>.<mexext>
-#     mex_bin = fs.name('@0@'.format(mex_src[0]).split('_mex')[0])
-#     mex_bin = fs.replace_suffix(mex_bin, '.'+mexext)
-#     mex_bin_all += mex_bin
-#     executable(mex_bin, mex_src[0],
-#                cpp_args : mex_cpp_args,
-#                link_args : mex_link_args,
-#                link_with : sgtsnepi_lib,
-#                dependencies : mex_src[1],
-#                build_rpath : meson.current_build_dir(),
-#                install : true, install_dir : 'matlab',
-#                install_rpath : get_option('prefix') / 'lib')
-#   endforeach
-
-#   # install M-files
-#   install_subdir('matlab', install_dir : '', exclude_files : mex_bin_all)
-
-# endif
-
-# # ========== documentation
-
-# subdir('docs')
