@@ -23,7 +23,7 @@
 #include "timers.hpp"
 #include "qq.hpp"
 
-#define MAX_NV_EXACT 2000  // maximum number of vertices to run exact
+#define MAX_NV_EXACT 1000  // maximum number of vertices to run exact
 
 extern std::vector<double> GLOBAL_GRID_SIZES;
 
