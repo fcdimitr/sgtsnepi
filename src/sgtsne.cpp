@@ -312,6 +312,7 @@ extern "C"{
     double const bound_box,
     double const eta,
     int    const n,
+    int    const dropLeaf,
     int    const run_exact,
     int    const np) {
 
@@ -319,6 +320,7 @@ extern "C"{
 
     tsneparams params;
 
+    params.dropLeaf = (bool) dropLeaf;
     params.alpha = alpha;
     params.fftw_single = single;
     params.lambda = lambda;

@@ -183,7 +183,10 @@ void kl_minimization(coord* y,
   fftwf_init_threads();
   fftwf_plan_with_nthreads( params.np );
 
-  std::cout << "Setting-up parallel FFTW: " << params.np << std::endl;
+  if ( params.fftw_single )
+    std::cout << "Setting-up parallel (single-precision) FFTW: " << params.np << std::endl;
+  else
+    std::cout << "Setting-up parallel (double-precision) FFTW: " << params.np << std::endl;
 
   // ----- Allocate memory
   coord* dy    = new coord [n*d];
@@ -197,10 +200,10 @@ void kl_minimization(coord* y,
   }  
 
   // ----- Print precision
-  if (sizeof(y[0]) == 4)
-    std::cout << "Working with single precision" << std::endl;
-  else if (sizeof(y[0]) == 8)
-    std::cout << "Working with double precision" << std::endl;
+  // if (sizeof(y[0]) == 4)
+  //   std::cout << "Working with single precision" << std::endl;
+  // else if (sizeof(y[0]) == 8)
+  //   std::cout << "Working with double precision" << std::endl;
 
   // phase index
   int p = 0;
