@@ -16,12 +16,6 @@
 
 void printParams(tsneparams P){
 
-  double box_side_length = 0.0;
-  if (P.h[1] >= P.max_iter)
-    box_side_length = P.h[2];
-  else
-    box_side_length = P.h[2];
-
   std::cout << "Number of vertices: " << P.n << std::endl
             << "Embedding dimensions: " << P.d << std::endl
             << "Rescaling parameter λ: " << P.lambda << std::endl
@@ -30,7 +24,7 @@ void printParams(tsneparams P){
             << "Early exag. iterations: " << P.earlyIter << std::endl
             << "Learning rate: " << P.eta << std::endl;
 
-  if (P.h[1] >= P.max_iter)
+  if (P.h[1] >= P.maxIter)
     std::cout << "Box side length h: " << P.h[2] << std::endl;
   else
     std::cout << "Adaptive box side length h (chaning with iterations) " << std::endl;
