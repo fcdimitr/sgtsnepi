@@ -40,12 +40,12 @@ void conv2dnopad_f( double * const PhiGrid,
   wc = reinterpret_cast<std::complex<float> *> (w);
 
   // get twiddle factors
-  for (int i=0; i<nGridDims[0]; i++)
+  cilk_for (int i=0; i<nGridDims[0]; i++)
     wc[i] = std::polar(1.0, -2*pi*i/(2*nGridDims[0]) );
 
-  for (long int i = 0; i < n1*n2; i++)
+  cilk_for (long int i = 0; i < n1*n2; i++)
     Kc[i] = 0.0;
-  for (long int i = 0; i < n1*n2*nVec; i++)
+  cilk_for (long int i = 0; i < n1*n2*nVec; i++)
     Xc[i] = 0.0;
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP PARALLELISM
@@ -127,9 +127,9 @@ void conv2dnopad_f( double * const PhiGrid,
   // ============================== ODD-EVEN
 
 
-  for (long int i = 0; i < n1*n2; i++)
+  cilk_for (long int i = 0; i < n1*n2; i++)
     Kc[i] = 0.0;
-  for (long int i = 0; i < n1*n2*nVec; i++)
+  cilk_for (long int i = 0; i < n1*n2*nVec; i++)
     Xc[i] = 0.0;
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
   for (int j=0; j<n2; j++) {
@@ -203,9 +203,9 @@ void conv2dnopad_f( double * const PhiGrid,
   // ============================== EVEN-ODD
 
 
-  for (long int i = 0; i < n1*n2; i++)
+  cilk_for (long int i = 0; i < n1*n2; i++)
     Kc[i] = 0.0;
-  for (long int i = 0; i < n1*n2*nVec; i++)
+  cilk_for (long int i = 0; i < n1*n2*nVec; i++)
     Xc[i] = 0.0;
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
   for (int j=0; j<n2; j++) {
@@ -279,9 +279,9 @@ void conv2dnopad_f( double * const PhiGrid,
   // ============================== ODD-ODD
 
 
-  for (long int i = 0; i < n1*n2; i++)
+  cilk_for (long int i = 0; i < n1*n2; i++)
     Kc[i] = 0.0;
-  for (long int i = 0; i < n1*n2*nVec; i++)
+  cilk_for (long int i = 0; i < n1*n2*nVec; i++)
     Xc[i] = 0.0;
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
   for (int j=0; j<n2; j++) {
