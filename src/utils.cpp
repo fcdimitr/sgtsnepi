@@ -24,10 +24,13 @@ void printParams(tsneparams P){
             << "Early exag. iterations: " << P.earlyIter << std::endl
             << "Learning rate: " << P.eta << std::endl;
 
-  if (P.h[1] >= P.maxIter)
-    std::cout << "Box side length h: " << P.h[2] << std::endl;
+  if (P.run_exact)
+    std::cout << "Running exact QQ (quadratic complexity)" << std::endl;
   else
-    std::cout << "Adaptive box side length h (chaning with iterations) " << std::endl;
+    if (P.h[0] >= P.maxIter)
+      std::cout << "Box side length h: " << P.h[1] << std::endl;
+    else
+      std::cout << "Adaptive box side length h (changing with iterations) " << std::endl;
 
   std::cout << "Drop edges originating from leaf nodes? " << P.dropLeaf << std::endl
             << "Number of processes: " << P.np << std::endl;
