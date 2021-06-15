@@ -6,8 +6,6 @@ void conv1dnopad_f( double * const PhiGrid,
                     const uint32_t nDim,
                     const uint32_t np) {
 
-  printf("Single precision FFTW\n");
-
   // ~~~~~~~~~~~~~~~~~~~~ DEFINE VARIABLES
   fftwf_complex *K, *X, *w;
   std::complex<float> *Kc, *Xc, *wc;
