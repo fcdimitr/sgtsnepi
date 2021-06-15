@@ -81,7 +81,7 @@ void conv1dnopad( double * const PhiGrid,
   wc = reinterpret_cast<std::complex<double> *> (w);
   
   // get twiddle factors
-  cilk_for (uint32_t i=0; i<nGridDims[0]; i++)
+  cilk_for (int i=0; i<nGridDims[0]; i++)
     wc[i] = std::polar(1.0, -2*pi*i/(2*nGridDims[0]) );
 
   
@@ -114,7 +114,7 @@ void conv1dnopad( double * const PhiGrid,
     
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
   
-  for (uint32_t i=0; i<n1; i++) {
+  for (int i=0; i<n1; i++) {
     std::complex<double> tmp( kernel1d( hsq, i ), 0 );
              Kc[i]    += tmp;
     if (i>0) Kc[n1-i] += tmp;
@@ -122,8 +122,8 @@ void conv1dnopad( double * const PhiGrid,
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
   
-  for (uint32_t iVec=0; iVec<nVec; iVec++) {
-    for (uint32_t i=0; i<n1; i++) {
+  for (int iVec=0; iVec<nVec; iVec++) {
+    for (int i=0; i<n1; i++) {
       Xc[ SUB2IND2D(i, iVec ,n1) ] =
         VGrid[ SUB2IND2D(i, iVec, n1) ];
     }
@@ -137,8 +137,8 @@ void conv1dnopad( double * const PhiGrid,
   fftw_execute(planc_rhs);
 
   // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-  for (uint32_t jVec=0; jVec<nVec; jVec++) {
-    for (uint32_t i=0; i<n1; i++){
+  for (int jVec=0; jVec<nVec; jVec++) {
+    for (int i=0; i<n1; i++){
       Xc[SUB2IND2D(i,jVec,n1)] = Xc[SUB2IND2D(i,jVec,n1)] *
         Kc[i];
     }
@@ -149,8 +149,8 @@ void conv1dnopad( double * const PhiGrid,
 
   // ---------- (no conjugate multiplication)
   
-  for (uint32_t iVec=0; iVec<nVec; iVec++){
-    for (uint32_t i=0; i<n1; i++){
+  for (int iVec=0; iVec<nVec; iVec++){
+    for (int i=0; i<n1; i++){
       PhiGrid[ SUB2IND2D(i, iVec, n1) ] =
         Xc[ SUB2IND2D(i, iVec, n1) ].real();
     }
@@ -164,20 +164,20 @@ void conv1dnopad( double * const PhiGrid,
   cilk_for (long int i = 0; i < n1*nVec; i++)
     Xc[i] = 0.0;
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
-  for (uint32_t i=0; i<n1; i++) {
+  for (int i=0; i<n1; i++) {
     std::complex<double> tmp( kernel1d( hsq, i ), 0 );
              Kc[i]    += tmp;
     if (i>0) Kc[n1-i] -= tmp;
   }
 
-  for (uint32_t i=0; i<n1; i++) {
+  for (int i=0; i<n1; i++) {
     Kc[i] *= wc[i];
   }
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
 
-  for (uint32_t iVec=0; iVec<nVec; iVec++) {
-    for (uint32_t i=0; i<n1; i++) {
+  for (int iVec=0; iVec<nVec; iVec++) {
+    for (int i=0; i<n1; i++) {
       Xc[ SUB2IND2D(i, iVec ,n1) ] =
         VGrid[ SUB2IND2D(i, iVec, n1) ] * wc[i];
     }
@@ -190,8 +190,8 @@ void conv1dnopad( double * const PhiGrid,
   fftw_execute(planc_rhs);
 
   // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-  for (uint32_t jVec=0; jVec<nVec; jVec++) {
-    for (uint32_t i=0; i<n1; i++){
+  for (int jVec=0; jVec<nVec; jVec++) {
+    for (int i=0; i<n1; i++){
       Xc[SUB2IND2D(i,jVec,n1)] = Xc[SUB2IND2D(i,jVec,n1)] *
         Kc[i];
     }
@@ -202,16 +202,16 @@ void conv1dnopad( double * const PhiGrid,
 
   
   // ---------- data normalization
-  for (uint32_t iVec=0; iVec<nVec; iVec++) {
-    for (uint32_t i=0; i<n1; i++) {
+  for (int iVec=0; iVec<nVec; iVec++) {
+    for (int i=0; i<n1; i++) {
       Xc[ SUB2IND2D(i, iVec, n1) ] =
         Xc[ SUB2IND2D(i, iVec, n1) ] *
         std::conj(wc[i]);
     }
   }
   
-  for (uint32_t iVec=0; iVec<nVec; iVec++){
-    for (uint32_t i=0; i<n1; i++){
+  for (int iVec=0; iVec<nVec; iVec++){
+    for (int i=0; i<n1; i++){
       PhiGrid[ SUB2IND2D(i, iVec, n1) ] +=
         Xc[ SUB2IND2D(i, iVec, n1) ].real();
     }
@@ -272,7 +272,7 @@ void conv2dnopad( double * const PhiGrid,
   wc = reinterpret_cast<std::complex<double> *> (w);
 
   // get twiddle factors
-  cilk_for (uint32_t i=0; i<nGridDims[0]; i++)
+  cilk_for (int i=0; i<nGridDims[0]; i++)
     wc[i] = std::polar(1.0, -2*pi*i/(2*nGridDims[0]) );
   
   cilk_for (long int i = 0; i < n1*n2; i++)
@@ -302,8 +302,8 @@ void conv2dnopad( double * const PhiGrid,
   // ============================== EVEN-EVEN
   
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
-  for (uint32_t j=0; j<n2; j++) {
-    for (uint32_t i=0; i<n1; i++) {
+  for (int j=0; j<n2; j++) {
+    for (int i=0; i<n1; i++) {
       std::complex<double> tmp( kernel2d( hsq, i, j ), 0 );
       Kc[SUB2IND2D(i,j,n1)]      += tmp;
       if (i>0) Kc[SUB2IND2D(n1-i,j,n1)] += tmp;
@@ -313,9 +313,9 @@ void conv2dnopad( double * const PhiGrid,
   }
   
   // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-  for (uint32_t iVec=0; iVec<nVec; iVec++) {
-    for (uint32_t j=0; j<n2; j++) {
-      for (uint32_t i=0; i<n1; i++) {
+  for (int iVec=0; iVec<nVec; iVec++) {
+    for (int j=0; j<n2; j++) {
+      for (int i=0; i<n1; i++) {
         Xc[ SUB2IND3D(i, j, iVec ,n1, n2) ] =
           VGrid[ SUB2IND3D(i, j, iVec, n1, n2) ];
       }
@@ -330,9 +330,9 @@ void conv2dnopad( double * const PhiGrid,
   fftw_execute(planc_rhs);
 
   // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-  for (uint32_t jVec=0; jVec<nVec; jVec++) {
-    for (uint32_t j=0; j<n2; j++){
-      for (uint32_t i=0; i<n1; i++){
+  for (int jVec=0; jVec<nVec; jVec++) {
+    for (int j=0; j<n2; j++){
+      for (int i=0; i<n1; i++){
         Xc[SUB2IND3D(i,j,jVec,n1,n2)] = Xc[SUB2IND3D(i,j,jVec,n1,n2)] *
           Kc[SUB2IND2D(i,j,n1)];
       }
@@ -344,9 +344,9 @@ void conv2dnopad( double * const PhiGrid,
 
   // ---------- (no conjugate multiplication)
 
-  for (uint32_t iVec=0; iVec<nVec; iVec++){
-    for (uint32_t j=0; j<n2; j++){
-      for (uint32_t i=0; i<n1; i++){
+  for (int iVec=0; iVec<nVec; iVec++){
+    for (int j=0; j<n2; j++){
+      for (int i=0; i<n1; i++){
         PhiGrid[ SUB2IND3D(i, j, iVec, n1, n2) ] =
           Xc[ SUB2IND3D(i, j, iVec, n1, n2) ].real();
       }
@@ -361,8 +361,8 @@ void conv2dnopad( double * const PhiGrid,
   cilk_for (long int i = 0; i < n1*n2*nVec; i++)
     Xc[i] = 0.0;
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
-  for (uint32_t j=0; j<n2; j++) {
-    for (uint32_t i=0; i<n1; i++) {
+  for (int j=0; j<n2; j++) {
+    for (int i=0; i<n1; i++) {
       std::complex<double> tmp( kernel2d( hsq, i, j ), 0 );
       Kc[SUB2IND2D(i,j,n1)]      += tmp;
       if (i>0) Kc[SUB2IND2D(n1-i,j,n1)] -= tmp;
@@ -372,16 +372,16 @@ void conv2dnopad( double * const PhiGrid,
   }
 
   
-  for (uint32_t j=0; j<n2; j++) {
-    for (uint32_t i=0; i<n1; i++) {
+  for (int j=0; j<n2; j++) {
+    for (int i=0; i<n1; i++) {
       Kc[SUB2IND2D(i,j,n1)] *= wc[i];
     }
   }
   
   // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-  for (uint32_t iVec=0; iVec<nVec; iVec++) {
-    for (uint32_t j=0; j<n2; j++) {
-      for (uint32_t i=0; i<n1; i++) {
+  for (int iVec=0; iVec<nVec; iVec++) {
+    for (int j=0; j<n2; j++) {
+      for (int i=0; i<n1; i++) {
         Xc[ SUB2IND3D(i, j, iVec ,n1, n2) ] =
           VGrid[ SUB2IND3D(i, j, iVec, n1, n2) ] * wc[i];
       }
@@ -396,9 +396,9 @@ void conv2dnopad( double * const PhiGrid,
   fftw_execute(planc_rhs);
 
   // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-  for (uint32_t jVec=0; jVec<nVec; jVec++) {
-    for (uint32_t j=0; j<n2; j++){
-      for (uint32_t i=0; i<n1; i++){
+  for (int jVec=0; jVec<nVec; jVec++) {
+    for (int j=0; j<n2; j++){
+      for (int i=0; i<n1; i++){
         Xc[SUB2IND3D(i,j,jVec,n1,n2)] = Xc[SUB2IND3D(i,j,jVec,n1,n2)] *
           Kc[SUB2IND2D(i,j,n1)];
       }
@@ -409,9 +409,9 @@ void conv2dnopad( double * const PhiGrid,
   fftw_execute(planc_inverse);
 
   // ---------- data normalization
-  for (uint32_t iVec=0; iVec<nVec; iVec++) {
-    for (uint32_t j=0; j<n2; j++) {
-      for (uint32_t i=0; i<n1; i++) {
+  for (int iVec=0; iVec<nVec; iVec++) {
+    for (int j=0; j<n2; j++) {
+      for (int i=0; i<n1; i++) {
         Xc[ SUB2IND3D(i, j, iVec, n1,n2) ] =
           Xc[ SUB2IND3D(i, j,iVec, n1,n2) ] *
           std::conj(wc[i]);
@@ -419,9 +419,9 @@ void conv2dnopad( double * const PhiGrid,
     }
   }
 
-  for (uint32_t iVec=0; iVec<nVec; iVec++){
-    for (uint32_t j=0; j<n2; j++){
-      for (uint32_t i=0; i<n1; i++){
+  for (int iVec=0; iVec<nVec; iVec++){
+    for (int j=0; j<n2; j++){
+      for (int i=0; i<n1; i++){
         PhiGrid[ SUB2IND3D(i, j, iVec, n1, n2) ] +=
           Xc[ SUB2IND3D(i, j, iVec, n1, n2) ].real();
       }
@@ -437,8 +437,8 @@ void conv2dnopad( double * const PhiGrid,
   cilk_for (long int i = 0; i < n1*n2*nVec; i++)
     Xc[i] = 0.0;
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
-  for (uint32_t j=0; j<n2; j++) {
-    for (uint32_t i=0; i<n1; i++) {
+  for (int j=0; j<n2; j++) {
+    for (int i=0; i<n1; i++) {
       std::complex<double> tmp( kernel2d( hsq, i, j ), 0 );
       Kc[SUB2IND2D(i,j,n1)]      += tmp;
       if (i>0) Kc[SUB2IND2D(n1-i,j,n1)] += tmp;
@@ -448,16 +448,16 @@ void conv2dnopad( double * const PhiGrid,
   }
 
   
-  for (uint32_t j=0; j<n2; j++) {
-    for (uint32_t i=0; i<n1; i++) {
+  for (int j=0; j<n2; j++) {
+    for (int i=0; i<n1; i++) {
       Kc[SUB2IND2D(i,j,n1)] *= wc[j];
     }
   }
   
   // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-  for (uint32_t iVec=0; iVec<nVec; iVec++) {
-    for (uint32_t j=0; j<n2; j++) {
-      for (uint32_t i=0; i<n1; i++) {
+  for (int iVec=0; iVec<nVec; iVec++) {
+    for (int j=0; j<n2; j++) {
+      for (int i=0; i<n1; i++) {
         Xc[ SUB2IND3D(i, j, iVec ,n1, n2) ] =
           VGrid[ SUB2IND3D(i, j, iVec, n1, n2) ] * wc[j];
       }
@@ -472,9 +472,9 @@ void conv2dnopad( double * const PhiGrid,
   fftw_execute(planc_rhs);
 
   // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-  for (uint32_t jVec=0; jVec<nVec; jVec++) {
-    for (uint32_t j=0; j<n2; j++){
-      for (uint32_t i=0; i<n1; i++){
+  for (int jVec=0; jVec<nVec; jVec++) {
+    for (int j=0; j<n2; j++){
+      for (int i=0; i<n1; i++){
         Xc[SUB2IND3D(i,j,jVec,n1,n2)] = Xc[SUB2IND3D(i,j,jVec,n1,n2)] *
           Kc[SUB2IND2D(i,j,n1)];
       }
@@ -485,9 +485,9 @@ void conv2dnopad( double * const PhiGrid,
   fftw_execute(planc_inverse);
 
   // ---------- data normalization
-  for (uint32_t iVec=0; iVec<nVec; iVec++) {
-    for (uint32_t j=0; j<n2; j++) {
-      for (uint32_t i=0; i<n1; i++) {
+  for (int iVec=0; iVec<nVec; iVec++) {
+    for (int j=0; j<n2; j++) {
+      for (int i=0; i<n1; i++) {
         Xc[ SUB2IND3D(i, j, iVec, n1,n2) ] =
           Xc[ SUB2IND3D(i, j,iVec, n1,n2) ] *
           std::conj(wc[j]);
@@ -495,9 +495,9 @@ void conv2dnopad( double * const PhiGrid,
     }
   }
 
-  for (uint32_t iVec=0; iVec<nVec; iVec++){
-    for (uint32_t j=0; j<n2; j++){
-      for (uint32_t i=0; i<n1; i++){
+  for (int iVec=0; iVec<nVec; iVec++){
+    for (int j=0; j<n2; j++){
+      for (int i=0; i<n1; i++){
         PhiGrid[ SUB2IND3D(i, j, iVec, n1, n2) ] +=
           Xc[ SUB2IND3D(i, j, iVec, n1, n2) ].real();
       }
@@ -513,8 +513,8 @@ void conv2dnopad( double * const PhiGrid,
   cilk_for (long int i = 0; i < n1*n2*nVec; i++)
     Xc[i] = 0.0;
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
-  for (uint32_t j=0; j<n2; j++) {
-    for (uint32_t i=0; i<n1; i++) {
+  for (int j=0; j<n2; j++) {
+    for (int i=0; i<n1; i++) {
       std::complex<double> tmp( kernel2d( hsq, i, j ), 0 );
       Kc[SUB2IND2D(i,j,n1)]      += tmp;
       if (i>0) Kc[SUB2IND2D(n1-i,j,n1)] -= tmp;
@@ -522,16 +522,16 @@ void conv2dnopad( double * const PhiGrid,
       if (i>0 && j>0) Kc[SUB2IND2D(n1-i,n2-j,n1)] += tmp;
     }
   }
-  for (uint32_t j=0; j<n2; j++) {
-    for (uint32_t i=0; i<n1; i++) {
+  for (int j=0; j<n2; j++) {
+    for (int i=0; i<n1; i++) {
       Kc[SUB2IND2D(i,j,n1)] *= wc[j]*wc[i];
     }
   }
   
   // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-  for (uint32_t iVec=0; iVec<nVec; iVec++) {
-    for (uint32_t j=0; j<n2; j++) {
-      for (uint32_t i=0; i<n1; i++) {
+  for (int iVec=0; iVec<nVec; iVec++) {
+    for (int j=0; j<n2; j++) {
+      for (int i=0; i<n1; i++) {
         Xc[ SUB2IND3D(i, j, iVec ,n1, n2) ] =
           VGrid[ SUB2IND3D(i, j, iVec, n1, n2) ] * wc[j] * wc[i];
       }
@@ -546,9 +546,9 @@ void conv2dnopad( double * const PhiGrid,
   fftw_execute(planc_rhs);
 
   // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-  for (uint32_t jVec=0; jVec<nVec; jVec++) {
-    for (uint32_t j=0; j<n2; j++){
-      for (uint32_t i=0; i<n1; i++){
+  for (int jVec=0; jVec<nVec; jVec++) {
+    for (int j=0; j<n2; j++){
+      for (int i=0; i<n1; i++){
         Xc[SUB2IND3D(i,j,jVec,n1,n2)] = Xc[SUB2IND3D(i,j,jVec,n1,n2)] *
           Kc[SUB2IND2D(i,j,n1)];
       }
@@ -559,9 +559,9 @@ void conv2dnopad( double * const PhiGrid,
   fftw_execute(planc_inverse);
 
   // ---------- data normalization
-  for (uint32_t iVec=0; iVec<nVec; iVec++) {
-    for (uint32_t j=0; j<n2; j++) {
-      for (uint32_t i=0; i<n1; i++) {
+  for (int iVec=0; iVec<nVec; iVec++) {
+    for (int j=0; j<n2; j++) {
+      for (int i=0; i<n1; i++) {
         Xc[ SUB2IND3D(i, j, iVec, n1,n2) ] =
           Xc[ SUB2IND3D(i, j,iVec, n1,n2) ] *
           std::conj(wc[i]) * std::conj(wc[j]);
@@ -569,18 +569,18 @@ void conv2dnopad( double * const PhiGrid,
     }
   }
 
-  for (uint32_t iVec=0; iVec<nVec; iVec++){
-    for (uint32_t j=0; j<n2; j++){
-      for (uint32_t i=0; i<n1; i++){
+  for (int iVec=0; iVec<nVec; iVec++){
+    for (int j=0; j<n2; j++){
+      for (int i=0; i<n1; i++){
         PhiGrid[ SUB2IND3D(i, j, iVec, n1, n2) ] +=
           Xc[ SUB2IND3D(i, j, iVec, n1, n2) ].real();
       }
     }
   }
   
-  for (uint32_t iVec=0; iVec<nVec; iVec++){
-    for (uint32_t j=0; j<n2; j++){
-      for (uint32_t i=0; i<n1; i++){
+  for (int iVec=0; iVec<nVec; iVec++){
+    for (int j=0; j<n2; j++){
+      for (int i=0; i<n1; i++){
         PhiGrid[ SUB2IND3D(i, j, iVec, n1, n2) ] *= 0.25 / ((double) n1*n2);
       }
     }
@@ -639,7 +639,7 @@ void conv3dnopad( double * const PhiGrid,
   wc = reinterpret_cast<std::complex<double> *> (w);
 
   // get twiddle factors
-  cilk_for (uint32_t i=0; i<nGridDims[0]; i++)
+  cilk_for (int i=0; i<nGridDims[0]; i++)
     wc[i] = std::polar(1.0, -2*pi*i/(2*nGridDims[0]) );
   
   cilk_for (long int i = 0; i < n1*n2*n3; i++)
@@ -701,10 +701,10 @@ void conv3dnopad( double * const PhiGrid,
        n1, n2, n3, nVec, hsq );
 
 
-  for (uint32_t iVec=0; iVec<nVec; iVec++){
-    for (uint32_t k=0; k<n3; k++){
-      for (uint32_t j=0; j<n2; j++){
-        for (uint32_t i=0; i<n1; i++){
+  for (int iVec=0; iVec<nVec; iVec++){
+    for (int k=0; k<n3; k++){
+      for (int j=0; j<n2; j++){
+        for (int i=0; i<n1; i++){
           PhiGrid[ SUB2IND4D(i, j, k, iVec, n1, n2, n3) ] *= 0.125 / ((double) n1*n2*n3);
         }
       }
