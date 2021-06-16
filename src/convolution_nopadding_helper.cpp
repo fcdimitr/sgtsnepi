@@ -26,22 +26,22 @@ void eee( double * const PhiGrid, const double *VGrid,
     cilk_for (long int i = 0; i < n1*n2*n3*nVec; i++)
         Xc[i] = 0.0;
 
-// ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
-for (long k=0; k<n3; k++) {
-  for (long j=0; j<n2; j++) {
-    for (long i=0; i<n1; i++) {
-      std::complex<double> tmp( kernel3d( hsq, i, j, k ), 0 );
-      Kc[SUB2IND3D(i,j,k,n1,n2)] += tmp;
-      if (i>0) Kc[SUB2IND3D(n1-i,j,k,n1,n2)] += tmp;
-      if (j>0) Kc[SUB2IND3D(i,n2-j,k,n1,n2)] += tmp;
-      if (i>0 && j>0) Kc[SUB2IND3D(n1-i,n2-j,k,n1,n2)] += tmp;
-      if (k>0) Kc[SUB2IND3D(i,j,n3-k,n1,n2)] += tmp;
-      if (k>0 && i>0) Kc[SUB2IND3D(n1-i,j,n3-k,n1,n2)] += tmp;
-      if (k>0 && j>0) Kc[SUB2IND3D(i,n2-j,n3-k,n1,n2)] += tmp;
-      if (k>0 && i>0 && j>0) Kc[SUB2IND3D(n1-i,n2-j,n3-k,n1,n2)] += tmp;
+    // ~~~~~~~~~~~~~~~~~~~~ SETUP CAUCHY KERNEL
+    cilk_for (int k=0; k<n3; k++) {
+      for (int j=0; j<n2; j++) {
+        for (int i=0; i<n1; i++) {
+          double tmp = kernel3d( hsq, i, j, k );
+          Kc[SUB2IND3D(i,j,k,n1,n2)         ] += std::complex<double>(tmp);
+          Kc[SUB2IND3D(n1-i,j,k,n1,n2)      ] += std::complex<double>(tmp * (i>0));
+          Kc[SUB2IND3D(i,n2-j,k,n1,n2)      ] += std::complex<double>(tmp * (j>0));
+          Kc[SUB2IND3D(n1-i,n2-j,k,n1,n2)   ] += std::complex<double>(tmp * (i>0 && j>0));
+          Kc[SUB2IND3D(i,j,n3-k,n1,n2)      ] += std::complex<double>(tmp * (k>0));
+          Kc[SUB2IND3D(n1-i,j,n3-k,n1,n2)   ] += std::complex<double>(tmp * (k>0 && i>0));
+          Kc[SUB2IND3D(i,n2-j,n3-k,n1,n2)   ] += std::complex<double>(tmp * (k>0 && j>0));
+          Kc[SUB2IND3D(n1-i,n2-j,n3-k,n1,n2)] += std::complex<double>(tmp * (k>0 && i>0 && j>0));
+        }
+      }
     }
-  }
- }
 
 tsne_stop_timer("eee: setup", start); start = tsne_start_timer();
 
