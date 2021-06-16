@@ -344,6 +344,8 @@ extern "C"{
     params.np = ( np <= 0 ) ? getWorkers() : np;
     params.bound_box = bound_box;
 
+    setWorkers( params.np );
+
     sparse_matrix P;
 
      // ---------- prepare local matrices

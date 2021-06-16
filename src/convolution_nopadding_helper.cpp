@@ -27,7 +27,7 @@ void eee( double * const PhiGrid, const double *VGrid,
         Xc[i] = 0.0;
 
     // ~~~~~~~~~~~~~~~~~~~~ SETUP CAUCHY KERNEL
-    cilk_for (int k=0; k<n3; k++) {
+    for (int k=0; k<n3; k++) {
       for (int j=0; j<n2; j++) {
         for (int i=0; i<n1; i++) {
           double tmp = kernel3d( hsq, i, j, k );

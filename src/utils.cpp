@@ -159,6 +159,14 @@ int getWorkers(){
   return __cilkrts_get_nworkers();
 }
 
+void setWorkers(int n){
+  std::string str = std::to_string(n);
+
+  __cilkrts_end_cilk();
+  if ( 0!=__cilkrts_set_param("nworkers", str.c_str() ) )
+    std::cerr << "Error setting workers" << std::endl;
+}
+
 double * readXfromMTX( const char *filename, int *n, int *d ){
 
   // ~~~~~~~~~~ variable declarations
