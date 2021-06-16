@@ -20,7 +20,8 @@
 #include "nuconv.hpp"
 #include "dataReloc.hpp"
 
-#define N_GRID_SIZE 57
+#define N_GRID_SIZE 26
+// #define N_GRID_SIZE 57
 // #define N_GRID_SIZE 7
 
 // global vector to report grid sizes
@@ -120,13 +121,18 @@ dataval zetaAndForce( dataval * const F,            // Forces
 int getBestGridSize( int nGrid ){
 
   // list of FFT sizes that work "fast" with FFTW
+  // int listGridSize[N_GRID_SIZE] =
+  //   {16, 18, 20, 24, 25, 27, 30, 32, 36, 40, 45, 48, 50,
+  //    54, 60, 64, 72, 75, 80, 81, 90, 96, 100, 108, 120,
+  //    125, 128, 135, 144, 150, 160, 162, 180, 192, 200,
+  //    216, 225, 240, 243, 250, 256, 270, 288, 300, 320,
+  //    324, 360, 375, 384, 400, 405, 432, 450, 480, 486,
+  //    500, 512};
+
   int listGridSize[N_GRID_SIZE] =
-    {16, 18, 20, 24, 25, 27, 30, 32, 36, 40, 45, 48, 50,
-     54, 60, 64, 72, 75, 80, 81, 90, 96, 100, 108, 120,
-     125, 128, 135, 144, 150, 160, 162, 180, 192, 200,
-     216, 225, 240, 243, 250, 256, 270, 288, 300, 320,
-     324, 360, 375, 384, 400, 405, 432, 450, 480, 486,
-     500, 512};
+    {16, 18, 24, 27, 32, 36, 48, 54, 64, 72, 81, 96, 108,
+     128, 144, 162, 192, 216, 243, 256, 288, 324, 384, 432,
+     486, 512}
 
   // int listGridSize[N_GRID_SIZE] =
   //   {8,16,32,64,128,256,512};
