@@ -5,7 +5,7 @@
 #include <cmath>
 #include <cilk/cilk.h>
 #include "matrix_indexing.hpp"
-
+#include "timers.hpp"
 
 double kernel1d(double hsq, double i) {
   return pow(1.0 + hsq * i*i, -2);
@@ -606,7 +606,10 @@ void conv3dnopad( double * const PhiGrid,
                   const uint32_t nVec,
                   const uint32_t nDim,
                   const uint32_t nProc ) {
-  
+
+  struct timeval start;
+  start = tsne_start_timer();
+
   // ~~~~~~~~~~~~~~~~~~~~ DEFINE VARIABLES
   fftw_complex *K, *X, *w;
   std::complex<double> *Kc, *Xc, *wc;
@@ -648,7 +651,7 @@ void conv3dnopad( double * const PhiGrid,
     Xc[i] = 0.0;
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP PARALLELISM
-
+  tsne_stop_timer("init", start); start = tsne_start_timer();
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP FFTW PLANS
 
@@ -665,6 +668,7 @@ void conv3dnopad( double * const PhiGrid,
                                      X, onembed,
                                      ostride, odist,
                                      FFTW_BACKWARD, FFTW_ESTIMATE);
+  tsne_stop_timer("plan", start); start = tsne_start_timer();
 
   // ============================== 8 KERNELS
   
@@ -672,33 +676,49 @@ void conv3dnopad( double * const PhiGrid,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
 
+  tsne_stop_timer("eee", start); start = tsne_start_timer();
+
   oee( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
+
+  tsne_stop_timer("oee", start); start = tsne_start_timer();
 
   eoe( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
 
+  tsne_stop_timer("eoe", start); start = tsne_start_timer();
+
   ooe( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
+
+  tsne_stop_timer("ooe", start); start = tsne_start_timer();
 
   eeo( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
 
+  tsne_stop_timer("eeo", start); start = tsne_start_timer();
+
   oeo( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
+
+  tsne_stop_timer("oeo", start); start = tsne_start_timer();
 
   eoo( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
 
+  tsne_stop_timer("eoo", start); start = tsne_start_timer();
+
   ooo( PhiGrid, VGrid, Xc, Kc, wc,
        planc_kernel, planc_rhs, planc_inverse,
        n1, n2, n3, nVec, hsq );
+
+  tsne_stop_timer("ooo", start); start = tsne_start_timer();
 
 
   for (int iVec=0; iVec<nVec; iVec++){
@@ -710,7 +730,8 @@ void conv3dnopad( double * const PhiGrid,
       }
     }
   }
-  
+
+  tsne_stop_timer("phi", start); start = tsne_start_timer();
 
   // ~~~~~~~~~~~~~~~~~~~~ DESTROY FFTW PLANS
   fftw_destroy_plan( planc_kernel );
@@ -721,6 +742,8 @@ void conv3dnopad( double * const PhiGrid,
   fftw_free( K );
   fftw_free( X );
   fftw_free( w );
+
+  tsne_stop_timer("destroy", start); start = tsne_start_timer();
 
 }
 }
