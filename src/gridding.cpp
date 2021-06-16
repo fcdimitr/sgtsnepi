@@ -12,6 +12,9 @@
 #include <iostream>
 #include <cilk/cilk.h>
 #include <cmath>
+#include <vector>
+#include <cstring>
+#include <algorithm>
 #include "matrix_indexing.hpp"
 
 #define LAGRANGE_INTERPOLATION
@@ -623,5 +626,94 @@ void g2s3d( double * Phi,
 
 }
 
+  double stochastic_min(double const * const Y, int d, int n, double tau)
+    {
+      tau = tau < 0 ? 0 : tau;
+      double min = std::numeric_limits<double>::infinity();
+      int prctile = (int) floor(tau * n);
+      prctile = (prctile >= n) ? (n-1) : prctile;
+
+      for (int j = 0 ; j < d; j++){
+        std::vector<double> v;
+        v.reserve(n);
+        for (int i = 0; i < n; i++)
+          v.push_back( Y[i*d + j] );
+
+        std::nth_element( v.begin(), v.begin() + prctile, v.end() );
+
+        if ( v[prctile] < min )
+          min = v[prctile];
+      }
+
+      return min;
+    }
+
+    double stochastic_max(double const * const Y, int d, int n, double tau)
+    {
+      tau = tau < 0 ? 0 : tau;
+      double max = -1 *std::numeric_limits<double>::infinity();
+      int prctile = (int) floor(tau * n);
+      prctile = (prctile >= n) ? (n-1) : prctile;
+
+      for (int j = 0 ; j < d; j++){
+        std::vector<double> v;
+        v.reserve(n);
+        for (int i = 0; i < n; i++)
+          v.push_back( Y[i*d + j] );
+
+        std::nth_element( v.begin(), v.begin() + prctile, v.end() );
+
+        if ( v[prctile] > max )
+          max = v[prctile];
+      }
+
+      return max;
+    }
+
+    void separate_points( double ** Yin, double ** Yex,
+                          int ** idx_in, int ** idx_ex,
+                          int * n_in, int * n_ex,
+                          double const * const Y, int d, int n, double tau ){
+
+      double min = stochastic_min( Y, d, n, tau );
+      double max = stochastic_max( Y, d, n, 1.0 - tau );
+
+      std::vector<int>    p_in; p_in.reserve(n);
+      std::vector<int>    p_ex; p_ex.reserve(n);
+
+      std::vector<double> y_in; y_in.reserve(n*d);
+      std::vector<double> y_ex; y_ex.reserve(n*d);
+
+      for (int i = 0; i < n; i++){
+        bool is_in = true;
+        for (int j = 0; j < d; j++)
+          is_in &= ( Y[i*d + j] >= min && Y[i*d + j] <= max ) ;
+
+        if (is_in) {
+          for (int j = 0; j < d; j++)
+            y_in.push_back( Y[i*d + j] );
+          p_in.push_back(i);
+        } else {
+          for (int j = 0; j < d; j++)
+            y_ex.push_back( Y[i*d + j] );
+          p_ex.push_back(i);
+        }
+      }
+
+      n_in[0]  = (int) p_in.size();
+      n_ex[0]  = (int) p_ex.size();
+
+      Yin[0] = (double *) malloc( (*n_in) * d * sizeof(double) );
+      Yex[0] = (double *) malloc( (*n_ex) * d * sizeof(double) );
+      idx_in[0] = (int *) malloc( (*n_in) * sizeof(int) );
+      idx_ex[0] = (int *) malloc( (*n_ex) * sizeof(int) );
+
+      std::memcpy( *Yin, y_in.data(), (*n_in) * d * sizeof(double) );
+      std::memcpy( *Yex, y_ex.data(), (*n_ex) * d * sizeof(double) );
+      std::memcpy( *idx_in, p_in.data(), (*n_in) * sizeof(int) );
+      std::memcpy( *idx_ex, p_ex.data(), (*n_ex) * sizeof(int) );
+
+      return;
+    }
 
 }
