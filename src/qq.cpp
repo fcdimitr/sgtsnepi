@@ -132,7 +132,7 @@ int getBestGridSize( int nGrid ){
   int listGridSize[N_GRID_SIZE] =
     {16, 18, 24, 27, 32, 36, 48, 54, 64, 72, 81, 96, 108,
      128, 144, 162, 192, 216, 243, 256, 288, 324, 384, 432,
-     486, 512}
+     486, 512};
 
   // int listGridSize[N_GRID_SIZE] =
   //   {8,16,32,64,128,256,512};
