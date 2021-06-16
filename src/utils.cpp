@@ -160,10 +160,11 @@ int getWorkers(){
 }
 
 void setWorkers(int n){
-  std::string str = std::to_string(n);
+  char str[4];
+  sprintf( str, "%d", n );
 
   __cilkrts_end_cilk();
-  if ( 0!=__cilkrts_set_param("nworkers", str.c_str() ) )
+  if ( 0!=__cilkrts_set_param("nworkers", str ) )
     std::cerr << "Error setting workers" << std::endl;
 }
 
