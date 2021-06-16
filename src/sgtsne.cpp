@@ -291,6 +291,8 @@ sparse_matrix perplexityEqualization( int *I, double *D, int n, int nn, double u
 ///////////////////////////////////////////////////////////////////////////////
 
 extern std::vector<double> GLOBAL_GRID_SIZES;
+extern int N_GRID_SIZE;
+extern int *listGridSize;
 
 extern "C"{
 
@@ -311,12 +313,20 @@ extern "C"{
     double       * const h,
     double const bound_box,
     double const eta,
+    int    const * const list_grid_size_jl,
+    int    const n_grid_size_jl,
     int    const n,
     int    const dropLeaf,
     int    const run_exact,
     int    const np) {
 
     if  ( !GLOBAL_GRID_SIZES.empty() ) GLOBAL_GRID_SIZES.clear();
+
+    N_GRID_SIZE = n_grid_size_jl;
+
+    listGridSize = new int [N_GRID_SIZE];
+
+    std::copy( list_grid_size_jl, list_grid_size_jl + N_GRID_SIZE, listGridSize  );
 
     tsneparams params;
 
@@ -357,6 +367,8 @@ extern "C"{
     if (gridSizes != nullptr)
       for (int i = 0; i < params.maxIter*3; i++)
         gridSizes[i] = GLOBAL_GRID_SIZES[i];
+
+    delete[] listGridSize;
 
     return Y;
 

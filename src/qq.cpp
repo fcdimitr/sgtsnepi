@@ -20,12 +20,18 @@
 #include "nuconv.hpp"
 #include "dataReloc.hpp"
 
-#define N_GRID_SIZE 26
+int N_GRID_SIZE = 26;
 // #define N_GRID_SIZE 57
 // #define N_GRID_SIZE 7
 
 // global vector to report grid sizes
 std::vector<double> GLOBAL_GRID_SIZES;
+
+
+int *listGridSize;
+// {16, 18, 24, 27, 32, 36, 48, 54, 64, 72, 81, 96, 108,
+//  128, 144, 162, 192, 216, 243, 256, 288, 324, 384, 432,
+//  486, 512};
 
 coord computeFrepulsive_exact(coord * frep,
                               coord * pointsX,
@@ -129,10 +135,10 @@ int getBestGridSize( int nGrid ){
   //    324, 360, 375, 384, 400, 405, 432, 450, 480, 486,
   //    500, 512};
 
-  int listGridSize[N_GRID_SIZE] =
-    {16, 18, 24, 27, 32, 36, 48, 54, 64, 72, 81, 96, 108,
-     128, 144, 162, 192, 216, 243, 256, 288, 324, 384, 432,
-     486, 512};
+  // int listGridSize[N_GRID_SIZE] =
+  //   {16, 18, 24, 27, 32, 36, 48, 54, 64, 72, 81, 96, 108,
+  //    128, 144, 162, 192, 216, 243, 256, 288, 324, 384, 432,
+  //    486, 512};
 
   // int listGridSize[N_GRID_SIZE] =
   //   {8,16,32,64,128,256,512};
