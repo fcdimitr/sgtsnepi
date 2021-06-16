@@ -2,3 +2,7 @@ option('tune_native',
        type : 'boolean',
        value : false,
        description : 'Use compilation tuning flags for native/host architecture?')
+option('print_times',
+       type : 'boolean',
+       value : false,
+       description : 'Print module times?')

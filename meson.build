@@ -33,6 +33,9 @@ cc.has_header('cilk/cilk_api.h'     , required : true)
 cc.has_header('cilk/reducer_opadd.h', required : true)
 cc.has_header('cilk/reducer_max.h'  , required : true)
 
+
+
+
 # icpc-specific flags
 if is_icpc
   add_project_arguments(['-wd3947,3946,10006,3950'], language : 'cpp')
@@ -46,6 +49,11 @@ if use_opencilk
 elif use_cilkplus
   add_project_arguments(['-fcilkplus'], language : 'cpp')
   add_project_link_arguments(['-lcilkrts'], language : 'cpp')
+endif
+
+# add flag for showing times
+if get_option('print_times')
+  add_project_arguments(['-DPRINT_DEBUG_TIME'], language : 'cpp')
 endif
 
 # compiler optimizations for host computer
