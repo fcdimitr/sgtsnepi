@@ -126,7 +126,7 @@ cilk_for (int k=0; k<n3; k++) {
  tsne_stop_timer("oee: setup", start); start = tsne_start_timer();
    
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-for (int iVec=0; iVec<nVec; iVec++) {
+cilk_for (int iVec=0; iVec<nVec; iVec++) {
   for (int k=0; k<n3; k++) {
     for (int j=0; j<n2; j++) {
       for (int i=0; i<n1; i++) {
@@ -151,16 +151,9 @@ fftw_execute(planc_rhs);
 tsne_stop_timer("oee: fft-rhs", start); start = tsne_start_timer();
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-for (int jVec=0; jVec<nVec; jVec++) {
-  for (int k=0; k<n3; k++){
-    for (int j=0; j<n2; j++){
-      for (int i=0; i<n1; i++){
-        Xc[SUB2IND4D(i,j,k,jVec,n1,n2,n3)] = Xc[SUB2IND4D(i,j,k,jVec,n1,n2,n3)] *
-          Kc[SUB2IND3D(i,j,k,n1,n2)];
-      }
-    }
-  }
- }
+cilk_for (long i = 0; i < n1*n2*n3; i++)
+    for (long jVec = 0; jVec < nVec; jVec++)
+        Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
 tsne_stop_timer("oee: hadmard", start); start = tsne_start_timer();
 
@@ -170,7 +163,7 @@ fftw_execute(planc_inverse);
 tsne_stop_timer("oee: ifft", start); start = tsne_start_timer();
 
 // ---------- data normalization
- for (int iVec=0; iVec<nVec; iVec++) {
+ cilk_for (int iVec=0; iVec<nVec; iVec++) {
    for (int k=0; k<n3; k++){
      for (int j=0; j<n2; j++) {
        for (int i=0; i<n1; i++) {
@@ -182,16 +175,9 @@ tsne_stop_timer("oee: ifft", start); start = tsne_start_timer();
    }
  }
   
- for (int iVec=0; iVec<nVec; iVec++){
-   for (int k=0; k<n3; k++){
-     for (int j=0; j<n2; j++){
-       for (int i=0; i<n1; i++){
-         PhiGrid[ SUB2IND4D(i, j, k, iVec, n1, n2, n3) ] +=
-           Xc[ SUB2IND4D(i, j, k, iVec, n1, n2, n3) ].real();
-       }
-     }
-   }
- }
+ cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+    PhiGrid[i] += Xc[i].real();
+
 
  tsne_stop_timer("oee: final", start); start = tsne_start_timer();
 
@@ -234,7 +220,7 @@ cilk_for (int k=0; k<n3; k++) {
  }
    
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-for (int iVec=0; iVec<nVec; iVec++) {
+cilk_for (int iVec=0; iVec<nVec; iVec++) {
   for (int k=0; k<n3; k++) {
     for (int j=0; j<n2; j++) {
       for (int i=0; i<n1; i++) {
@@ -253,22 +239,15 @@ fftw_execute(planc_kernel);
 fftw_execute(planc_rhs);
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-for (int jVec=0; jVec<nVec; jVec++) {
-  for (int k=0; k<n3; k++){
-    for (int j=0; j<n2; j++){
-      for (int i=0; i<n1; i++){
-        Xc[SUB2IND4D(i,j,k,jVec,n1,n2,n3)] = Xc[SUB2IND4D(i,j,k,jVec,n1,n2,n3)] *
-          Kc[SUB2IND3D(i,j,k,n1,n2)];
-      }
-    }
-  }
- }
+cilk_for (long i = 0; i < n1*n2*n3; i++)
+    for (long jVec = 0; jVec < nVec; jVec++)
+        Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
 // ---------- execute plan
 fftw_execute(planc_inverse);
 
 // ---------- data normalization
- for (int iVec=0; iVec<nVec; iVec++) {
+ cilk_for (int iVec=0; iVec<nVec; iVec++) {
    for (int k=0; k<n3; k++){
      for (int j=0; j<n2; j++) {
        for (int i=0; i<n1; i++) {
@@ -279,17 +258,9 @@ fftw_execute(planc_inverse);
      }
    }
  }
-  
-for (int iVec=0; iVec<nVec; iVec++){
-  for (int k=0; k<n3; k++){
-    for (int j=0; j<n2; j++){
-      for (int i=0; i<n1; i++){
-        PhiGrid[ SUB2IND4D(i, j, k, iVec, n1, n2, n3) ] += 
-          Xc[ SUB2IND4D(i, j, k, iVec, n1, n2, n3) ].real();
-      }
-    }
-  }
- }
+
+ cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+    PhiGrid[i] += Xc[i].real();
 
 }
 
@@ -329,7 +300,7 @@ cilk_for (int k=0; k<n3; k++) {
  }
    
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-for (int iVec=0; iVec<nVec; iVec++) {
+cilk_for (int iVec=0; iVec<nVec; iVec++) {
   for (int k=0; k<n3; k++) {
     for (int j=0; j<n2; j++) {
       for (int i=0; i<n1; i++) {
@@ -348,22 +319,15 @@ fftw_execute(planc_kernel);
 fftw_execute(planc_rhs);
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-for (int jVec=0; jVec<nVec; jVec++) {
-  for (int k=0; k<n3; k++){
-    for (int j=0; j<n2; j++){
-      for (int i=0; i<n1; i++){
-        Xc[SUB2IND4D(i,j,k,jVec,n1,n2,n3)] = Xc[SUB2IND4D(i,j,k,jVec,n1,n2,n3)] *
-          Kc[SUB2IND3D(i,j,k,n1,n2)];
-      }
-    }
-  }
- }
+cilk_for (long i = 0; i < n1*n2*n3; i++)
+    for (long jVec = 0; jVec < nVec; jVec++)
+        Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
 // ---------- execute plan
 fftw_execute(planc_inverse);
 
 // ---------- data normalization
- for (int iVec=0; iVec<nVec; iVec++) {
+ cilk_for (int iVec=0; iVec<nVec; iVec++) {
    for (int k=0; k<n3; k++){
      for (int j=0; j<n2; j++) {
        for (int i=0; i<n1; i++) {
@@ -375,16 +339,8 @@ fftw_execute(planc_inverse);
    }
  }
   
-for (int iVec=0; iVec<nVec; iVec++){
-  for (int k=0; k<n3; k++){
-    for (int j=0; j<n2; j++){
-      for (int i=0; i<n1; i++){
-        PhiGrid[ SUB2IND4D(i, j, k, iVec, n1, n2, n3) ] +=
-          Xc[ SUB2IND4D(i, j, k, iVec, n1, n2, n3) ].real();
-      }
-    }
-  }
- }
+cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+    PhiGrid[i] += Xc[i].real();
 
 }
 
@@ -425,7 +381,7 @@ cilk_for (int k=0; k<n3; k++) {
  }
    
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-for (int iVec=0; iVec<nVec; iVec++) {
+cilk_for (int iVec=0; iVec<nVec; iVec++) {
   for (int k=0; k<n3; k++) {
     for (int j=0; j<n2; j++) {
       for (int i=0; i<n1; i++) {
@@ -444,22 +400,15 @@ fftw_execute(planc_kernel);
 fftw_execute(planc_rhs);
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-for (int jVec=0; jVec<nVec; jVec++) {
-  for (int k=0; k<n3; k++){
-    for (int j=0; j<n2; j++){
-      for (int i=0; i<n1; i++){
-        Xc[SUB2IND4D(i,j,k,jVec,n1,n2,n3)] = Xc[SUB2IND4D(i,j,k,jVec,n1,n2,n3)] *
-          Kc[SUB2IND3D(i,j,k,n1,n2)];
-      }
-    }
-  }
- }
+cilk_for (long i = 0; i < n1*n2*n3; i++)
+    for (long jVec = 0; jVec < nVec; jVec++)
+        Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
 // ---------- execute plan
 fftw_execute(planc_inverse);
 
 // ---------- data normalization
- for (int iVec=0; iVec<nVec; iVec++) {
+ cilk_for (int iVec=0; iVec<nVec; iVec++) {
    for (int k=0; k<n3; k++){
      for (int j=0; j<n2; j++) {
        for (int i=0; i<n1; i++) {
@@ -471,16 +420,8 @@ fftw_execute(planc_inverse);
    }
  }
   
-for (int iVec=0; iVec<nVec; iVec++){
-  for (int k=0; k<n3; k++){
-    for (int j=0; j<n2; j++){
-      for (int i=0; i<n1; i++){
-        PhiGrid[ SUB2IND4D(i, j, k, iVec, n1, n2, n3) ] +=
-          Xc[ SUB2IND4D(i, j, k, iVec, n1, n2, n3) ].real();
-      }
-    }
-  }
- }
+cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+    PhiGrid[i] += Xc[i].real();
 
 }
 
@@ -520,7 +461,7 @@ cilk_for (int k=0; k<n3; k++) {
  }
    
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-for (int iVec=0; iVec<nVec; iVec++) {
+cilk_for (int iVec=0; iVec<nVec; iVec++) {
   for (int k=0; k<n3; k++) {
     for (int j=0; j<n2; j++) {
       for (int i=0; i<n1; i++) {
@@ -539,22 +480,15 @@ fftw_execute(planc_kernel);
 fftw_execute(planc_rhs);
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-for (int jVec=0; jVec<nVec; jVec++) {
-  for (int k=0; k<n3; k++){
-    for (int j=0; j<n2; j++){
-      for (int i=0; i<n1; i++){
-        Xc[SUB2IND4D(i,j,k,jVec,n1,n2,n3)] = Xc[SUB2IND4D(i,j,k,jVec,n1,n2,n3)] *
-          Kc[SUB2IND3D(i,j,k,n1,n2)];
-      }
-    }
-  }
- }
+cilk_for (long i = 0; i < n1*n2*n3; i++)
+    for (long jVec = 0; jVec < nVec; jVec++)
+        Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
 // ---------- execute plan
 fftw_execute(planc_inverse);
 
 // ---------- data normalization
- for (int iVec=0; iVec<nVec; iVec++) {
+ cilk_for (int iVec=0; iVec<nVec; iVec++) {
    for (int k=0; k<n3; k++){
      for (int j=0; j<n2; j++) {
        for (int i=0; i<n1; i++) {
@@ -566,16 +500,8 @@ fftw_execute(planc_inverse);
    }
  }
   
-for (int iVec=0; iVec<nVec; iVec++){
-  for (int k=0; k<n3; k++){
-    for (int j=0; j<n2; j++){
-      for (int i=0; i<n1; i++){
-        PhiGrid[ SUB2IND4D(i, j, k, iVec, n1, n2, n3) ] +=
-          Xc[ SUB2IND4D(i, j, k, iVec, n1, n2, n3) ].real();
-      }
-    }
-  }
- }
+cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+    PhiGrid[i] += Xc[i].real();
 
 }
 
@@ -615,7 +541,7 @@ cilk_for (int k=0; k<n3; k++) {
  }
  
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-for (int iVec=0; iVec<nVec; iVec++) {
+cilk_for (int iVec=0; iVec<nVec; iVec++) {
   for (int k=0; k<n3; k++) {
     for (int j=0; j<n2; j++) {
       for (int i=0; i<n1; i++) {
@@ -634,22 +560,15 @@ fftw_execute(planc_kernel);
 fftw_execute(planc_rhs);
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-for (int jVec=0; jVec<nVec; jVec++) {
-  for (int k=0; k<n3; k++){
-    for (int j=0; j<n2; j++){
-      for (int i=0; i<n1; i++){
-        Xc[SUB2IND4D(i,j,k,jVec,n1,n2,n3)] = Xc[SUB2IND4D(i,j,k,jVec,n1,n2,n3)] *
-          Kc[SUB2IND3D(i,j,k,n1,n2)];
-      }
-    }
-  }
- }
+cilk_for (long i = 0; i < n1*n2*n3; i++)
+    for (long jVec = 0; jVec < nVec; jVec++)
+        Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
 // ---------- execute plan
 fftw_execute(planc_inverse); 
 
 // ---------- data normalization
- for (int iVec=0; iVec<nVec; iVec++) {
+ cilk_for (int iVec=0; iVec<nVec; iVec++) {
    for (int k=0; k<n3; k++){
      for (int j=0; j<n2; j++) {
        for (int i=0; i<n1; i++) {
@@ -661,16 +580,8 @@ fftw_execute(planc_inverse);
    }
  }
   
-for (int iVec=0; iVec<nVec; iVec++){
-  for (int k=0; k<n3; k++){
-    for (int j=0; j<n2; j++){
-      for (int i=0; i<n1; i++){
-        PhiGrid[ SUB2IND4D(i, j, k, iVec, n1, n2, n3) ] +=
-          Xc[ SUB2IND4D(i, j, k, iVec, n1, n2, n3) ].real();
-      }
-    }
-  }
- }
+cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+    PhiGrid[i] += Xc[i].real();
 
 }
 
@@ -710,7 +621,7 @@ cilk_for (int k=0; k<n3; k++) {
  }
    
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-for (int iVec=0; iVec<nVec; iVec++) {
+cilk_for (int iVec=0; iVec<nVec; iVec++) {
   for (int k=0; k<n3; k++) {
     for (int j=0; j<n2; j++) {
       for (int i=0; i<n1; i++) {
@@ -729,22 +640,15 @@ fftw_execute(planc_kernel);
 fftw_execute(planc_rhs);
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-for (int jVec=0; jVec<nVec; jVec++) {
-  for (int k=0; k<n3; k++){
-    for (int j=0; j<n2; j++){
-      for (int i=0; i<n1; i++){
-        Xc[SUB2IND4D(i,j,k,jVec,n1,n2,n3)] = Xc[SUB2IND4D(i,j,k,jVec,n1,n2,n3)] *
-          Kc[SUB2IND3D(i,j,k,n1,n2)];
-      }
-    }
-  }
- }
+cilk_for (long i = 0; i < n1*n2*n3; i++)
+    for (long jVec = 0; jVec < nVec; jVec++)
+        Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
 // ---------- execute plan
 fftw_execute(planc_inverse);
 
 // ---------- data normalization
- for (int iVec=0; iVec<nVec; iVec++) {
+ cilk_for (int iVec=0; iVec<nVec; iVec++) {
    for (int k=0; k<n3; k++){
      for (int j=0; j<n2; j++) {
        for (int i=0; i<n1; i++) {
@@ -756,16 +660,8 @@ fftw_execute(planc_inverse);
    }
  }
   
-for (int iVec=0; iVec<nVec; iVec++){
-  for (int k=0; k<n3; k++){
-    for (int j=0; j<n2; j++){
-      for (int i=0; i<n1; i++){
-        PhiGrid[ SUB2IND4D(i, j, k, iVec, n1, n2, n3) ] +=
-          Xc[ SUB2IND4D(i, j, k, iVec, n1, n2, n3) ].real();
-      }
-    }
-  }
- }
+cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+    PhiGrid[i] += Xc[i].real();
 
 }
 
