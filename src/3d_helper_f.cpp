@@ -6,6 +6,8 @@ void eee( double * const PhiGrid, const double *VGrid,
           uint32_t n1, uint32_t n2, uint32_t n3, uint32_t nVec,
           double hsq ) {
 
+    struct timeval start;
+    start = tsne_start_timer();
 
     for (long int i = 0; i < n1*n2*n3; i++)
         Kc[i] = 0.0;
@@ -27,31 +29,45 @@ for (long k=0; k<n3; k++) {
       if (k>0 && i>0 && j>0) Kc[SUB2IND3D(n1-i,n2-j,n3-k,n1,n2)] += tmp;
     }
   }
- }
+}
+
+tsne_stop_timer("eee: setup", start); start = tsne_start_timer();
 
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
 
 for (long i = 0; i < n1*n2*n3*nVec; i++)
     Xc[i] = VGrid[i];
 
+tsne_stop_timer("eee: rhs", start); start = tsne_start_timer();
+
 // ---------- execute kernel plan
 fftwf_execute(planc_kernel);
 
+tsne_stop_timer("eee: fft-kernel", start); start = tsne_start_timer();
+
 // ---------- execute RHS plan
 fftwf_execute(planc_rhs);
+
+tsne_stop_timer("eee: fft-rhs", start); start = tsne_start_timer();
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
 for (long i = 0; i < n1*n2*n3; i++)
     for (long jVec = 0; jVec < nVec; jVec++)
         Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
+tsne_stop_timer("eee: hadmard", start); start = tsne_start_timer();
+
 // ---------- execute plan
 fftwf_execute(planc_inverse);
+
+tsne_stop_timer("eee: ifft", start); start = tsne_start_timer();
 
 // ---------- (no conjugate multiplication)
 
 for (long i = 0; i < n1*n2*n3*nVec; i++)
     PhiGrid[i] = Xc[i].real();
+
+tsne_stop_timer("eee: final", start); start = tsne_start_timer();
 
 }
 
@@ -61,6 +77,9 @@ void oee( double * const PhiGrid, const double *VGrid,
           fftwf_plan planc_kernel, fftwf_plan planc_rhs, fftwf_plan planc_inverse,
           uint32_t n1, uint32_t n2, uint32_t n3, uint32_t nVec,
           double hsq ) {
+
+    struct timeval start;
+    start = tsne_start_timer();
 
     for (long int i = 0; i < n1*n2*n3; i++)
         Kc[i] = 0.0;
@@ -92,6 +111,8 @@ for (int k=0; k<n3; k++) {
    }
  }
 
+ tsne_stop_timer("oee: setup", start); start = tsne_start_timer();
+
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
 for (int iVec=0; iVec<nVec; iVec++) {
   for (int k=0; k<n3; k++) {
@@ -104,12 +125,18 @@ for (int iVec=0; iVec<nVec; iVec++) {
   }
  }
 
+tsne_stop_timer("oee: rhs", start); start = tsne_start_timer();
+
 
 // ---------- execute kernel plan
 fftwf_execute(planc_kernel);
 
+tsne_stop_timer("oee: fft-kernel", start); start = tsne_start_timer();
+
 // ---------- execute RHS plan
 fftwf_execute(planc_rhs);
+
+tsne_stop_timer("eee: fft-rhs", start); start = tsne_start_timer();
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
 for (int jVec=0; jVec<nVec; jVec++) {
@@ -121,10 +148,14 @@ for (int jVec=0; jVec<nVec; jVec++) {
       }
     }
   }
- }
+}
+
+tsne_stop_timer("oee: hadmard", start); start = tsne_start_timer();
 
 // ---------- execute plan
 fftwf_execute(planc_inverse);
+
+tsne_stop_timer("oee: ifft", start); start = tsne_start_timer();
 
 // ---------- data normalization
  for (int iVec=0; iVec<nVec; iVec++) {
@@ -149,6 +180,8 @@ fftwf_execute(planc_inverse);
      }
    }
  }
+
+ tsne_stop_timer("oee: final", start); start = tsne_start_timer();
 
 }
 

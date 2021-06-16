@@ -123,7 +123,7 @@ for (int k=0; k<n3; k++) {
    }
  }
 
- tsne_stop_timer("eee: setup", start); start = tsne_start_timer();
+ tsne_stop_timer("oee: setup", start); start = tsne_start_timer();
    
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
 for (int iVec=0; iVec<nVec; iVec++) {
@@ -137,18 +137,18 @@ for (int iVec=0; iVec<nVec; iVec++) {
   }
 }
 
-tsne_stop_timer("eee: rhs", start); start = tsne_start_timer();
+tsne_stop_timer("oee: rhs", start); start = tsne_start_timer();
 
 
 // ---------- execute kernel plan
 fftw_execute(planc_kernel);
 
-tsne_stop_timer("eee: fft-kernel", start); start = tsne_start_timer();
+tsne_stop_timer("oee: fft-kernel", start); start = tsne_start_timer();
   
 // ---------- execute RHS plan
 fftw_execute(planc_rhs);
-                                                \
-tsne_stop_timer("eee: fft-rhs", start); start = tsne_start_timer();
+
+tsne_stop_timer("oee: fft-rhs", start); start = tsne_start_timer();
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
 for (int jVec=0; jVec<nVec; jVec++) {
@@ -162,12 +162,12 @@ for (int jVec=0; jVec<nVec; jVec++) {
   }
  }
 
-tsne_stop_timer("eee: hadmard", start); start = tsne_start_timer();
+tsne_stop_timer("oee: hadmard", start); start = tsne_start_timer();
 
 // ---------- execute plan
 fftw_execute(planc_inverse);
 
-tsne_stop_timer("eee: ifft", start); start = tsne_start_timer();
+tsne_stop_timer("oee: ifft", start); start = tsne_start_timer();
 
 // ---------- data normalization
  for (int iVec=0; iVec<nVec; iVec++) {
@@ -193,7 +193,7 @@ tsne_stop_timer("eee: ifft", start); start = tsne_start_timer();
    }
  }
 
- tsne_stop_timer("eee: final", start); start = tsne_start_timer();
+ tsne_stop_timer("oee: final", start); start = tsne_start_timer();
 
 }
 
