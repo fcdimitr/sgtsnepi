@@ -293,6 +293,7 @@ sparse_matrix perplexityEqualization( int *I, double *D, int n, int nn, double u
 extern std::vector<double> GLOBAL_GRID_SIZES;
 extern int N_GRID_SIZE;
 extern int *listGridSize;
+extern int GRID_SIZE_THRESHOLD;
 
 extern "C"{
 
@@ -318,10 +319,12 @@ extern "C"{
     int    const n,
     int    const dropLeaf,
     int    const run_exact,
+    int    const grid_threshold,
     int    const np) {
 
     if  ( !GLOBAL_GRID_SIZES.empty() ) GLOBAL_GRID_SIZES.clear();
 
+    GRID_SIZE_THRESHOLD = grid_threshold;
     N_GRID_SIZE = n_grid_size_jl;
 
     listGridSize = new int [N_GRID_SIZE];

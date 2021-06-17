@@ -22,6 +22,9 @@
 #include "gridding.cpp"
 #include "non_periodic_conv.cpp"
 
+int GRID_SIZE_THRESHOLD = 100;  // Different parallelism strategy for small grids
+
+
 void nuconv( coord *PhiScat, coord *y, coord *VScat,
              uint32_t *ib, uint32_t *cb,
              int n, int d, int m, int np, int nGridDim,

@@ -13,8 +13,6 @@
 #include "types.hpp"
 #include "utils.hpp"
 
-#define GRID_SIZE_THRESHOLD 100  // Differenet parallelism strategy for small grids
-
 extern "C" {
     void nuconv( coord *PhiScat, coord *y, coord *VScat,
                  uint32_t *ib, uint32_t *cb,
