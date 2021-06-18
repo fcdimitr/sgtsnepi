@@ -22,7 +22,7 @@ void s2g(dataPoint *VGrid, dataPoint *y, dataPoint *VScat, uint32_t nGridDim,
          uint32_t n, uint32_t d, uint32_t m) {
   double *VGridD;
   int szV = pow(nGridDim + 2, d) * m;
-  CUDA_CALL(cudaMallocManaged(&VGridD, szV * sizeof(double)));
+  gpuErrchk(cudaMallocManaged(&VGridD, szV * sizeof(double)));
   initKernel<<<Blocks, Threads>>>(VGridD, (double)0, szV);
 
   switch (d) {
@@ -40,7 +40,7 @@ void s2g(dataPoint *VGrid, dataPoint *y, dataPoint *VScat, uint32_t nGridDim,
     break;
   }
   copymixed<<<Blocks, Threads>>>(VGrid, VGridD, szV);
-  cudaFree(VGridD);
+  gpuErrchk(cudaFree(VGridD));
 }
 
 #else
