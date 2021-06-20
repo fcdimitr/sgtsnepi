@@ -1,5 +1,5 @@
 ## test_digits.py
-# Test 3D SG-t-SNE embedding with 
+# Test 3D SG-t-SNE embedding 
 
 ## download the matrix and label file from Tim Davids' matrix collection
 import requests
