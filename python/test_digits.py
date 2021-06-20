@@ -33,11 +33,6 @@ jl = Julia(compiled_modules=False)
 import sys
 sys.path.insert(0,"./")
 
-# make sure that the sgtsnepi.py is in the current 
-# script_url = "https://raw.githubusercontent.com/fcdimitr/sgtsnepi/julia-python-packages/python/sgtsnepi.py";
-# r = requests.get(url, allow_redirects=True)
-# open('sgtsnepi.py', 'w').write(r.text)
-
 # generate the embedding
 from sgtsnepi import sgtsnepi
 Y = sgtsnepi(A, d = 3, λ = 10, max_iter = 500)
