@@ -9,12 +9,25 @@
 
 ** PyJulia
 
-The ~Python~ interface calls the ~Julia~ SG-t-SNE-Π library, through the
+The ~Python~ interface calls the ~Julia~ ~SG-t-SNE-Π~ library, through the
 ~PyJulia~ package. Please follow the [[https://pyjulia.readthedocs.io/en/latest/installation.html][official installation instructions]]
-to get PyJulia working. You can verify that your installation is valid
+to get ~PyJulia~ working. You can verify that your installation is valid
 by issuing the following command. More details are available in the
 [[https://pyjulia.readthedocs.io/en/latest/usage.html][official usage tutorial]].
 
+You need to do either one of the following for ~PyJulia~ to work:
+- Issue
+  #+begin_src python
+  from julia.api import Julia
+  jl = Julia(compiled_modules=False)
+  #+end_src
+- Another workaround is to run your Python script with 
+  #+begin_src python
+  python-jl
+  #+end_src
+  which is bundled in PyJulia. 
+  
+You can verify your installation by issuing  
 #+begin_src python
 from julia import Base
 Base.sind(90)
@@ -22,7 +35,8 @@ Base.sind(90)
 
 * SG-t-SNE-Π usage
 
-The ~SG-t-SNE~ Python module is now ready to be used. Simply import the module and call ~SG-t-SNE~ on a sparse, CSC matrix.
+The ~SG-t-SNE-Π~ Python module is now ready to be used. Simply import the module and call ~SG-t-SNE-Π~ on a sparse, CSC matrix.
+For the next steps to work, you need to have placed ~sgtsnepi.py~ somewhere in your Python's search path.
 
 #+begin_src python
 # make sure current module is in Python's search path
