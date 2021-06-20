@@ -37,7 +37,7 @@ sys.path.insert(0,"./")
 from sgtsnepi import sgtsnepi
 Y = sgtsnepi(A, d = 3, λ = 10, max_iter = 500)
 
-# visualization
+# visualization -- require matplotlib package
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 import numpy as np
@@ -69,5 +69,5 @@ plt.show()
 
 ## AUTHOR
 # Tiancheng Liu <tcliu@cs.duke.edu>
-# Dimitris Foloros <fcdimitr@auth.gr>
+# Dimitris Floros <fcdimitr@auth.gr>
 # 
