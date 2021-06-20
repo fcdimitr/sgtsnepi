@@ -22,7 +22,7 @@ Base.sind(90)
 
 * SG-t-SNE-Π usage
 
-The SGtSNE Python module is now ready to be used. Simply import the module and call SGtSNE on a sparse, CSC matrix.
+The ~SG-t-SNE~ Python module is now ready to be used. Simply import the module and call ~SG-t-SNE~ on a sparse, CSC matrix.
 
 #+begin_src python
 # make sure current module is in Python's search path
