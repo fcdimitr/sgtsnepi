@@ -3,7 +3,7 @@
 * Contents :toc:
 - [[#prerequisites][Prerequisites]]
   - [[#pyjulia][PyJulia]]
-  - [[#sg-t-sne-π][SG-t-SNE-Π]]
+- [[#sg-t-sne-π-usage][SG-t-SNE-Π usage]]
 
 * Prerequisites
 
@@ -20,7 +20,7 @@ from julia import Base
 Base.sind(90)
 #+end_src
 
-** SG-t-SNE-Π
+* SG-t-SNE-Π usage
 
 The SGtSNE Python module is now ready to be used. Simply import the module and call SGtSNE on a sparse, CSC matrix.
 
@@ -35,5 +35,7 @@ from scipy.sparse import random
 A = random(100, 100, density=0.2, format="csc")
 
 # run SGtSNEpi 3D
-sgtsnepi(A, d = 3)
+Y = sgtsnepi(A, d = 3, eta = 100, alpha = 50, early_exag = 300, max_iter = 1200, λ = 10)
 #+end_src
+
+Documentation on ~sgstnepi~ function usage is available [[https://fcdimitr.github.io/SGtSNEpi.jl/stable/API/#SGtSNEpi.sgtsnepi-Tuple{LightGraphs.AbstractGraph}][here]].

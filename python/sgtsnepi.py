@@ -1,8 +1,4 @@
 #!/usr/bin/env python
-import numpy as np
-
-from scipy.sparse import csc_matrix
-
 from julia import Main
 from julia import Pkg
 
@@ -29,4 +25,4 @@ Main.eval("""
 # setup Python function
 
 def sgtsnepi( A, **kwargs ):
-    SGtSNEpi.sgtsnepi( A, **kwargs )
+    return SGtSNEpi.sgtsnepi( A, **kwargs )
