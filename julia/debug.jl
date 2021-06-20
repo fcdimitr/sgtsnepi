@@ -11,33 +11,6 @@ Y .-= minimum( Y; dims = 2 );
 
 h = 0.2
 
-function separate_points( Y, tau )
-
-  y_in = Ref{Ptr{Cdouble}}(); y_ex = Ref{Ptr{Cdouble}}(); p_in = Ref{Ptr{Cint}}(); p_ex = Ref{Ptr{Cint}}();
-  n_in = Int32.( [-1] ); n_ex = Int32.( [-1] );
-  (d, n) = Int32.( size(Y) )
-
-  q = tau/(2*d);
-
-  ccall( (:separate_points, "../build/libsgtsnepi.dylib"),
-         Cvoid,
-         (Ptr{Ptr{Cdouble}}, Ptr{Ptr{Cdouble}},
-          Ptr{Ptr{Cint}}, Ptr{Ptr{Cint}},
-          Ptr{Cint}, Ptr{Cint},
-          Ptr{Cdouble},
-          Cint, Cint, Cdouble),
-         y_in, y_ex, p_in, p_ex, n_in, n_ex, Y, d, n, q )
-
-  y_in = unsafe_wrap( Array, y_in.x, (d, n_in[1]) )
-  y_ex = unsafe_wrap( Array, y_ex.x, (d, n_ex[1]) )
-
-  p_in = unsafe_wrap( Array, p_in.x, n_in[1] )
-  p_ex = unsafe_wrap( Array, p_ex.x, n_ex[1] )
-
-  y_in, p_in.+1, y_ex, p_ex.+1
-
-end
-
 function s2g!( VGrid, VScat, Y, np )
 
   (d, n) = size( Y )
@@ -267,38 +240,3 @@ function convFFT(VGrid::Array{Float64,4}, h)
   return [PhiGrid,nFFT]
 
 end
-
-
-f_g, z_g = _qq_interp_c( Y, h, np );
-
-VScat = [ones(1,n); Y];
-PhiScat = zeros( d+1, n );
-Yt = copy( Y )
-timers = zeros(12+6)
-ccall( (:nuconv, "../build/libsgtsnepi.dylib"), Cvoid,
-       (Ptr{Cdouble}, Ptr{Cdouble}, Ptr{Cdouble},
-        Ptr{Cint}, Ptr{Cint},
-        Cint, Cint, Cint, Cint, Cint, Ptr{Cdouble} ),
-       PhiScat, Yt, VScat,
-       C_NULL, C_NULL,
-       n, d, d+1, np, nGrid, timers )
-
-Ysq = sum( Y.^2; dims = 1 );
-Z  = - sum( 2 * PhiScat[2:end,:] .* Y )
-Z +=   sum( ( 1 .+ (2 .* Ysq) ) .* PhiScat[1,:]' )
-Z -= n
-
-f = ( (Y .* PhiScat[1,:]') - PhiScat[2:end,:] ) / Z
-
-PhiScat2  = nuconv( Y, np, nGrid )
-
-Ysq = sum( Y.^2; dims = 1 );
-Z  = - sum( 2 * PhiScat2[2:end,:] .* Y )
-Z +=   sum( ( 1 .+ (2 .* Ysq) ) .* PhiScat2[1,:]' )
-Z -= n
-
-f = ( (Y .* PhiScat2[1,:]') - PhiScat2[2:end,:] ) / Z
-
-@assert f ≈ f_g
-@assert Z ≈ z_g
-@assert PhiScat2 ≈ PhiScat

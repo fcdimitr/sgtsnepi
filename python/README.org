@@ -1,6 +1,6 @@
 #+TITLE: Installation and usage instructions through Python
 
-* Contents :toc:
+* Contents :toc:noexport:
 - [[#prerequisites][Prerequisites]]
   - [[#pyjulia][PyJulia]]
 - [[#sg-t-sne-π-usage][SG-t-SNE-Π usage]]
@@ -36,20 +36,12 @@ Base.sind(90)
 * SG-t-SNE-Π usage
 
 The ~SG-t-SNE-Π~ Python module is now ready to be used. Simply import the module and call ~SG-t-SNE-Π~ on a sparse, CSC matrix.
-For the next steps to work, you need to have placed ~sgtsnepi.py~ somewhere in your Python's search path.
+We provide a [[https://github.com/fcdimitr/sgtsnepi/blob/julia-python-packages/python/test_digits.py][demo script]] to test installation. For the script to run succesfully, you need to place ~sgtsnepi.py~ somewhere in your Python's search path.
+If the installation of ~SG-t-SNE-Π~ is successful, you should see a 3D embedding similar
+to the following image.
 
-#+begin_src python
-# make sure current module is in Python's search path
-import sys
-sys.path.insert(0, "./")
-from sgtsnepi import sgtsnepi
-
-# prepare a random CSC matrix
-from scipy.sparse import random
-A = random(100, 100, density=0.2, format="csc")
-
-# run SGtSNEpi 3D
-Y = sgtsnepi(A, d = 3, eta = 100, alpha = 50, early_exag = 300, max_iter = 1200, λ = 10)
-#+end_src
+#+CAPTION: 3D embedding of the graph [[https://sparse.tamu.edu/ML_Graph/optdigits_10NN][~ML_Graph/optdigits_10NN~]]
+#+NAME:   fig:digits-embedding
+[[./demo.png]]
 
 Documentation on ~sgstnepi~ function usage is available [[https://fcdimitr.github.io/SGtSNEpi.jl/stable/API/#SGtSNEpi.sgtsnepi-Tuple{LightGraphs.AbstractGraph}][here]].
