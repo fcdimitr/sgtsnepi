@@ -4,7 +4,7 @@ from julia import Pkg
 
 # load packages in Julia
 Pkg.add( "SparseArrays" )
-Pkg.add( Pkg.add( Pkg.PackageSpec(name="SGtSNEpi", version="0.2.0") ) )
+Pkg.add( Pkg.add( Pkg.PackageSpec(name="SGtSNEpi", version="0.2.1") ) )
 
 from julia import SGtSNEpi
 
