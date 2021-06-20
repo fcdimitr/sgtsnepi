@@ -1,0 +1,39 @@
+#+TITLE: Installation and usage instructions through Python
+
+* Contents :toc:
+- [[#prerequisites][Prerequisites]]
+  - [[#pyjulia][PyJulia]]
+  - [[#sg-t-sne-π][SG-t-SNE-Π]]
+
+* Prerequisites
+
+** PyJulia
+
+The ~Python~ interface calls the ~Julia~ SG-t-SNE-Π library, through the
+~PyJulia~ package. Please follow the [[https://pyjulia.readthedocs.io/en/latest/installation.html][official installation instructions]]
+to get PyJulia working. You can verify that your installation is valid
+by issuing the following command. More details are available in the
+[[https://pyjulia.readthedocs.io/en/latest/usage.html][official usage tutorial]].
+
+#+begin_src python
+from julia import Base
+Base.sind(90)
+#+end_src
+
+** SG-t-SNE-Π
+
+The SGtSNE Python module is now ready to be used. Simply import the module and call SGtSNE on a sparse, CSC matrix.
+
+#+begin_src python
+# make sure current module is in Python's search path
+import sys
+sys.path.insert(0, "./")
+from sgtsnepi import sgtsnepi
+
+# prepare a random CSC matrix
+from scipy.sparse import random
+A = random(100, 100, density=0.2, format="csc")
+
+# run SGtSNEpi 3D
+sgtsnepi(A, d = 3)
+#+end_src
