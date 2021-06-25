@@ -1,0 +1,8 @@
+name: sgtsnepi
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - pip
+  - pip:
+    - -r file:requirements.txt

@@ -2,11 +2,13 @@
 from julia import Main
 from julia import Pkg
 
+
 # load packages in Julia
-Pkg.add( "SparseArrays" )
-Pkg.add( Pkg.PackageSpec(name="SGtSNEpi", version="0.2.1") )
+Pkg.add("SparseArrays")
+Pkg.add(Pkg.PackageSpec(name="SGtSNEpi", version="0.2.1"))
 
 from julia import SGtSNEpi
+
 
 # prepare Julia wrappers
 Main.eval("""
@@ -22,7 +24,9 @@ Main.eval("""
   sgtsnepi( A::PyObject ; kwargs... ) = sgtsnepi( scipyCSC_to_julia(A) ; kwargs... )
 """)
 
-# setup Python function
+__all__ = ['sgtsnepi']
 
-def sgtsnepi( A, **kwargs ):
-    return SGtSNEpi.sgtsnepi( A, **kwargs )
+
+# Setup Python function
+def sgtsnepi(A, **kwargs):
+    return SGtSNEpi.sgtsnepi(A, **kwargs)
