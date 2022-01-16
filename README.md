@@ -25,6 +25,7 @@
         -   [Support of the conventional t-SNE](#support-of-the-conventional-t-sne)
         -   [MATLAB interface](#matlab-interface)
     -   [Usage demo](#usage-demo)
+-   [How to cite](#how-to-cite)
 -   [License and community guidelines](#license-and-community-guidelines)
 -   [Contributors](#contributors)
 
@@ -388,6 +389,32 @@ graph embedding with SG-t-SNE-Π:
 The [MNIST data set](http://yann.lecun.com/exdb/mnist/) can be tested using [existing wrappers](https://github.com/lvdmaaten/bhtsne/) provided
 by van der Maaten [[3](#VanDerMaaten2014)].
 
+## How to cite
+
+If you use our package, please cite the following papers:
+
+```bib
+@inproceedings{pitsianis2019hpec,
+  title = {Spaceland Embedding of Sparse Stochastic Graphs},
+  booktitle = {{{IEEE High Performance Extreme Computing Conference}}},
+  author = {Pitsianis, Nikos and Iliopoulos, Alexandros-Stavros and Floros, Dimitris and Sun, Xiaobai},
+  date = {2019},
+  doi = {10.1109/HPEC.2019.8916505}
+}
+
+@article{pitsianis2019joss,
+  title = {{{SG-t-SNE-Π}}: Swift Neighbor Embedding of Sparse Stochastic Graphs},
+  author = {Pitsianis, Nikos and Floros, Dimitris and Iliopoulos, Alexandros-Stavros and Sun, Xiaobai},
+  date = {2019},
+  journaltitle = {Journal of Open Source Software},
+  volume = {4},
+  number = {39},
+  pages = {1577},
+  issn = {2475-9066},
+  doi = {10.21105/joss.01577},
+  url = {http://dx.doi.org/10.21105/joss.01577}
+}
+```
 
 ## License and community guidelines 
 
