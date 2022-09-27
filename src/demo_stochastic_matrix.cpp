@@ -42,13 +42,16 @@ int main(int argc, char **argv)
   // Shut GetOpt error messages down (return '?'): 
   opterr = 0;
 
-  while ( (opt = getopt(argc, argv, "l:d:a:m:e:h:p:")) != -1 ) { 
+  while ( (opt = getopt(argc, argv, "l:d:a:m:e:h:p:r")) != -1 ) {
     switch ( opt ) {
     case 'l':
       sscanf(optarg, "%lf", &params.lambda);
       break;
     case 'd':
       params.d = atoi(optarg);
+      break;
+    case 'r':
+      sscanf(optarg, "%lf", &params.eta);
       break;
     case 'm':
       params.maxIter = atoi(optarg);
