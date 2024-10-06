@@ -272,7 +272,8 @@ double *generateBanded( CS_INT n, CS_INT b ) {
 
 void printMinTime( double *x, CS_INT n ) {
 
-  std::cout << __sec_reduce_min(x[0:n])*1000 << " ms" << std::endl;
+  double min_val = *std::min_element(x, x + n);
+  std::cout << min_val * 1000 << " ms" << std::endl;
 
 }
   
@@ -292,11 +293,13 @@ template<typename T>
 T *permuteDataPoints( T* x, CS_INT *p, CS_INT n, CS_INT ldim ){
 
   T *y = (T *)malloc(n*ldim*sizeof(T));
-
-  CS_INT i;
   
-  cilk_for( i=0; i<n; i++ ){
-    y[i*ldim:ldim] = x[p[i]*ldim:ldim];
+  cilk_for(CS_INT i=0; i<n; i++ ){
+    // y[i*ldim:ldim] = x[p[i]*ldim:ldim];
+    for (CS_INT j = 0; j < ldim; j++) {
+      y[i * ldim + j] = x[p[i] * ldim + j];
+    }
+
   }
 
   return y;
