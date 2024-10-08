@@ -13,6 +13,8 @@
 #define INDEXTYPE uint32_t
 
 
+#include <stdint.h>
+
 template <class NT, class IT>
 class BiCsb;
 
