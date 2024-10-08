@@ -9,7 +9,6 @@
 
 #include <iostream>
 #include <cilk/cilk.h>
-#include <cilk/reducer_opadd.h>
 #include <limits>
 #include <cmath>
 
@@ -19,6 +18,7 @@
 #include "qq.hpp"
 #include "nuconv.hpp"
 #include "dataReloc.hpp"
+#include "opadd_reducer.hpp"
 
 int N_GRID_SIZE = 26;
 // #define N_GRID_SIZE 57
@@ -68,10 +68,11 @@ coord computeFrepulsive_exact(coord * frep,
     }
   }
 
-  cilk::reducer_opadd<coord> zeta_reducer(0.0);
+  opadd_reducer<coord> zeta_reducer = 0.0;
   cilk_for (int i = 0; i < N; i++)
-    *zeta_reducer += zetaVec[i];
-  coord zeta = zeta_reducer.get_value();
+    zeta_reducer += zetaVec[i];
+
+  coord zeta = static_cast<coord>(zeta_reducer);
 
   cilk_for (int i = 0; i < N; i++)
     for (int j = 0; j < d; j++)

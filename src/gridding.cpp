@@ -67,7 +67,7 @@ void s2g1d( double * V,
             uint32_t nVec) {
 
 
-  #pragma cilk grainsize = 1
+  #pragma cilk grainsize 1
   cilk_for (uint32_t pid = 0; pid<np; pid++){
 
     double v1[4];
@@ -174,7 +174,7 @@ void s2g2d( double * V,
             uint32_t nVec) {
 
 
-  #pragma cilk grainsize = 1
+  #pragma cilk grainsize 1
   cilk_for (uint32_t pid = 0; pid<np; pid++){
 
     double v1[4];
@@ -308,7 +308,7 @@ void s2g3d( double * V,
             uint32_t nVec) {
 
 
-  #pragma cilk grainsize = 1
+  #pragma cilk grainsize 1
   cilk_for (uint32_t pid = 0; pid<np; pid++){
 
     double v1[4];

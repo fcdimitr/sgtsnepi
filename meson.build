@@ -30,8 +30,6 @@ endif
 # relevant Cilk headers
 cc.has_header('cilk/cilk.h'         , required : true)
 cc.has_header('cilk/cilk_api.h'     , required : true)
-cc.has_header('cilk/reducer_opadd.h', required : true)
-cc.has_header('cilk/reducer_max.h'  , required : true)
 
 
 
