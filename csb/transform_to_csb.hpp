@@ -544,7 +544,7 @@ void traverse_bssb_csr_tsne(double      *F,
                             int         nworkers){
 
 
-#pragma cilk grainsize = 1
+#pragma cilk grainsize 1
   cilk_for (int thr = 0; thr < nworkers; thr++){
     
     for(int i=thr; i<BSSB.nRow; i+=nworkers){

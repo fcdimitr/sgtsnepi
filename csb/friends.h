@@ -160,7 +160,7 @@ void bicsb_gespmv (const BiCsb<NT, IT> & A, const RHS * __restrict x, LHS * __re
       
   #ifdef BREAK_NBR /* break cilk_for rows to enforce consecutive writing */
       /* cilk for */
-      #pragma cilk grainsize = BREAK_NBR
+      #pragma cilk grainsize BREAK_NBR
       cilk_for (IT i = ib ; i < min(ib + blockSize, A.nbr) ; ++i)
   #else
       cilk_for (IT i = 0 ; i < A.nbr ; ++i)	// for all block rows of A
@@ -371,7 +371,7 @@ void bicsb_gespmv_tar (const BiCsb<NT, IT> & A, const RHS * __restrict x, LHS * 
       
   #ifdef BREAK_NBR /* break cilk_for rows to enforce consecutive writing */
       /* cilk for */
-      #pragma cilk grainsize = BREAK_NBR
+      #pragma cilk grainsize BREAK_NBR
       cilk_for (IT i = ib ; i < min(ib + blockSize, A.nbr) ; ++i)
   #else
       cilk_for (IT i = 0 ; i < A.nbr ; ++i)	// for all block rows of A
@@ -998,7 +998,7 @@ template <typename SR, typename NT, typename IT, typename RHS, typename LHS>
 
 #ifdef GRAIN_1
     
-    #pragma cilk grainsize = 1
+    #pragma cilk grainsize 1
     cilk_for (int thr = 0; thr < workers; thr++){
       for (IT i = thr ; i < A.nbr ; i+=workers)    // for all block
 						   // rows of A
@@ -1092,7 +1092,7 @@ template <typename SR, typename NT, typename IT, typename RHS, typename LHS>
 
 #ifdef GRAIN_1
 
-    #pragma cilk grainsize = 1
+    #pragma cilk grainsize 1
     cilk_for (int thr = 0; thr < workers; thr++){
       for (IT i = thr ; i < A.nbr ; i+=workers)    // for all block
 						   // rows of A

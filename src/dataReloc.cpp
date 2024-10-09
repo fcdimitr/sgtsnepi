@@ -202,7 +202,7 @@ void doSort_top( uint64_t * const Cs, uint64_t * const Ct,
   // get mask for required number of bits
   uint64_t mask = ( 0x01 << (nbits) ) - 1;
 
-  #pragma cilk grainsize = 1
+  #pragma cilk grainsize 1
   cilk_for (int i=0; i<np; i++){
     int size = ((i+1)*m < n) ? m : (n - i*m);
     for(int j=0; j<size; j++) {
@@ -221,7 +221,7 @@ void doSort_top( uint64_t * const Cs, uint64_t * const Ct,
   }
   
   // permute points
-  #pragma cilk grainsize = 1
+  #pragma cilk grainsize 1
   cilk_for (int j=0; j<np; j++){
     int size = ((j+1)*m < n) ? m : (n - j*m);
     for(int i=0; i<size; i++){
