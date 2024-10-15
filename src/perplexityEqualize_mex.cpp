@@ -15,11 +15,11 @@
 #include <sys/time.h>
 #include <string>
 #include <iostream>
-#include <cilk/cilk_api.h>
 #include <cmath>
 #include <flann/flann.h>
 
 #include "sgtsne.hpp"
+#include "cilk.hpp"
 
 //! Compute the approximate all-kNN graph of the input data points
 /*!  

@@ -25,11 +25,9 @@
 #include "gradient_descend.hpp"
 #include "graph_rescaling.hpp"
 
-#include <cilk/cilk.h>
-#include <cilk/cilk_api.h>
+#include "cilk.hpp"
 
 #include <metis.h>
-#include "../csb/csb_wrapper.hpp"
 
 #define FLAG_BSDB_PERM
 
@@ -121,20 +119,6 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
   
   printSparseMatrix(P);
 
-
-  // ~~~~~~~~~~ build CSB matrix
-
-  // initialize CSB object
-  BiCsb<matval, matidx> *csb = NULL;
-
-  // build CSB object (with default workers & BETA)
-  csb = prepareCSB<matval, matidx>
-    ( P.val, P.row, P.col,
-      P.nnz,
-      P.m,
-      P.n,
-      0, 0 );
-
   // ~~~~~~~~~~ initial embedding coordinates
 
   coord *y = new coord [params.n * params.d];
@@ -153,7 +137,7 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
   }
 
   // ~~~~~~~~~~ gradient descent
-  kl_minimization( y, params, csb, timeInfo );
+  kl_minimization( y, params, &P, timeInfo );
 
 
   // ~~~~~~~~~~ inverse permutation
@@ -166,7 +150,6 @@ coord * sgtsne(sparse_matrix P, tsneparams params,
 
   // ~~~~~~~~~~ dellocate memory
   
-  deallocate(csb);
   delete [] y;
   delete [] perm;
   delete [] iperm;
@@ -245,7 +228,7 @@ sparse_matrix perplexityEqualization( int *I, double *D, int n, int nn, double u
   col = new matidx [n+1] ();
 
   // perplexity-equalization of kNN input
-  cilk_for(int i = 0; i < n; i++) {
+  CILK_FOR (int i = 0; i < n; i++) {
 
     equalizeVertex( &val[i*nn], &D[i*(nn+1)], u, nn );
     

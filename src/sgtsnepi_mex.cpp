@@ -13,9 +13,9 @@
 #include <sys/time.h>
 #include <string>
 #include <iostream>
-#include <cilk/cilk_api.h>
 
 #include "sgtsne.hpp"
+#include "cilk.hpp"
 
 void parseInputs( tsneparams &P, double **y, int nrhs, const mxArray *prhs[] ){
 

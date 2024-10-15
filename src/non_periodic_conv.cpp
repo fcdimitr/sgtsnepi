@@ -3,7 +3,7 @@
 #include <complex>
 #include <fftw3.h>
 #include <cmath>
-#include <cilk/cilk.h>
+#include "cilk.hpp"
 #include "matrix_indexing.hpp"
 
 
@@ -63,13 +63,13 @@ void conv1dnopad( double * const PhiGrid,
   wc = reinterpret_cast<std::complex<double> *> (w);
   
   // get twiddle factors
-  cilk_for (uint32_t i=0; i<nGridDims[0]; i++)
+  CILK_FOR (uint32_t i=0; i<nGridDims[0]; i++)
     wc[i] = std::polar(1.0, -2*pi*i/(2*nGridDims[0]) );
 
   
-  cilk_for (long int i = 0; i < n1; i++)
+  CILK_FOR (long int i = 0; i < n1; i++)
     Kc[i] = 0.0;
-  cilk_for (long int i = 0; i < n1*nVec; i++)
+  CILK_FOR (long int i = 0; i < n1*nVec; i++)
     Xc[i] = 0.0;
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP PARALLELISM
@@ -145,9 +145,9 @@ void conv1dnopad( double * const PhiGrid,
   // ============================== ODD FREQUENCIES
 
   
-  cilk_for (long int i = 0; i < n1; i++)
+  CILK_FOR (long int i = 0; i < n1; i++)
     Kc[i] = 0.0;
-  cilk_for (long int i = 0; i < n1*nVec; i++)
+  CILK_FOR (long int i = 0; i < n1*nVec; i++)
     Xc[i] = 0.0;
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
   for (uint32_t i=0; i<n1; i++) {
@@ -203,7 +203,7 @@ void conv1dnopad( double * const PhiGrid,
     }
   }
 
-  cilk_for (long int i = 0; i < n1*nVec; i++)
+  CILK_FOR (long int i = 0; i < n1*nVec; i++)
     PhiGrid[i] *= (0.5 / n1);
 
   // ~~~~~~~~~~~~~~~~~~~~ DESTROY FFTW PLANS
@@ -261,12 +261,12 @@ void conv2dnopad( double * const PhiGrid,
   wc = reinterpret_cast<std::complex<double> *> (w);
 
   // get twiddle factors
-  cilk_for (uint32_t i=0; i<nGridDims[0]; i++)
+  CILK_FOR (uint32_t i=0; i<nGridDims[0]; i++)
     wc[i] = std::polar(1.0, -2*pi*i/(2*nGridDims[0]) );
   
-  cilk_for (long int i = 0; i < n1*n2; i++)
+  CILK_FOR (long int i = 0; i < n1*n2; i++)
     Kc[i] = 0.0;
-  cilk_for (long int i = 0; i < n1*n2*nVec; i++)
+  CILK_FOR (long int i = 0; i < n1*n2*nVec; i++)
     Xc[i] = 0.0;
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP PARALLELISM
@@ -349,9 +349,9 @@ void conv2dnopad( double * const PhiGrid,
   // ============================== ODD-EVEN
 
   
-  cilk_for (long int i = 0; i < n1*n2; i++)
+  CILK_FOR (long int i = 0; i < n1*n2; i++)
     Kc[i] = 0.0;
-  cilk_for (long int i = 0; i < n1*n2*nVec; i++)
+  CILK_FOR (long int i = 0; i < n1*n2*nVec; i++)
     Xc[i] = 0.0;
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
   for (uint32_t j=0; j<n2; j++) {
@@ -425,9 +425,9 @@ void conv2dnopad( double * const PhiGrid,
   // ============================== EVEN-ODD
 
   
-  cilk_for (long int i = 0; i < n1*n2; i++)
+  CILK_FOR (long int i = 0; i < n1*n2; i++)
     Kc[i] = 0.0;
-  cilk_for (long int i = 0; i < n1*n2*nVec; i++)
+  CILK_FOR (long int i = 0; i < n1*n2*nVec; i++)
     Xc[i] = 0.0;
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
   for (uint32_t j=0; j<n2; j++) {
@@ -501,9 +501,9 @@ void conv2dnopad( double * const PhiGrid,
   // ============================== ODD-ODD
 
   
-  cilk_for (long int i = 0; i < n1*n2; i++)
+  CILK_FOR (long int i = 0; i < n1*n2; i++)
     Kc[i] = 0.0;
-  cilk_for (long int i = 0; i < n1*n2*nVec; i++)
+  CILK_FOR (long int i = 0; i < n1*n2*nVec; i++)
     Xc[i] = 0.0;
   // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
   for (uint32_t j=0; j<n2; j++) {
@@ -635,12 +635,12 @@ void conv3dnopad( double * const PhiGrid,
   wc = reinterpret_cast<std::complex<double> *> (w);
 
   // get twiddle factors
-  cilk_for (uint32_t i=0; i<nGridDims[0]; i++)
+  CILK_FOR (uint32_t i=0; i<nGridDims[0]; i++)
     wc[i] = std::polar(1.0, -2*pi*i/(2*nGridDims[0]) );
   
-  cilk_for (long int i = 0; i < n1*n2*n3; i++)
+  CILK_FOR (long int i = 0; i < n1*n2*n3; i++)
     Kc[i] = 0.0;
-  cilk_for (long int i = 0; i < n1*n2*n3*nVec; i++)
+  CILK_FOR (long int i = 0; i < n1*n2*n3*nVec; i++)
     Xc[i] = 0.0;
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP PARALLELISM

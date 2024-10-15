@@ -9,10 +9,10 @@
 
 #include <iostream>
 #include <limits>
-#include <cilk/cilk.h>
 #include <tbb/scalable_allocator.h>
 #include <cmath>
 
+#include "cilk.hpp"
 #include "dataReloc.hpp"
 
 #define LIMIT_SEQ 512
@@ -95,7 +95,7 @@ void quantizeAndComputeCodes( uint64_t * const C,
   dataval multQuant = nGrid - 1 - std::numeric_limits<dataval>::epsilon();
     
   // add codes and ID to struct to sort them
-  cilk_for(int i=0; i<nPts; i++){
+  CILK_FOR(int i=0; i<nPts; i++){
     C[i] = tangleCode( &YScat[i*nDim], scale, multQuant, nGrid, nDim );
   }
 }
@@ -153,7 +153,7 @@ void doSort( uint64_t * const Cs, uint64_t * const Ct,
       uint32_t nPts = BinCursor[i] - offset;
 
       if ( nPts > LIMIT_SEQ ){
-        cilk_spawn doSort( &Ct[offset], &Cs[offset],
+        CILK_SPAWN doSort( &Ct[offset], &Cs[offset],
                            &Pt[offset], &Ps[offset],
                            &Yt[offset*d], &Ys[offset*d],
                            prev_off + offset,
@@ -171,7 +171,7 @@ void doSort( uint64_t * const Cs, uint64_t * const Ct,
     }
   }
 
-  cilk_sync;
+  CILK_SYNC;
   
   // delete BinCursor;
   parallel_free( BinCursor );
@@ -202,8 +202,10 @@ void doSort_top( uint64_t * const Cs, uint64_t * const Ct,
   // get mask for required number of bits
   uint64_t mask = ( 0x01 << (nbits) ) - 1;
 
+  #ifdef OPENCILK
   #pragma cilk grainsize 1
-  cilk_for (int i=0; i<np; i++){
+  #endif // OPENCILK
+  CILK_FOR (int i=0; i<np; i++){
     int size = ((i+1)*m < n) ? m : (n - i*m);
     for(int j=0; j<size; j++) {
       uint32_t const ii = ( Cs[ i*m + j ] >> sft ) & mask;
@@ -221,8 +223,10 @@ void doSort_top( uint64_t * const Cs, uint64_t * const Ct,
   }
   
   // permute points
+  #ifdef OPENCILK
   #pragma cilk grainsize 1
-  cilk_for (int j=0; j<np; j++){
+  #endif // OPENCILK
+  CILK_FOR (int j=0; j<np; j++){
     int size = ((j+1)*m < n) ? m : (n - j*m);
     for(int i=0; i<size; i++){
       uint32_t const idx = j*m + i;
@@ -243,7 +247,7 @@ void doSort_top( uint64_t * const Cs, uint64_t * const Ct,
       uint32_t nPts = BinCursor[(np-1)*nBin + i] - offset;
 
       if ( nPts > LIMIT_SEQ ){
-        cilk_spawn doSort( &Ct[offset], &Cs[offset],
+        CILK_SPAWN doSort( &Ct[offset], &Cs[offset],
                            &Pt[offset], &Ps[offset],
                            &Yt[offset*d], &Ys[offset*d],
                            prev_off + offset,
@@ -261,7 +265,7 @@ void doSort_top( uint64_t * const Cs, uint64_t * const Ct,
     }
   } 
 
-  cilk_sync;
+  CILK_SYNC;
   
   // delete BinCursor;
   parallel_free( BinCursor );

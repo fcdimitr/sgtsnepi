@@ -1,6 +1,7 @@
 #ifndef MAX_REDUCER_HPP
 #define MAX_REDUCER_HPP
 
+#ifdef OPENCILK
 
 #include <limits>
 #include <algorithm>
@@ -14,5 +15,11 @@ template<typename T> void max_operation(void *left, void *right) {
 }
 
 template<typename T> using max_reducer = T cilk_reducer(min_limit<T>, max_operation<T>);
+
+#else
+
+template<typename T> using max_reducer = T;
+
+#endif // OPENCILK
 
 #endif // MAX_REDUCER_HPP

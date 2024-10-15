@@ -11,8 +11,8 @@
 
 #include <iostream>
 #include <string>
-#include <cilk/cilk.h>
 #include <cmath>
+ #include "cilk.hpp"
 #include "matrix_indexing.hpp"
 
 #define LAGRANGE_INTERPOLATION
@@ -64,8 +64,10 @@ void s2g1d( double * V,
             uint32_t nVec) {
 
 
+  #ifdef OPENCILK
   #pragma cilk grainsize 1
-  cilk_for (uint32_t pid = 0; pid<np; pid++){
+  #endif // OPENCILK
+  CILK_FOR (uint32_t pid = 0; pid<np; pid++){
 
     double v1[4];
     
@@ -114,7 +116,7 @@ void s2g1drb( double * V,
 
   for (uint32_t s = 0; s < 2; s++ ) { // red-black sync
 
-    cilk_for (uint32_t idual = 0; idual < (ng-3) ; idual += 6) { // coarse-grid
+    CILK_FOR (uint32_t idual = 0; idual < (ng-3) ; idual += 6) { // coarse-grid
 
       for (uint32_t ifine = 0 ; ifine < 3 ; ifine++ ) { // fine-grid
 
@@ -171,8 +173,10 @@ void s2g2d( double * V,
             uint32_t nVec) {
 
 
+  #ifdef OPENCILK
   #pragma cilk grainsize 1
-  cilk_for (uint32_t pid = 0; pid<np; pid++){
+  #endif // OPENCILK
+  CILK_FOR (uint32_t pid = 0; pid<np; pid++){
 
     double v1[4];
     double v2[4];
@@ -234,7 +238,7 @@ void s2g2drb( double * V,
 
   for (uint32_t s = 0; s < 2; s++ ) { // red-black sync
 
-    cilk_for (uint32_t idual = 0; idual < (ng-3) ; idual += 6) { // coarse-grid
+    CILK_FOR (uint32_t idual = 0; idual < (ng-3) ; idual += 6) { // coarse-grid
 
       for (uint32_t ifine = 0 ; ifine < 3 ; ifine++ ) { // fine-grid
 
@@ -305,8 +309,10 @@ void s2g3d( double * V,
             uint32_t nVec) {
 
 
+  #ifdef OPENCILK
   #pragma cilk grainsize 1
-  cilk_for (uint32_t pid = 0; pid<np; pid++){
+  #endif // OPENCILK
+  CILK_FOR (uint32_t pid = 0; pid<np; pid++){
 
     double v1[4];
     double v2[4];
@@ -381,7 +387,7 @@ void s2g3drb( double * V,
 
   for (uint32_t s = 0; s < 2; s++ ) { // red-black sync
 
-    cilk_for (uint32_t idual = 0; idual < (ng-3) ; idual += 6) { // coarse-grid
+    CILK_FOR (uint32_t idual = 0; idual < (ng-3) ; idual += 6) { // coarse-grid
 
       for (uint32_t ifine = 0 ; ifine < 3 ; ifine++ ) { // fine-grid
 
@@ -461,7 +467,7 @@ void g2s1d( double * Phi,
             uint32_t nVec) {
 
 
-  cilk_for (uint32_t i = 0; i<nPts; i++){
+  CILK_FOR (uint32_t i = 0; i<nPts; i++){
 
     uint32_t f1;
     double d;
@@ -504,7 +510,7 @@ void g2s2d( double * Phi,
             uint32_t nVec) {
 
 
-  cilk_for (uint32_t i = 0; i<nPts; i++){
+  CILK_FOR (uint32_t i = 0; i<nPts; i++){
 
     uint32_t f1, f2;
     double d;
@@ -562,7 +568,7 @@ void g2s3d( double * Phi,
             uint32_t nVec) {
 
 
-  cilk_for (uint32_t i = 0; i<nPts; i++){
+  CILK_FOR (uint32_t i = 0; i<nPts; i++){
 
     uint32_t f1, f2, f3;
     double d;
