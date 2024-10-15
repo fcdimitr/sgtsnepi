@@ -13,11 +13,10 @@
 #include <random>
 #include <cstring>
 
-#include <cilk/cilk.h>
+#include "cilk.hpp"
 #include "utils.hpp"
 #include "qq.hpp"
 #include "pq.hpp"
-#include "../csb/csb_wrapper.hpp"
 
 #define N_NUM 3
 #define D_NUM 3
@@ -73,7 +72,7 @@ sparse_matrix *generateRandomCSC(int n){
 }
 
 
-
+/*
 bool testAttractiveTerm( int n, int d){
 
   bool flag = true;
@@ -84,22 +83,8 @@ bool testAttractiveTerm( int n, int d){
  
 
   double *Fg = new double [n*d] ();
-  double *Ft = new double [n*d] ();
 
   pq( Fg, y, P->val, P->row, P->col, n, d);
-  
-  // initialize CSB object
-  BiCsb<matval, matidx> *csb = NULL;
-
-  // build CSB object (with default workers & BETA)
-  csb = prepareCSB<matval, matidx>
-    ( P->val, P->row, P->col,
-      P->nnz,
-      P->m,
-      P->n,
-      0, 0 );
-
-  csb_pq( NULL, NULL, csb, y, Ft, n, d, 0, 0, 0 );
 
   double maxErr = 0;
   for (int i = 0; i<n*d; i++)
@@ -110,14 +95,13 @@ bool testAttractiveTerm( int n, int d){
   if ( maxErr > 1e-10 )
     flag = false;
   
-  deallocate(csb);
   delete P;
   delete [] y;
   delete [] Fg;
-  delete [] Ft;
   return flag;
   
 }
+*/
 
 bool testRepulsiveTerm( int n, int d, int np){
 
@@ -168,11 +152,12 @@ int main(void)
   
   std::cout << " %% Using " << np << " threads\n\n";
   
-  std::cout << "\n - Attractive term [PQ]\n";
-
   int n_pass = 0;
   int n_fail = 0;
   
+  /*
+  std::cout << "\n - Attractive term [PQ]\n";
+
   for (int i = 0; i < N_NUM; i++){
     for (int j = 0; j < D_NUM; j++){
       std::cout << "   > N = " << n[i] << " D = " << d[j] << "..." << std::flush;
@@ -187,6 +172,7 @@ int main(void)
         std::cout << "FAIL!!!" << std::endl;
     }
   }
+  */
 
   std::cout << "\n - Repulsive term [QQ]\n";
 

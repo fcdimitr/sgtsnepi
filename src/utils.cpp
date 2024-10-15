@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <fstream>
 
-#include <cilk/cilk_api.h>
+#include "cilk.hpp"
 
 void printParams(tsneparams P){
 
@@ -146,18 +146,12 @@ void extractEmbedding( double *y, int n, int d ){
   return;
 }
 
-#ifndef OPENCILK
-void setWorkers(int n){
-  std::string str = std::to_string(n);
-
-  __cilkrts_end_cilk();
-  if ( 0!=__cilkrts_set_param("nworkers", str.c_str() ) )
-    std::cerr << "Error setting workers" << std::endl;
-}
-#endif
-
 int getWorkers(){
+  #ifdef OPENCILK
   return __cilkrts_get_nworkers();
+  #else
+  return 1;
+  #endif // OPENCILK
 }
 
 double * readXfromMTX( const char *filename, int *n, int *d ){

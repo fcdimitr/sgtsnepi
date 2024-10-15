@@ -19,9 +19,9 @@ void eee( double * const PhiGrid, const double *VGrid,
           double hsq ) {
 
 
-    cilk_for (long int i = 0; i < n1*n2*n3; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3; i++)
         Kc[i] = 0.0;
-    cilk_for (long int i = 0; i < n1*n2*n3*nVec; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3*nVec; i++)
         Xc[i] = 0.0;
 
 // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
@@ -97,9 +97,9 @@ void oee( double * const PhiGrid, const double *VGrid,
           uint32_t n1, uint32_t n2, uint32_t n3, uint32_t nVec,
           double hsq ) {
 
-    cilk_for (long int i = 0; i < n1*n2*n3; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3; i++)
         Kc[i] = 0.0;
-    cilk_for (long int i = 0; i < n1*n2*n3*nVec; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3*nVec; i++)
         Xc[i] = 0.0;
 
   
@@ -193,9 +193,9 @@ void eoe( double * const PhiGrid, const double *VGrid,
           uint32_t n1, uint32_t n2, uint32_t n3, uint32_t nVec,
           double hsq ) {
 
-    cilk_for (long int i = 0; i < n1*n2*n3; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3; i++)
         Kc[i] = 0.0;
-    cilk_for (long int i = 0; i < n1*n2*n3*nVec; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3*nVec; i++)
         Xc[i] = 0.0;
 
 
@@ -289,9 +289,9 @@ void ooe( double *PhiGrid, const double *VGrid,
           uint32_t n1, uint32_t n2, uint32_t n3, uint32_t nVec,
           double hsq ) {
 
-    cilk_for (long int i = 0; i < n1*n2*n3; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3; i++)
         Kc[i] = 0.0;
-    cilk_for (long int i = 0; i < n1*n2*n3*nVec; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3*nVec; i++)
         Xc[i] = 0.0;
 
 // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
@@ -386,9 +386,9 @@ void eeo( double *PhiGrid, const double *VGrid,
           double hsq ) {
 
   
-    cilk_for (long int i = 0; i < n1*n2*n3; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3; i++)
         Kc[i] = 0.0;
-    cilk_for (long int i = 0; i < n1*n2*n3*nVec; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3*nVec; i++)
         Xc[i] = 0.0;
 // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
 for (uint32_t k=0; k<n3; k++) {
@@ -480,9 +480,9 @@ void oeo( double *PhiGrid, const double *VGrid,
           uint32_t n1, uint32_t n2, uint32_t n3, uint32_t nVec,
           double hsq ) {
 
-    cilk_for (long int i = 0; i < n1*n2*n3; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3; i++)
         Kc[i] = 0.0;
-    cilk_for (long int i = 0; i < n1*n2*n3*nVec; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3*nVec; i++)
         Xc[i] = 0.0;
 
 // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
@@ -575,9 +575,9 @@ void eoo( double *PhiGrid, const double *VGrid,
           uint32_t n1, uint32_t n2, uint32_t n3, uint32_t nVec,
           double hsq ) {
 
-    cilk_for (long int i = 0; i < n1*n2*n3; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3; i++)
         Kc[i] = 0.0;
-    cilk_for (long int i = 0; i < n1*n2*n3*nVec; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3*nVec; i++)
         Xc[i] = 0.0;
 
 // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
@@ -670,9 +670,9 @@ void ooo( double *PhiGrid, const double *VGrid,
           uint32_t n1, uint32_t n2, uint32_t n3, uint32_t nVec,
           double hsq ) {
 
-    cilk_for (long int i = 0; i < n1*n2*n3; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3; i++)
         Kc[i] = 0.0;
-    cilk_for (long int i = 0; i < n1*n2*n3*nVec; i++)
+    CILK_FOR (long int i = 0; i < n1*n2*n3*nVec; i++)
         Xc[i] = 0.0;
 
 // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL

@@ -8,10 +8,10 @@
 
 
 #include <iostream>
-#include <cilk/cilk.h>
 #include <limits>
 #include <cmath>
 
+#include "cilk.hpp"
 #include "timers.hpp"
 #include "qq.hpp"
 #include "nuconv.hpp"
@@ -27,7 +27,7 @@ coord computeFrepulsive_exact(coord * frep,
   
   coord *zetaVec = new coord [N] ();
   
-  cilk_for (int i = 0; i < N; i++) {
+  CILK_FOR (int i = 0; i < N; i++) {
     coord Yi[10] = {0};
     for (int dd = 0; dd < d; dd++ )
       Yi[dd] = pointsX[i*d + dd];
@@ -56,12 +56,12 @@ coord computeFrepulsive_exact(coord * frep,
   }
 
   opadd_reducer<coord> zeta_reducer = 0.0;
-  cilk_for (int i = 0; i < N; i++)
+  CILK_FOR (int i = 0; i < N; i++)
     zeta_reducer += zetaVec[i];
 
   coord zeta = static_cast<coord>(zeta_reducer);
 
-  cilk_for (int i = 0; i < N; i++)
+  CILK_FOR (int i = 0; i < N; i++)
     for (int j = 0; j < d; j++)
       frep[(i*d) + j] /= zeta;
 
@@ -96,7 +96,7 @@ dataval zetaAndForce( dataval * const F,            // Forces
   Z = Z-nPts;
   
   // Compute repulsive forces
-  cilk_for (uint32_t i=0; i<nPts; i++){
+  CILK_FOR (uint32_t i=0; i<nPts; i++){
     for (uint32_t j=0; j<nDim; j++)
       F[iPerm[i]*nDim + j] =
         ( Y[i*nDim+j] * Phi[i*(nDim+1)] - Phi[i*(nDim+1)+j+1] ) / Z;
@@ -153,7 +153,7 @@ coord computeFrepulsive_interp(coord * Frep,
     for (int j = 0; j < d; j++)
       miny[j] = miny[j] > y[i*d + j] ? y[i*d + j] : miny[j];
 
-  cilk_for(int i = 0; i < n; i++) {
+  CILK_FOR(int i = 0; i < n; i++) {
     for(int j = 0; j < d; j++) {
       y[i*d + j] -= miny[j];
     }
@@ -182,7 +182,7 @@ coord computeFrepulsive_interp(coord * Frep,
   uint32_t *ib    = new uint32_t [nGrid] ();
   uint32_t *cb    = new uint32_t [nGrid] ();
 
-  cilk_for( int i = 0; i < n; i++ ){
+  CILK_FOR( int i = 0; i < n; i++ ){
     iPerm[i] = i;
   }
 
@@ -202,7 +202,7 @@ coord computeFrepulsive_interp(coord * Frep,
 
   // ----- setup VScat (value on scattered points)
   
-  cilk_for( int i = 0; i < n; i++ ){
+  CILK_FOR( int i = 0; i < n; i++ ){
 
     VScat[ i*(d+1) ] = 1.0;
     for ( int j = 0; j < d; j++ )
