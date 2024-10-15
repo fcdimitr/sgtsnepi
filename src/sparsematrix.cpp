@@ -13,8 +13,9 @@
 #include <cmath>
 #include <limits>
 #include <iostream>
-#include <cilk/cilk.h>
 #include <fstream>
+
+#include "cilk.hpp"
 
 void free_sparse_matrix(sparse_matrix * P){
 
@@ -28,7 +29,7 @@ uint32_t makeStochastic(sparse_matrix P){
 
   int *stoch = new int [P.n] ();
   
-  cilk_for (int j=0; j<P.n; j++){
+  CILK_FOR (int j=0; j<P.n; j++){
 
     double sum = 0;
 

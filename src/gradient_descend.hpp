@@ -11,7 +11,6 @@
 #define GRADIENT_DESCEND_HPP
 
 #include "types.hpp"
-#include "../csb/csb_wrapper.hpp"
 #include "utils.hpp"
 
 //! Gradient descend for Kullback-Leibler minimization
@@ -19,7 +18,7 @@
 */
 void kl_minimization(coord* Y,  //!< Embedding coordinates (output)
                      tsneparams param, //!< t-SNE parameters
-                     BiCsb<matval, matidx> *csb, //!< CSB object
+                     sparse_matrix *P, //!< Sparse Matrix
                      double **timeInfo //!< [Optional] Timing information (output)
                      );
 
@@ -32,7 +31,7 @@ double compute_gradient(dataPoint *dy,
                         double *timeFattr,
                         tsneparams params,
                         dataPoint *y,
-                        BiCsb<dataPoint, unsigned int> * csb,
+                        sparse_matrix *P,
                         int p,
                         double *timeInfo = nullptr);
 

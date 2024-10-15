@@ -13,6 +13,8 @@
 #include <cstring>
 #include "pq.hpp"
 
+#include "cilk.hpp"
+
 void pq( double       *       Fattr,
          double       * const Y,
          double const * const p_sp,
@@ -22,7 +24,7 @@ void pq( double       *       Fattr,
          int    const         d) {
   
   std::memset( Fattr, 0, n*d * sizeof(double) );
-  for (int j = 0; j < n; j++) {
+  CILK_FOR (int j = 0; j < n; j++) {
   //for (unsigned int j = 0; j < n; j++) {
 
     double accum[3] = {0};

@@ -14,13 +14,16 @@
 #include <cmath>
 #include <cfloat>
 #include <cstdlib>
-#include <cilk/cilk.h>
+
+#include "cilk.hpp"
 #include <vector>
 
 #include <fftw3.h>
 
+#include "sgtsne.hpp"
 #include "timers.hpp"
 #include "opadd_reducer.hpp"
+#include "pq.hpp"
 #include "qq.hpp"
 
 #define MAX_NV_EXACT 1000  // maximum number of vertices to run exact
@@ -36,7 +39,7 @@ void compute_dy(dataPoint       * const dy,
                 dataPoint         const alpha){
 
 
-  cilk_for (int k = 0; k < N*dim; k++)
+  CILK_FOR (int k = 0; k < N*dim; k++)
     dy[k] = alpha * Fattr[k] - Frep[k];
 
 }
@@ -54,7 +57,7 @@ void update_positions(dataPoint * const dY,
 
 
   // Update gains
-  cilk_for(int i = 0; i < N * no_dims; i++){
+  CILK_FOR(int i = 0; i < N * no_dims; i++){
     gains[i] = (sign(dY[i]) != sign(uY[i])) ? (gains[i] + .2) : (gains[i] * .8);
     if(gains[i] < .01) gains[i] = .01;
     uY[i] = momentum * uY[i] - eta * gains[i] * dY[i];
@@ -65,7 +68,7 @@ void update_positions(dataPoint * const dY,
   dataPoint meany[no_dims];
   for (int i = 0; i < no_dims; i++){
     opadd_reducer<dataPoint> sum = 0.0;
-    cilk_for (int j = i; j < N*no_dims; j += no_dims)
+    CILK_FOR (int j = i; j < N*no_dims; j += no_dims)
       sum += Y[j];
     meany[i] = static_cast<dataPoint>(sum) / N;
   }
@@ -74,7 +77,7 @@ void update_positions(dataPoint * const dY,
   double max_tot = 0.0;
 
   // zero-mean
-  cilk_for(int n = 0; n < N; n++) {
+  CILK_FOR(int n = 0; n < N; n++) {
     for(int d = 0; d < no_dims; d++) {
       Y[n*no_dims + d] -= meany[d];
       if( std::abs( Y[n*no_dims + d] ) > max_tot )
@@ -103,7 +106,7 @@ double compute_gradient(dataPoint *dy,
                         double *timeFattr,
                         tsneparams params,
                         dataPoint *y,
-                        BiCsb<dataPoint, unsigned int> * csb,
+                        sparse_matrix *P,
                         int p,
                         double *timeInfo){
 
@@ -121,7 +124,7 @@ double compute_gradient(dataPoint *dy,
 
   // ------ Compute PQ (fattr)
   start = tsne_start_timer();
-  csb_pq( NULL, NULL, csb, y, Fattr, n, d, 0, 0, 0 );
+  pq(Fattr, y, P->val, P->row, P->col, n, d);
   if (timeInfo != nullptr) {
     timeInfo[0] = tsne_stop_timer("PQ", start);
     *timeFattr += timeInfo[0];
@@ -155,9 +158,43 @@ double compute_gradient(dataPoint *dy,
   return zeta;
 }
 
+
+// Evaluate t-SNE cost function
+double tsne_cost(
+    matidx * row_P,
+    matidx * col_P,
+    matval * val_P,
+    double * y,
+    double zeta,
+    int n,
+    int d){
+
+  // Adapted original cost function from:
+  // github.com/lvdmaaten/bhtsne/blob/cd619e6c186b909a2d8ed26fbf0b1afec770f43d/tsne.cpp
+
+  // Loop over all edges to compute t-SNE error
+  int index_i, index_j;
+  double C = 0.0, Q;
+  for(int i = 0; i < n; i++) {
+      index_i = i * d;
+      for(int j = col_P[i]; j < col_P[i + 1]; j++) {
+          Q = .0;
+          index_j = row_P[j] * d;
+          for(int k = 0; k < d; k++) {
+            double y_diff  = y[index_i + k] - y[index_j + k];
+            Q += y_diff * y_diff;
+          }
+          Q = (1.0 / (1.0 + Q)) / zeta;
+          C += val_P[i] * log((val_P[i] + FLT_MIN) / (Q + FLT_MIN));
+      }
+  }
+
+  return C;
+}
+
 void kl_minimization(coord* y,
                      tsneparams params, 
-                     BiCsb<matval, matidx> *csb,
+                     sparse_matrix *P,
                      double **timeInfo = nullptr){
 
   // ----- t-SNE hard coded parameters - Same as in vdM's code
@@ -217,9 +254,9 @@ void kl_minimization(coord* y,
 
     // ----- Gradient calculation
     if (timeInfo == nullptr)
-      zeta = compute_gradient(dy, &timeFrep, &timeFattr, params, y, csb, p);
+      zeta = compute_gradient(dy, &timeFrep, &timeFattr, params, y, P, p);
     else
-      zeta = compute_gradient(dy, &timeFrep, &timeFattr, params, y, csb, p,
+      zeta = compute_gradient(dy, &timeFrep, &timeFattr, params, y, P, p,
                               timeInfo[iter]);
     // ----- Position update
     update_positions<coord>(dy, uy, n, d, y, gains, momentum, eta, params.bound_box);
@@ -236,7 +273,7 @@ void kl_minimization(coord* y,
     
     // Print out progress
     if( iter % iterPrint == 0 || iter == max_iter - 1 ) {
-      matval C = tsne_cost( csb, y, n, d, params.alpha, zeta );
+      matval C = tsne_cost(P->row, P->col, P->val, y, zeta, n, d);
       if(iter == 0){
         std::cout << "Iteration " << iter+1
                   << ": error is " << C
@@ -279,7 +316,7 @@ double compute_gradient(double *dy,
                         double *timeFattr,
                         tsneparams params,
                         double *y,
-                        BiCsb<double, unsigned int> * csb,
+                        sparse_matrix *P,
                         int p,
                         double *timeInfo);
 
@@ -289,5 +326,5 @@ double compute_gradient(double *dy,
 //                         double *timeFattr,
 // 			tsneparams params,
 // 			float *y,
-// 			BiCsb<float, unsigned int> * csb,
+//      sparse_matrix *P,
 //                         double *timeInfo);

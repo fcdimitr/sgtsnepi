@@ -8,12 +8,12 @@
 
 
 #include <iostream>
-#include <cilk/cilk.h>
 #include <limits>
 #include <cmath>
 #include <vector>
 #include <algorithm>
 
+#include "cilk.hpp"
 #include "nuconv.hpp"
 #include "timers.hpp"
 #include "types.hpp"
@@ -37,12 +37,12 @@ void nuconv( coord *PhiScat, coord *y, coord *VScat,
   // ~~~~~~~~~~ normalize coordinates and scale to [0,ng-1] (inside bins)
 
   max_reducer<coord> max_reducer = y[0];
-  cilk_for (int i = 0; i < n*d; i++)
+  CILK_FOR (int i = 0; i < n*d; i++)
     max_reducer = std::max<coord>(y[i], max_reducer);
 
   coord maxy = static_cast<coord>(max_reducer);
 
-  cilk_for (int i = 0; i < n*d; i++) {
+  CILK_FOR (int i = 0; i < n*d; i++) {
     y[i] /= maxy;
     y[i] -= (y[i] == 1) * std::numeric_limits<coord>::epsilon();
     y[i] *= (nGridDim-1);
@@ -88,7 +88,7 @@ void nuconv( coord *PhiScat, coord *y, coord *VScat,
   }
 
   // ----- reduction across processors
-  cilk_for( int i=0; i < szV ; i++ )
+  CILK_FOR( int i=0; i < szV ; i++ )
     for (int j=1; j<np; j++)
       VGrid[i] += VGrid[ j*szV + i ];
 

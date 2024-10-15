@@ -10,11 +10,13 @@
 
 #include "graph_rescaling.hpp"
 
-#include <cilk/cilk.h>
 #include <limits>
 #include <cmath>
 
 #include <iostream>
+
+#include "cilk.hpp"
+
 
 void lambdaRescaling( sparse_matrix P, double lambda, bool dist, bool dropLeafEdge ){
 
@@ -24,7 +26,7 @@ void lambdaRescaling( sparse_matrix P, double lambda, bool dist, bool dropLeafEd
 
   if (dist)  std::cout << "Input considered as distances" << std::endl;
   
-  cilk_for (int i=0; i<P.n; i++){
+  CILK_FOR (int i=0; i<P.n; i++){
 
     double fval = 1 - lambda;
     sig2[i] = 1;

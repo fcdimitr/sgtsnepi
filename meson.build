@@ -19,17 +19,12 @@ cc = meson.get_compiler('cpp')
 is_icpc      = cc.get_id().contains('intel')
 use_opencilk = not is_icpc \
                and cc.has_argument('-fopencilk')
-use_cilkplus = not use_opencilk \
-               and (is_icpc or cc.has_argument('-fcilkplus'))
-
-if not (use_opencilk or use_cilkplus)
-  cc_str = cc.get_id() + ' ' + cc.version()
-  error('The specified compiler (' + cc_str + ') does not support Cilk.')
-endif
 
 # relevant Cilk headers
-cc.has_header('cilk/cilk.h'         , required : true)
-cc.has_header('cilk/cilk_api.h'     , required : true)
+if use_opencilk
+  cc.has_header('cilk/cilk.h'         , required : true)
+  cc.has_header('cilk/cilk_api.h'     , required : true)
+endif
 
 
 
@@ -44,9 +39,6 @@ endif
 if use_opencilk
   add_project_arguments(['-fopencilk','-DOPENCILK'], language : 'cpp')
   add_project_link_arguments(['-fopencilk'], language : 'cpp')
-elif use_cilkplus
-  add_project_arguments(['-fcilkplus'], language : 'cpp')
-  add_project_link_arguments(['-lcilkrts'], language : 'cpp')
 endif
 
 # add flag for showing times
@@ -94,12 +86,11 @@ endforeach
 
 # source files
 subdir('src')
-subdir('csb')
+#subdir('csb')
 
 # SG-t-SNE-Pi library
 sgtsnepi_lib = library('sgtsnepi', [sgtsnepi_src],
-                       dependencies : [libs_dep, csb_dep],
-                       include_directories : csb_inc_dir,
+                       dependencies : [libs_dep],
                        install : true, install_dir : 'lib',
                        soversion : vso)
 

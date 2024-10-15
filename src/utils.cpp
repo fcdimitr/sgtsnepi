@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <fstream>
 
-#include <cilk/cilk_api.h>
+#include "cilk.hpp"
 
 void printParams(tsneparams P){
 
@@ -156,7 +156,11 @@ void extractEmbedding( double *y, int n, int d ){
 }
 
 int getWorkers(){
+  #ifdef OPENCILK
   return __cilkrts_get_nworkers();
+  #else
+  return 1;
+  #endif // OPENCILK
 }
 
 void setWorkers(int n){
