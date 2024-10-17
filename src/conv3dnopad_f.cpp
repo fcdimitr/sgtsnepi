@@ -45,12 +45,12 @@ void conv3dnopad_f( double * const PhiGrid,
   wc = reinterpret_cast<std::complex<float> *> (w);
 
   // get twiddle factors
-  cilk_for (int i=0; i<nGridDims[0]; i++)
+  CILK_FOR (int i=0; i<nGridDims[0]; i++)
     wc[i] = std::polar(1.0, -2*pi*i/(2*nGridDims[0]) );
 
-  cilk_for (long int i = 0; i < n1*n2*n3; i++)
+  CILK_FOR (long int i = 0; i < n1*n2*n3; i++)
     Kc[i] = 0.0;
-  cilk_for (long int i = 0; i < n1*n2*n3*nVec; i++)
+  CILK_FOR (long int i = 0; i < n1*n2*n3*nVec; i++)
     Xc[i] = 0.0;
 
   // ~~~~~~~~~~~~~~~~~~~~ SETUP PARALLELISM

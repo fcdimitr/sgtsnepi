@@ -75,6 +75,12 @@ void extractEmbeddingText( double *y, int n, int d );
 
 // ============================== CILK UTILITIES
 
+//! Set number of CILK workers.
+/*!
+  \param n      Desired number of workers
+*/
+void setWorkers(int n);
+
 //! Recover active number of CILK workers
 /*!
   \return Active number of CILK workers

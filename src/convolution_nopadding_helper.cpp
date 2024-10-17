@@ -27,7 +27,7 @@ void eee( double * const PhiGrid, const double *VGrid,
         Xc[i] = 0.0;
 
     // ~~~~~~~~~~~~~~~~~~~~ SETUP CAUCHY KERNEL
-    cilk_for (int k=0; k<n3; k++) {
+    CILK_FOR (int k=0; k<n3; k++) {
       for (int j=0; j<n2; j++) {
         for (int i=0; i<n1; i++) {
           std::complex<double> tmp( kernel3d( hsq, i, j, k ), 0 );
@@ -47,7 +47,7 @@ tsne_stop_timer("eee: setup", start); start = tsne_start_timer();
 
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
 
-cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+CILK_FOR (long i = 0; i < n1*n2*n3*nVec; i++)
     Xc[i] = VGrid[i];
 
 tsne_stop_timer("eee: rhs", start); start = tsne_start_timer();
@@ -63,7 +63,7 @@ fftw_execute(planc_rhs);
 tsne_stop_timer("eee: fft-rhs", start); start = tsne_start_timer();
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-cilk_for (long i = 0; i < n1*n2*n3; i++)
+CILK_FOR (long i = 0; i < n1*n2*n3; i++)
     for (long jVec = 0; jVec < nVec; jVec++)
         Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
@@ -76,7 +76,7 @@ tsne_stop_timer("eee: ifft", start); start = tsne_start_timer();
 
 // ---------- (no conjugate multiplication)
 
-cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+CILK_FOR (long i = 0; i < n1*n2*n3*nVec; i++)
     PhiGrid[i] = Xc[i].real();
 
 tsne_stop_timer("eee: final", start); start = tsne_start_timer();
@@ -100,7 +100,7 @@ void oee( double * const PhiGrid, const double *VGrid,
 
   
 // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
-cilk_for (int k=0; k<n3; k++) {
+CILK_FOR (int k=0; k<n3; k++) {
   for (int j=0; j<n2; j++) {
     for (int i=0; i<n1; i++) {
       std::complex<double> tmp( kernel3d( hsq, i, j, k ), 0 );
@@ -115,7 +115,7 @@ cilk_for (int k=0; k<n3; k++) {
     }
   }
  }
- cilk_for (int k=0; k<n3; k++) {
+ CILK_FOR (int k=0; k<n3; k++) {
    for (int j=0; j<n2; j++) {
      for (int i=0; i<n1; i++) {
        Kc[SUB2IND3D(i,j,k,n1,n2)] *= wc[i];
@@ -126,7 +126,7 @@ cilk_for (int k=0; k<n3; k++) {
  tsne_stop_timer("oee: setup", start); start = tsne_start_timer();
    
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-cilk_for (int iVec=0; iVec<nVec; iVec++) {
+CILK_FOR (int iVec=0; iVec<nVec; iVec++) {
   for (int k=0; k<n3; k++) {
     for (int j=0; j<n2; j++) {
       for (int i=0; i<n1; i++) {
@@ -151,7 +151,7 @@ fftw_execute(planc_rhs);
 tsne_stop_timer("oee: fft-rhs", start); start = tsne_start_timer();
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-cilk_for (long i = 0; i < n1*n2*n3; i++)
+CILK_FOR (long i = 0; i < n1*n2*n3; i++)
     for (long jVec = 0; jVec < nVec; jVec++)
         Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
@@ -163,7 +163,7 @@ fftw_execute(planc_inverse);
 tsne_stop_timer("oee: ifft", start); start = tsne_start_timer();
 
 // ---------- data normalization
- cilk_for (int iVec=0; iVec<nVec; iVec++) {
+ CILK_FOR (int iVec=0; iVec<nVec; iVec++) {
    for (int k=0; k<n3; k++){
      for (int j=0; j<n2; j++) {
        for (int i=0; i<n1; i++) {
@@ -175,7 +175,7 @@ tsne_stop_timer("oee: ifft", start); start = tsne_start_timer();
    }
  }
   
- cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+ CILK_FOR (long i = 0; i < n1*n2*n3*nVec; i++)
     PhiGrid[i] += Xc[i].real();
 
 
@@ -196,7 +196,7 @@ void eoe( double * const PhiGrid, const double *VGrid,
 
 
 // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
-cilk_for (int k=0; k<n3; k++) {
+CILK_FOR (int k=0; k<n3; k++) {
   for (int j=0; j<n2; j++) {
     for (int i=0; i<n1; i++) {
       std::complex<double> tmp( kernel3d( hsq, i, j, k ), 0 );
@@ -211,7 +211,7 @@ cilk_for (int k=0; k<n3; k++) {
     }
   }
  }
- cilk_for (int k=0; k<n3; k++) {
+ CILK_FOR (int k=0; k<n3; k++) {
    for (int j=0; j<n2; j++) {
      for (int i=0; i<n1; i++) {
        Kc[SUB2IND3D(i,j,k,n1,n2)] *= wc[j];
@@ -220,7 +220,7 @@ cilk_for (int k=0; k<n3; k++) {
  }
    
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-cilk_for (int iVec=0; iVec<nVec; iVec++) {
+CILK_FOR (int iVec=0; iVec<nVec; iVec++) {
   for (int k=0; k<n3; k++) {
     for (int j=0; j<n2; j++) {
       for (int i=0; i<n1; i++) {
@@ -239,7 +239,7 @@ fftw_execute(planc_kernel);
 fftw_execute(planc_rhs);
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-cilk_for (long i = 0; i < n1*n2*n3; i++)
+CILK_FOR (long i = 0; i < n1*n2*n3; i++)
     for (long jVec = 0; jVec < nVec; jVec++)
         Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
@@ -247,7 +247,7 @@ cilk_for (long i = 0; i < n1*n2*n3; i++)
 fftw_execute(planc_inverse);
 
 // ---------- data normalization
- cilk_for (int iVec=0; iVec<nVec; iVec++) {
+ CILK_FOR (int iVec=0; iVec<nVec; iVec++) {
    for (int k=0; k<n3; k++){
      for (int j=0; j<n2; j++) {
        for (int i=0; i<n1; i++) {
@@ -259,7 +259,7 @@ fftw_execute(planc_inverse);
    }
  }
 
- cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+ CILK_FOR (long i = 0; i < n1*n2*n3*nVec; i++)
     PhiGrid[i] += Xc[i].real();
 
 }
@@ -276,7 +276,7 @@ void ooe( double *PhiGrid, const double *VGrid,
         Xc[i] = 0.0;
 
 // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
-cilk_for (int k=0; k<n3; k++) {
+CILK_FOR (int k=0; k<n3; k++) {
   for (int j=0; j<n2; j++) {
     for (int i=0; i<n1; i++) {
       std::complex<double> tmp( kernel3d( hsq, i, j, k ), 0 );
@@ -291,7 +291,7 @@ cilk_for (int k=0; k<n3; k++) {
     }
   }
  }
- cilk_for (int k=0; k<n3; k++) {
+ CILK_FOR (int k=0; k<n3; k++) {
    for (int j=0; j<n2; j++) {
      for (int i=0; i<n1; i++) {
        Kc[SUB2IND3D(i,j,k,n1,n2)] *= wc[j] * wc[i];
@@ -300,7 +300,7 @@ cilk_for (int k=0; k<n3; k++) {
  }
    
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-cilk_for (int iVec=0; iVec<nVec; iVec++) {
+CILK_FOR (int iVec=0; iVec<nVec; iVec++) {
   for (int k=0; k<n3; k++) {
     for (int j=0; j<n2; j++) {
       for (int i=0; i<n1; i++) {
@@ -319,7 +319,7 @@ fftw_execute(planc_kernel);
 fftw_execute(planc_rhs);
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-cilk_for (long i = 0; i < n1*n2*n3; i++)
+CILK_FOR (long i = 0; i < n1*n2*n3; i++)
     for (long jVec = 0; jVec < nVec; jVec++)
         Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
@@ -327,7 +327,7 @@ cilk_for (long i = 0; i < n1*n2*n3; i++)
 fftw_execute(planc_inverse);
 
 // ---------- data normalization
- cilk_for (int iVec=0; iVec<nVec; iVec++) {
+ CILK_FOR (int iVec=0; iVec<nVec; iVec++) {
    for (int k=0; k<n3; k++){
      for (int j=0; j<n2; j++) {
        for (int i=0; i<n1; i++) {
@@ -339,7 +339,7 @@ fftw_execute(planc_inverse);
    }
  }
   
-cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+CILK_FOR (long i = 0; i < n1*n2*n3*nVec; i++)
     PhiGrid[i] += Xc[i].real();
 
 }
@@ -357,7 +357,7 @@ void eeo( double *PhiGrid, const double *VGrid,
     CILK_FOR (long int i = 0; i < n1*n2*n3*nVec; i++)
         Xc[i] = 0.0;
 // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
-cilk_for (int k=0; k<n3; k++) {
+CILK_FOR (int k=0; k<n3; k++) {
   for (int j=0; j<n2; j++) {
     for (int i=0; i<n1; i++) {
       std::complex<double> tmp( kernel3d( hsq, i, j, k ), 0 );
@@ -372,7 +372,7 @@ cilk_for (int k=0; k<n3; k++) {
     }
   }
  }
- cilk_for (int k=0; k<n3; k++) {
+ CILK_FOR (int k=0; k<n3; k++) {
    for (int j=0; j<n2; j++) {
      for (int i=0; i<n1; i++) {
        Kc[SUB2IND3D(i,j,k,n1,n2)] *= wc[k];
@@ -381,7 +381,7 @@ cilk_for (int k=0; k<n3; k++) {
  }
    
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-cilk_for (int iVec=0; iVec<nVec; iVec++) {
+CILK_FOR (int iVec=0; iVec<nVec; iVec++) {
   for (int k=0; k<n3; k++) {
     for (int j=0; j<n2; j++) {
       for (int i=0; i<n1; i++) {
@@ -400,7 +400,7 @@ fftw_execute(planc_kernel);
 fftw_execute(planc_rhs);
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-cilk_for (long i = 0; i < n1*n2*n3; i++)
+CILK_FOR (long i = 0; i < n1*n2*n3; i++)
     for (long jVec = 0; jVec < nVec; jVec++)
         Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
@@ -408,7 +408,7 @@ cilk_for (long i = 0; i < n1*n2*n3; i++)
 fftw_execute(planc_inverse);
 
 // ---------- data normalization
- cilk_for (int iVec=0; iVec<nVec; iVec++) {
+ CILK_FOR (int iVec=0; iVec<nVec; iVec++) {
    for (int k=0; k<n3; k++){
      for (int j=0; j<n2; j++) {
        for (int i=0; i<n1; i++) {
@@ -420,7 +420,7 @@ fftw_execute(planc_inverse);
    }
  }
   
-cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+CILK_FOR (long i = 0; i < n1*n2*n3*nVec; i++)
     PhiGrid[i] += Xc[i].real();
 
 }
@@ -437,7 +437,7 @@ void oeo( double *PhiGrid, const double *VGrid,
         Xc[i] = 0.0;
 
 // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
-cilk_for (int k=0; k<n3; k++) {
+CILK_FOR (int k=0; k<n3; k++) {
   for (int j=0; j<n2; j++) {
     for (int i=0; i<n1; i++) {
       std::complex<double> tmp( kernel3d( hsq, i, j, k ), 0 );
@@ -452,7 +452,7 @@ cilk_for (int k=0; k<n3; k++) {
     }
   }
  }
- cilk_for (int k=0; k<n3; k++) {
+ CILK_FOR (int k=0; k<n3; k++) {
    for (int j=0; j<n2; j++) {
      for (int i=0; i<n1; i++) {
        Kc[SUB2IND3D(i,j,k,n1,n2)] *= wc[i] * wc[k];
@@ -461,7 +461,7 @@ cilk_for (int k=0; k<n3; k++) {
  }
    
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-cilk_for (int iVec=0; iVec<nVec; iVec++) {
+CILK_FOR (int iVec=0; iVec<nVec; iVec++) {
   for (int k=0; k<n3; k++) {
     for (int j=0; j<n2; j++) {
       for (int i=0; i<n1; i++) {
@@ -480,7 +480,7 @@ fftw_execute(planc_kernel);
 fftw_execute(planc_rhs);
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-cilk_for (long i = 0; i < n1*n2*n3; i++)
+CILK_FOR (long i = 0; i < n1*n2*n3; i++)
     for (long jVec = 0; jVec < nVec; jVec++)
         Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
@@ -488,7 +488,7 @@ cilk_for (long i = 0; i < n1*n2*n3; i++)
 fftw_execute(planc_inverse);
 
 // ---------- data normalization
- cilk_for (int iVec=0; iVec<nVec; iVec++) {
+ CILK_FOR (int iVec=0; iVec<nVec; iVec++) {
    for (int k=0; k<n3; k++){
      for (int j=0; j<n2; j++) {
        for (int i=0; i<n1; i++) {
@@ -500,7 +500,7 @@ fftw_execute(planc_inverse);
    }
  }
   
-cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+CILK_FOR (long i = 0; i < n1*n2*n3*nVec; i++)
     PhiGrid[i] += Xc[i].real();
 
 }
@@ -517,7 +517,7 @@ void eoo( double *PhiGrid, const double *VGrid,
         Xc[i] = 0.0;
 
 // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
-cilk_for (int k=0; k<n3; k++) {
+CILK_FOR (int k=0; k<n3; k++) {
   for (int j=0; j<n2; j++) {
     for (int i=0; i<n1; i++) {
       std::complex<double> tmp( kernel3d( hsq, i, j, k ), 0 );
@@ -532,7 +532,7 @@ cilk_for (int k=0; k<n3; k++) {
     }
   }
  }
- cilk_for (int k=0; k<n3; k++) {
+ CILK_FOR (int k=0; k<n3; k++) {
    for (int j=0; j<n2; j++) {
      for (int i=0; i<n1; i++) {
        Kc[SUB2IND3D(i,j,k,n1,n2)] *= wc[j] * wc[k];
@@ -541,7 +541,7 @@ cilk_for (int k=0; k<n3; k++) {
  }
  
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-cilk_for (int iVec=0; iVec<nVec; iVec++) {
+CILK_FOR (int iVec=0; iVec<nVec; iVec++) {
   for (int k=0; k<n3; k++) {
     for (int j=0; j<n2; j++) {
       for (int i=0; i<n1; i++) {
@@ -560,7 +560,7 @@ fftw_execute(planc_kernel);
 fftw_execute(planc_rhs);
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-cilk_for (long i = 0; i < n1*n2*n3; i++)
+CILK_FOR (long i = 0; i < n1*n2*n3; i++)
     for (long jVec = 0; jVec < nVec; jVec++)
         Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
@@ -568,7 +568,7 @@ cilk_for (long i = 0; i < n1*n2*n3; i++)
 fftw_execute(planc_inverse); 
 
 // ---------- data normalization
- cilk_for (int iVec=0; iVec<nVec; iVec++) {
+ CILK_FOR (int iVec=0; iVec<nVec; iVec++) {
    for (int k=0; k<n3; k++){
      for (int j=0; j<n2; j++) {
        for (int i=0; i<n1; i++) {
@@ -580,7 +580,7 @@ fftw_execute(planc_inverse);
    }
  }
   
-cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+CILK_FOR (long i = 0; i < n1*n2*n3*nVec; i++)
     PhiGrid[i] += Xc[i].real();
 
 }
@@ -597,7 +597,7 @@ void ooo( double *PhiGrid, const double *VGrid,
         Xc[i] = 0.0;
 
 // ~~~~~~~~~~~~~~~~~~~~ SETUP KERNEL
-cilk_for (int k=0; k<n3; k++) {
+CILK_FOR (int k=0; k<n3; k++) {
   for (int j=0; j<n2; j++) {
     for (int i=0; i<n1; i++) {
       std::complex<double> tmp( kernel3d( hsq, i, j, k ), 0 );
@@ -612,7 +612,7 @@ cilk_for (int k=0; k<n3; k++) {
     }
   }
  }
- cilk_for (int k=0; k<n3; k++) {
+ CILK_FOR (int k=0; k<n3; k++) {
    for (int j=0; j<n2; j++) {
      for (int i=0; i<n1; i++) {
        Kc[SUB2IND3D(i,j,k,n1,n2)] *= wc[j] * wc[i] * wc[k];
@@ -621,7 +621,7 @@ cilk_for (int k=0; k<n3; k++) {
  }
    
 // ~~~~~~~~~~~~~~~~~~~~ SETUP RHS
-cilk_for (int iVec=0; iVec<nVec; iVec++) {
+CILK_FOR (int iVec=0; iVec<nVec; iVec++) {
   for (int k=0; k<n3; k++) {
     for (int j=0; j<n2; j++) {
       for (int i=0; i<n1; i++) {
@@ -640,7 +640,7 @@ fftw_execute(planc_kernel);
 fftw_execute(planc_rhs);
 
 // ~~~~~~~~~~~~~~~~~~~~ HADAMARD PRODUCT
-cilk_for (long i = 0; i < n1*n2*n3; i++)
+CILK_FOR (long i = 0; i < n1*n2*n3; i++)
     for (long jVec = 0; jVec < nVec; jVec++)
         Xc[jVec*n1*n2*n3 + i] *= Kc[i];
 
@@ -648,7 +648,7 @@ cilk_for (long i = 0; i < n1*n2*n3; i++)
 fftw_execute(planc_inverse);
 
 // ---------- data normalization
- cilk_for (int iVec=0; iVec<nVec; iVec++) {
+ CILK_FOR (int iVec=0; iVec<nVec; iVec++) {
    for (int k=0; k<n3; k++){
      for (int j=0; j<n2; j++) {
        for (int i=0; i<n1; i++) {
@@ -660,7 +660,7 @@ fftw_execute(planc_inverse);
    }
  }
   
-cilk_for (long i = 0; i < n1*n2*n3*nVec; i++)
+CILK_FOR (long i = 0; i < n1*n2*n3*nVec; i++)
     PhiGrid[i] += Xc[i].real();
 
 }

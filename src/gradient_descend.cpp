@@ -89,7 +89,7 @@ void update_positions(dataPoint * const dY,
   if ( max_tot > bound_box ) {
     max_tot /= bound_box;
     GLOBAL_GRID_SIZES.push_back( max_tot );
-    cilk_for(int n = 0; n < N; n++) {
+    CILK_FOR(int n = 0; n < N; n++) {
       for(int d = 0; d < no_dims; d++) {
         Y[n*no_dims + d] /= max_tot;
       }
