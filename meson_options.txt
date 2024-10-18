@@ -6,3 +6,9 @@ option('print_times',
        type : 'boolean',
        value : false,
        description : 'Print module times?')
+option('fftw_parallel_lib',
+       type : 'combo',
+       choices : ['threads', 'omp'],
+       value : 'threads',
+       description : 'Parallel FFTW3 library implementation suffix (use single-threaded FFTW if empty)')
+

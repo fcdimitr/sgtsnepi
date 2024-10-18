@@ -164,16 +164,9 @@ int getWorkers(){
 }
 
 void setWorkers(int n){
-  #ifdef OPENCILK
-  char str[4];
-  
-  sprintf( str, "%d", n );
-
-  __cilkrts_end_cilk();
-  if ( 0!=__cilkrts_set_param("nworkers", str ) )
-    std::cerr << "Error setting workers" << std::endl;
-  #else
-  #endif
+  // this function does nothing, it only exists for backwards-compatibility.
+  // if you want to set the number of OpenCilk workers do it via setting 
+  // the enviromental variable CILK_NWORKERS
 }
 
 double * readXfromMTX( const char *filename, int *n, int *d ){
