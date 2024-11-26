@@ -215,10 +215,12 @@ void kl_minimization(coord* y,
   coord zeta = 0;
 
   // ----- setup parallel FFTW
+#ifndef FFTW_NO_PARALLEL
   fftw_init_threads();
   fftw_plan_with_nthreads( params.np );
   fftwf_init_threads();
   fftwf_plan_with_nthreads( params.np );
+#endif
 
   if ( params.fftw_single )
     std::cout << "Setting-up parallel (single-precision) FFTW: " << params.np << std::endl;
