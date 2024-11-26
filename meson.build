@@ -83,31 +83,42 @@ foreach l : required_lib_deps
 endforeach
 
 # parallel FFTW library
-fftw_par_dep = dependency('fftw3_' + get_option('fftw_parallel_lib'),
-                          required : true)
-if not fftw_par_dep.found()
-  fftw_par_dep = cc.find_library('fftw3_' + get_option('fftw_parallel_lib'),
-                                 required : true)
-endif
-if not fftw_par_dep.found()
-  error('Could not find fftw3_' + get_option('fftw_parallel_lib') + ' library.')
-endif
+if not ['', 'none'].contains(get_option('fftw_parallel_lib'))
+  fftw_par_dep = dependency('fftw3_' + get_option('fftw_parallel_lib'),
+                            required : false)
+  fftwf_par_dep = dependency('fftw3f_' + get_option('fftw_parallel_lib'),
+                            required : true)
 
-fftwf_par_dep = dependency('fftw3f_' + get_option('fftw_parallel_lib'),
-                          required : true)
-if not fftwf_par_dep.found()
-  fftwf_par_dep = cc.find_library('fftw3f_' + get_option('fftw_parallel_lib'),
-                                 required : true)
+  if not fftw_par_dep.found()
+    fftw_par_dep = cc.find_library('fftw3_' + get_option('fftw_parallel_lib'),
+                                   required : false)
+  endif
+
+  if not fftwf_par_dep.found()
+    fftwf_par_dep = cc.find_library('fftw3f_' + get_option('fftw_parallel_lib'),
+                                   required : true)
+  endif
+
+  if not fftw_par_dep.found()
+    warning('Could not find fftw3_' + get_option('fftw_parallel_lib') + 'library.' +
+            ' Using single-threaded FFTW3 execution.')
+  endif
+  if not fftwf_par_dep.found()
+    warning('Could not find fftw3f_' + get_option('fftw_parallel_lib') + ' library.' +
+            ' Using single-threaded FFTW3 execution.')
+  endif
+else
+  fftw_par_dep = dependency('', required : false)
+  fftwf_par_dep = dependency('', required : false)
 endif
-if not fftwf_par_dep.found()
-  error('Could not find fftw3f_' + get_option('fftw_parallel_lib') + ' library.')
+if not (fftw_par_dep.found() and fftwf_par_dep.found())
+  add_project_arguments(['-DFFTW_NO_PARALLEL'], language : 'cpp')
 endif
 
 libs_dep = [fftw_par_dep] + [fftwf_par_dep] + libs_dep 
 # NOTE -lfftw3_<parallel> should precede -lfftw3
 libs_dep_dict += {'fftw3_parallel' : fftw_par_dep,
                   'fftw3f_parallel' : fftwf_par_dep}
-
 
 # ========== build targets
 
