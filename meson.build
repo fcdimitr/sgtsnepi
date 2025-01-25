@@ -127,8 +127,27 @@ subdir('src')
 #subdir('csb')
 
 # SG-t-SNE-Pi library
-sgtsnepi_lib = library('sgtsnepi', [sgtsnepi_src],
-                       dependencies : [libs_dep],
-                       install : true, install_dir : 'lib',
-                       soversion : vso)
+sgtsnepi_lib = shared_library(
+  'sgtsnepi', 
+  sgtsnepi_src,
+  dependencies: [libs_dep],
+  install: true,
+  install_dir: 'lib',
+  soversion: vso
+)
 
+static_sgtsnepi = static_library(
+  'sgtsnepi_static',
+  sgtsnepi_src,
+  dependencies: [libs_dep],
+  install: false,
+  install_dir: 'lib'
+)
+
+
+
+sgtsnepilib_inc = include_directories('src')
+sgtsnepilib_dep = declare_dependency(
+  link_with: static_sgtsnepi,
+  include_directories: sgtsnepilib_inc
+)
