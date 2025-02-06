@@ -11,8 +11,15 @@
 
 The ~Python~ interface calls the ~Julia~ ~SG-t-SNE-Π~ library, through the
 ~PyJulia~ package. Please follow the [[https://pyjulia.readthedocs.io/en/latest/installation.html][official installation instructions]]
-to get ~PyJulia~ working. You can verify that your installation is valid
-by issuing the following command. More details are available in the
+to get ~PyJulia~ working. 
+To verify that your installation is completed succesfully try to issue the following command.
+
+#+begin_src python
+from julia import Base
+Base.sind(90)
+#+end_src
+
+More details on the PyJulia package are available in the
 [[https://pyjulia.readthedocs.io/en/latest/usage.html][official usage tutorial]].
 
 You need to do either one of the following for ~PyJulia~ to work:
@@ -26,12 +33,33 @@ You need to do either one of the following for ~PyJulia~ to work:
   python-jl
   #+end_src
   which is bundled in PyJulia. 
-  
-You can verify your installation by issuing  
-#+begin_src python
-from julia import Base
-Base.sind(90)
+
+To install the python wrapper of SG-t-SNE-Π to your python virtual environment or a conda environment follow the instructions below:
+
+To install using Conda:
+
+#+begin_src bash
+git clone https://github.com/fcdimitr/sgtsnepi.git
+cd sgtsnepi
+conda env create -f python/environment.yml
+source activate sgtsnepi
+python-jl python/test_digits.py
 #+end_src
+
+To install to a new python virtual environment:
+
+#+begin_src bash
+python3 -m venv /path/to/new/virtual/environment
+source /path/to/new/virtual/environment/bin/activate
+git clone https://github.com/fcdimitr/sgtsnepi.git
+cd sgtsnepi
+pip install -r python/requirements.txt
+python-jl python/test_digits.py
+#+end_src
+
+
+
+
 
 * SG-t-SNE-Π usage
 
