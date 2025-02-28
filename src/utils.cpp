@@ -22,6 +22,7 @@ void printParams(tsneparams P){
             << "Early exag. multiplier α: " << P.alpha << std::endl
             << "Maximum iterations: " << P.maxIter << std::endl
             << "Early exag. iterations: " << P.earlyIter << std::endl
+            << "Learning rate: " << P.eta << std::endl
             << "Box side length h: " << P.h << std::endl
             << "Drop edges originating from leaf nodes? " << P.dropLeaf << std::endl
             << "Number of processes: " << P.np << std::endl;
